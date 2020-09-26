@@ -1,16 +1,17 @@
+/*
 package org.whitneyrobotics.ftc.teamcode.tests;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.whitneyrobotics.ftc.teamcode.lib.geometry.Coordinate;
-import org.whitneyrobotics.ftc.teamcode.lib.purepursuit.strafetotarget.StrafeToTarget;
+//import org.whitneyrobotics.ftc.teamcode.lib.purepursuit.strafetotarget.StrafeToTarget;
 import org.whitneyrobotics.ftc.teamcode.subsys.WHSRobotImpl;
 
 @Autonomous(name = "StrafeToTarget Test")
 public class StrafeToTargetTest extends OpMode {
     WHSRobotImpl robot;
-    StrafeToTarget strafe1;
+    //StrafeToTarget strafe1;
     double[] motorPowers = {0,0,0,0};
     public double kP = 0.000001;
     public double kV = 0.0000006338;
@@ -56,7 +57,8 @@ public class StrafeToTargetTest extends OpMode {
         telemetry.addData("Right extension", robot.outtake.getExtensionEncoderPositions()[1]);
         telemetry.addData("Left intake Velocity", robot.intake.getWheelVelocities()[0]);
         telemetry.addData("Right intake Velocity", robot.intake.getWheelVelocities()[1]);
-        /*for(int i = 0; i < strafe1.smoothedPath.length; i++) {
+        */
+/*for(int i = 0; i < strafe1.smoothedPath.length; i++) {
             telemetry.log().add("Target Angular Velocities " + strafe1.targetAngularVelocities[i]);
         }
         for(int i = 0; i < strafe1.smoothedPath.length; i++){
@@ -68,7 +70,8 @@ public class StrafeToTargetTest extends OpMode {
             telemetry.log().add("dTheta" + deltaTheta);
             targetAngularVelocities[i] = (targetAngularVelocities[i+1] * targetAngularVelocities[i+1]) + 2 * 5.0 * deltaTheta;
             telemetry.log().add("tAV " + targetAngularVelocities[i]);
-        }*/
+        }*//*
+
 //        telemetry.addData("Target Left Velcoities", strafe1.getCurrentTargetWheelVelocities()[0]);
 //        telemetry.addData("Target Right Velcoities ", swerve1.getCurrentTargetWheelVelocities()[1]);
         telemetry.addData("Current Velocities Left", robot.drivetrain.getAllWheelVelocities()[0] +
@@ -83,3 +86,4 @@ public class StrafeToTargetTest extends OpMode {
 
     }
 }
+*/

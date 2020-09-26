@@ -33,7 +33,7 @@ public class RotateToTargetTest extends OpMode {
 
     @Override
     public void loop() {
-        robot.rotateController.setConstants(RobotConstants.R_KP, RobotConstants.R_KI, RobotConstants.R_KD);
+        robot.rotateController.setConstants(RobotConstants.ROTATE_CONSTANTS);
 
         if(robot.rotateToTargetInProgress()) {
             robot.rotateToTarget(RobotConstants.rotateTestAngle, false);//RobotConstants.rotateOrientation);

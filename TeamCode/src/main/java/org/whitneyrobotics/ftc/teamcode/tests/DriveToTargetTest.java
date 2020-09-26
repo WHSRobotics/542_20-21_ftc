@@ -1,8 +1,8 @@
 package org.whitneyrobotics.ftc.teamcode.tests;
 
-import com.acmerobotics.dashboard.FtcDashboard;
+/*import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;*/
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
@@ -17,8 +17,8 @@ import org.whitneyrobotics.ftc.teamcode.subsys.WHSRobotImpl;
 public class DriveToTargetTest extends OpMode {
 
     WHSRobotImpl robot;
-    FtcDashboard dashboard = FtcDashboard.getInstance();
-    Telemetry dashboardTelemetry = dashboard.getTelemetry();
+/*    FtcDashboard dashboard = FtcDashboard.getInstance();
+    Telemetry dashboardTelemetry = dashboard.getTelemetry();*/
 
     Coordinate startingCoordinate = new Coordinate(600, -1571, -90);
     Position p1 = new Position(600, -600);
@@ -31,8 +31,8 @@ public class DriveToTargetTest extends OpMode {
 
     @Override
     public void init() {
-        TelemetryPacket packet = new TelemetryPacket();
-        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+/*        TelemetryPacket packet = new TelemetryPacket();
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());*/
 
         // dashboard.sendTelemetryPacket(packet);
 
@@ -43,7 +43,7 @@ public class DriveToTargetTest extends OpMode {
 
     @Override
     public void loop() {
-        robot.driveController.setConstants(RobotConstants.D_KP, RobotConstants.D_KI, RobotConstants.D_KD);
+        robot.driveController.setConstants(RobotConstants.DRIVE_CONSTANTS);
         robot.estimatePosition();
         robot.estimateHeading();
         switch(state){

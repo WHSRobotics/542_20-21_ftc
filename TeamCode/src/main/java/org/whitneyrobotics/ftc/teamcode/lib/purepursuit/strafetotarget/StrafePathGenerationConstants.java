@@ -7,13 +7,14 @@ public class StrafePathGenerationConstants extends SwervePathGenerationConstants
     private double maxAngularAcceleration, hKP, hKI, hKD;
 
     public StrafePathGenerationConstants(double spacing, double weightSmooth, double turnSpeed, double pathMaxVelocity, double maxAcceleration, double lookaheadDistance, double kV, double kA, double maxAngularAcceleration, double hKP, double hKI, double hKD) {
-        super(spacing, weightSmooth, turnSpeed, pathMaxVelocity)
+        super(spacing, weightSmooth, turnSpeed, pathMaxVelocity);
         this.maxAngularAcceleration = maxAngularAcceleration;
         this.hKP = hKP;
         this.hKI = hKI;
         this.hKD = hKD;
     }
 
+/*
     public StrafePathGenerationConstants(SwervePathGenerationConstants swervePathGenerationConstants, double maxAngularAcceleration, double hKP, double hKI, double hKD){
         super(swervePathGenerationConstants.getSpacing(), swervePathGenerationConstants.getWeightSmooth(), swervePathGenerationConstants.getTurnSpeed(), swervePathGenerationConstants.getPathMaxVelocity(), swervePathGenerationConstants.getMaxAcceleration(), swervePathGenerationConstants.getLookaheadDistance(), swervePathGenerationConstants.getkV(), swervePathGenerationConstants.getkA());
         this.maxAngularAcceleration = maxAngularAcceleration;
@@ -21,6 +22,7 @@ public class StrafePathGenerationConstants extends SwervePathGenerationConstants
         this.hKI = hKI;
         this.hKD = hKD;
     }
+*/
 
     public double getMaxAngularAcceleration() {
         return maxAngularAcceleration;

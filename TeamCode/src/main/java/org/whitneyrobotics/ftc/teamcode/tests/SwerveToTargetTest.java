@@ -1,3 +1,4 @@
+/*
 package org.whitneyrobotics.ftc.teamcode.tests;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -7,7 +8,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.whitneyrobotics.ftc.teamcode.lib.geometry.Coordinate;
 import org.whitneyrobotics.ftc.teamcode.lib.geometry.Position;
 import org.whitneyrobotics.ftc.teamcode.lib.purepursuit.swervetotarget.SwervePathGenerationConstants;
-import org.whitneyrobotics.ftc.teamcode.lib.purepursuit.swervetotarget.SwerveToTarget;
+//import org.whitneyrobotics.ftc.teamcode.lib.purepursuit.swervetotarget.SwerveToTarget;
 import org.whitneyrobotics.ftc.teamcode.subsys.WHSRobotImpl;
 
 
@@ -16,14 +17,16 @@ public class SwerveToTargetTest extends OpMode {
     WHSRobotImpl robot;
     Coordinate startingCoordinate = new Coordinate(0, 0, 90);
     static Position p1 = new Position(0, 0);
-    static Position p2 = new Position(0, 2400);/*
+    static Position p2 = new Position(0, 2400);*/
+/*
     static Position p3 = new Position(1800, 2700);
     static Position p4 = new Position(-1800, 2700);
-    static Position p5 = new Position(-1800, 0);*/
+    static Position p5 = new Position(-1800, 0);*//*
 
-    FtcDashboard dashboard = FtcDashboard.getInstance();
 
-    Telemetry dashboardTelemetry = dashboard.getTelemetry();
+    //FtcDashboard dashboard = FtcDashboard.getInstance();
+
+    //Telemetry dashboardTelemetry = dashboard.getTelemetry();
 
 
     Position[] positions1 = {startingCoordinate.getPos(), p2};
@@ -38,12 +41,14 @@ public class SwerveToTargetTest extends OpMode {
         robot = new WHSRobotImpl(hardwareMap);
         robot.drivetrain.resetEncoders();
         robot.setInitialCoordinate(startingCoordinate);
-        swerve1 = new SwerveToTarget(SwervePathGenerationConstants.kP, SwervePathGenerationConstants.kV, SwervePathGenerationConstants.kA, positions1, 10, 0.99, 3, SwervePathGenerationConstants.lookaheadDistance, 1000);
+        //swerve1 = new SwerveToTarget(SwervePathGenerationConstants.kP, SwervePathGenerationConstants.kV, SwervePathGenerationConstants.kA, positions1, 10, 0.99, 3, SwervePathGenerationConstants.lookaheadDistance, 1000);
 
-        TelemetryPacket packet = new TelemetryPacket();
+       */
+/* TelemetryPacket packet = new TelemetryPacket();
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         dashboard.sendTelemetryPacket(packet);
-        telemetry.setMsTransmissionInterval(10);
+        telemetry.setMsTransmissionInterval(10);*//*
+
     }
 
     @Override
@@ -73,3 +78,4 @@ public class SwerveToTargetTest extends OpMode {
         telemetry.addData("Current Velocities Right", robot.drivetrain.getAllWheelVelocities()[1]);
     }
 }
+*/

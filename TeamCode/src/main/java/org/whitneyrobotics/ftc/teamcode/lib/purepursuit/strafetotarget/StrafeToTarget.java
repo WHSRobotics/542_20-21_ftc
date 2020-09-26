@@ -1,3 +1,4 @@
+/*
 package org.whitneyrobotics.ftc.teamcode.lib.purepursuit.strafetotarget;
 
 import org.whitneyrobotics.ftc.teamcode.lib.control.PIDController;
@@ -180,7 +181,9 @@ public class StrafeToTarget {
     private int calculateIndexOfClosestPoint(Position[] smoothedPath) {
         // creates array in which we store the current distance to each point in our path
         double[] distances = new double[smoothedPath.length];
-        for (int i = 0/*lastClosestPointIndex*/; i < smoothedPath.length; i++) {
+        for (int i = 0*/
+/*lastClosestPointIndex*//*
+; i < smoothedPath.length; i++) {
             distances[i] = Functions.Positions.subtract(smoothedPath[i], currentCoord).getMagnitude();
         }
 
@@ -239,4 +242,4 @@ public class StrafeToTarget {
     }
 
 
-}
+}*/
