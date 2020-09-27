@@ -10,7 +10,12 @@ public class PIDFController {
     double lastKnownError;
     double integral;
     double derivative;
-    double velocity;
+
+    double targetVelocity;
+    double targetAcceleration;
+
+    double currentPosition;
+    double currentVelocity;
 
     double error;
 
@@ -20,9 +25,14 @@ public class PIDFController {
         this.motionProfile = motionProfile;
     }
 
+    public PIDFController(ControlConstants constants){
+        setConstants(constants);
+    }
+
     public PIDFController (MotionProfile motionProfile, ControlConstants constants ){
         this.motionProfile = motionProfile;
         setConstants(constants);
+
     }
 
     public void setConstants(ControlConstants constants){
@@ -35,7 +45,9 @@ public class PIDFController {
         integral = 0;
     }
 
-    public void calculate(double error, double currentPosition){
+    public void calculate(double error, double currentPosition, double currentVelocity){
+       this.currentPosition = currentPosition;
+       this.currentVelocity = currentVelocity;
        this.error = error;
        double deltaError = error - lastKnownError;
 
@@ -45,12 +57,15 @@ public class PIDFController {
 
        integral += error * deltaTime;
        derivative = deltaError/deltaTime;
-
-       velocity = motionProfile.getTargetVelocities()[velocityAtClosestPoint(currentPosition)];
     }
 
     public double getOutput(){
-        double output = constants.getkP() * error + constants.getkD() * derivative + constants.getkI() * integral + constants.getkV() * velocity;
+        double output = constants.getkP() * error
+                + constants.getkD() * derivative
+                + constants.getkI() * integral
+                + constants.getkV() * targetVelocity + constants.getkA() * targetAcceleration
+                + constants.getkF().invoke(currentPosition, currentVelocity);
+
         return output;
     }
 
@@ -61,5 +76,22 @@ public class PIDFController {
         }
         return Functions.calculateIndexOfSmallestValue(differenceArray);
     }
+
+    public double getTargetVelocity() {
+        return targetVelocity;
+    }
+
+    public void setTargetVelocity(double targetVelocity) {
+        this.targetVelocity = targetVelocity;
+    }
+
+    public double getTargetAcceleration() {
+        return targetAcceleration;
+    }
+
+    public void setTargetAcceleration(double targetAcceleration) {
+        this.targetAcceleration = targetAcceleration;
+    }
+
 
 }
