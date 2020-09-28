@@ -13,13 +13,13 @@ public class Canister {
         loader = canisterMap.servo.get("canisterServo");
     }
 
-    public enum Loader_Positions{
+    public enum LoaderPositions{
         REST, PUSH
     }
 
     public double[]LOADER_POSITIONS={0, 90} ; // rest, push
-    public final double LOADER_REST = LOADER_POSITIONS[Loader_Positions.REST.ordinal()];
-    public final double LOADER_PUSH = LOADER_POSITIONS[Loader_Positions.PUSH.ordinal()];
+    public final double LOADER_REST = LOADER_POSITIONS[LoaderPositions.REST.ordinal()];
+    public final double LOADER_PUSH = LOADER_POSITIONS[LoaderPositions.PUSH.ordinal()];
 
     public void operateCanister(boolean gamepadInput1) {
         canisterToggler.changeState(gamepadInput1);
