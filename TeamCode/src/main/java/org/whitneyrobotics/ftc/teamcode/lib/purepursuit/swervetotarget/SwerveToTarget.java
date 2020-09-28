@@ -1,4 +1,4 @@
-/*
+
 package org.whitneyrobotics.ftc.teamcode.lib.purepursuit.swervetotarget;
 
 import org.whitneyrobotics.ftc.teamcode.lib.geometry.Coordinate;
@@ -47,7 +47,7 @@ public class SwerveToTarget {
      * @param weightSmooth         Determines the extent of smoothing done on the path (from 0-1)
      * @param turnSpeed            Determines the speed of the robot around turns (recommended 1-5)
      * @param lookaheadDistance    How far ahead along the path the robot will be "looking" (in mm)
-     *//*
+     */
 
     public SwerveToTarget(double kP, double kV, double kA, Position[] targetPositions, double spacing, double weightSmooth, double turnSpeed, double lookaheadDistance, double pathMaximumVelocity) {
         this.pathMaximumVelocity = pathMaximumVelocity;
@@ -220,8 +220,8 @@ public class SwerveToTarget {
     private int calculateIndexOfClosestPoint(Position[] smoothedPath) {
         // creates array in which we store the current distance to each point in our path
         double[] distances = new double[smoothedPath.length];
-        for (int i = 0*/
-/*lastClosestPointIndex*//*
+        for (int i = 0
+/*lastClosestPointIndex*/
 ; i < smoothedPath.length; i++) {
             distances[i] = Functions.Positions.subtract(smoothedPath[i], currentCoord).getMagnitude();
         }
@@ -271,4 +271,4 @@ public class SwerveToTarget {
     public double[] getCurrentTargetWheelVelocities() {
         return currentTargetWheelVelocities;
     }
-}*/
+}

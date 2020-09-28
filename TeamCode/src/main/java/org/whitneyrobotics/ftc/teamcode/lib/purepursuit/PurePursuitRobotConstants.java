@@ -4,7 +4,12 @@ package org.whitneyrobotics.ftc.teamcode.lib.purepursuit;
 public class PurePursuitRobotConstants {
 
     public final static double MAX_ACCELERATION = 0;
+
     public final static double SWERVE_KP = 0;
     public final static double SWERVE_KV = 0;
     public final static double SWERVE_KA = 0;
+
+    public final static double STRAFE_KP = 0;
+    public final static double STRAFE_KV = 0;
+    public final static double STRAFE_KA = 0;
 }
