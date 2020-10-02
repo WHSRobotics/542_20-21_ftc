@@ -19,7 +19,7 @@ public class Flywheel {
     Position powershot2 = new Position(0,0);
     Position powershot3 = new Position(0,0);
     Position bins = new Position(0,0);
-    public Position[] Target_Positions = {powershot1, powershot2, powershot3, highbin, midbin};
+    public Position[] Target_Positions = {powershot1, powershot2, powershot3, bins};
     public final Position Pow1 = Target_Positions[LaunchTargets.POWERSHOT1.ordinal()];
     public final Position Pow2 = Target_Positions[LaunchTargets.POWERSHOT2.ordinal()];
     public final Position Pow3 = Target_Positions[LaunchTargets.POWERSHOT3.ordinal()];
@@ -28,11 +28,35 @@ public class Flywheel {
     public Flywheel(HardwareMap flyMap){
         launcher = flyMap.get(DcMotorEx.class, "FlyWheel");
     }
-    Toggler flyWheelTog = new Toggler(2);
-    public int launchState;
-    public void calculateLaunchHeading(Position target, Coordinate robotPos){
-
+    public Toggler flyWheelTog = new Toggler(2);
+    public Position triangle;
+    public double leg1;
+    public double leg2;
+    public double hypotenuse;
+    public double targetHeading;
+    public boolean above;
+    public double headingToTarget;
+    public double calculateLaunchHeading(Position target, Coordinate robotPos){
+        if (robotPos.getY()>target.getY()){
+            above = true;
+        }
+        else {
+            above = false;
+        }
+        triangle = new Position(robotPos.getX(), target.getY());
+        leg1 = Math.abs(triangle.getY()- robotPos.getY());
+        leg2 = Math.abs(triangle.getX()-target.getX());
+        hypotenuse = Math.sqrt(Math.pow(leg1, 2)+Math.pow(leg2,2));
+        targetHeading = Math.asin((leg1*Math.sin(90))/hypotenuse);
+        if (above){
+            headingToTarget = 180 - targetHeading;
+        }
+        else{
+            headingToTarget = targetHeading;
+        }
+        return headingToTarget;
     }
+    public int launchState;
     public void operate(boolean togInc, boolean togDec){
         flyWheelTog.changeState(togInc, togDec);
         launchState = flyWheelTog.currentState();
