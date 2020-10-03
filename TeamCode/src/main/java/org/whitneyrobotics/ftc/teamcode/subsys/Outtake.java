@@ -19,9 +19,9 @@ public class Outtake {
     public enum LaunchTargets{
         POWERSHOT1, POWERSHOT2, POWERSHOT3, BINS
     }
-    Position powershot1 = new Position(0,0);
-    Position powershot2 = new Position(0,0);
-    Position powershot3 = new Position(0,0);
+    Position powershot1 = new Position(3.75,28.5); // from right to left fix later
+    Position powershot2 = new Position(11.25,28.5);
+    Position powershot3 = new Position(18.75,28.5);
     Position bins = new Position(0,0);
     public Position[] Target_Positions = {powershot1, powershot2, powershot3, bins};
     public final Position Pow1 = Target_Positions[LaunchTargets.POWERSHOT1.ordinal()];
@@ -31,7 +31,7 @@ public class Outtake {
     public final double FLYWHEEL_POWER = 0.5;
     public Outtake (HardwareMap flyMap) {
         launcher = flyMap.get(DcMotorEx.class, "FlyWheel");
-        flap =  hardwareMap.servo.get("flap");
+        flap =  hardwareMap.servo.get("Flap");
     }
     public Toggler flyWheelTog = new Toggler(2);
     public Position triangle;
