@@ -2,16 +2,20 @@ package org.whitneyrobotics.ftc.teamcode.subsys;
 
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.whitneyrobotics.ftc.teamcode.lib.geometry.Coordinate;
 import org.whitneyrobotics.ftc.teamcode.lib.geometry.Position;
 import org.whitneyrobotics.ftc.teamcode.lib.util.Toggler;
 
-public class Flywheel {
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
+
+public class Outtake {
     public final double POWER_SHOT_TARGET_HEIGHT = 584.2;
     public final double MID_GOAL_HEIGHT = 685.8;
     public final double HIGH_TARGET_HEIGHT = 901.7;
     public DcMotorEx launcher;
+    public Servo flap;
     public enum LaunchTargets{
         POWERSHOT1, POWERSHOT2, POWERSHOT3, BINS
     }
@@ -25,8 +29,9 @@ public class Flywheel {
     public final Position Pow3 = Target_Positions[LaunchTargets.POWERSHOT3.ordinal()];
     public final Position Bin = Target_Positions[LaunchTargets.BINS.ordinal()];
     public final double FLYWHEEL_POWER = 0.5;
-    public Flywheel(HardwareMap flyMap){
+    public Outtake (HardwareMap flyMap) {
         launcher = flyMap.get(DcMotorEx.class, "FlyWheel");
+        flap =  hardwareMap.servo.get("flap");
     }
     public Toggler flyWheelTog = new Toggler(2);
     public Position triangle;

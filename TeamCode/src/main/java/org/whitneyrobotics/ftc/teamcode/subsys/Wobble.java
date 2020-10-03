@@ -32,11 +32,11 @@ public class Wobble {
     public final double CLAW_OPEN = CLAW_POSITIONS[ClawPositions.OPEN.ordinal()];
     public final double CLAW_CLOSE = CLAW_POSITIONS[ClawPositions.CLOSE.ordinal()];
 
-    public int[] ARM_POSITIONS = {0, 1, 2, 3,}; //folded, down, up, over in order change position once motor information and tick information is released
-    public final double ARM_FOLDED = ARM_POSITIONS[ArmPositions.FOLDED.ordinal()];
-    public final double ARM_DOWN = ARM_POSITIONS[ArmPositions.DOWN.ordinal()];
-    public final double ARM_UP = ARM_POSITIONS[ArmPositions.UP.ordinal()];
-    public final double ARM_OVER = ARM_POSITIONS[ArmPositions.OVER.ordinal()];
+    public int[] ARM_POSITIONS = {0, 1, 2, 3}; //folded, down, up, over in order change position once motor information and tick information is released
+    public final int ARM_FOLDED = ARM_POSITIONS[ArmPositions.FOLDED.ordinal()];
+    public final int ARM_DOWN = ARM_POSITIONS[ArmPositions.DOWN.ordinal()];
+    public final int ARM_UP = ARM_POSITIONS[ArmPositions.UP.ordinal()];
+    public final int ARM_OVER = ARM_POSITIONS[ArmPositions.OVER.ordinal()];
 
     public void operateClaw(boolean gamepadInput1) {
         clawToggler.changeState(gamepadInput1);
@@ -54,15 +54,15 @@ public class Wobble {
         armState = armToggler.currentState();
         switch (armState) {
             case 1: //ARM_DOWN
-                arm.setTargetPosition(1);
+                arm.setTargetPosition(ARM_DOWN);
                 break;
             case 2: //ARM_UP
-                arm.setTargetPosition(2);
+                arm.setTargetPosition(ARM_UP);
                 break;
             case 3: //ARM_OVER
-                arm.setTargetPosition(3);
+                arm.setTargetPosition(ARM_OVER);
             default: //ARM_FOLDED
-                arm.setTargetPosition(0);
+                arm.setTargetPosition(ARM_FOLDED);
         }
     }
 }
