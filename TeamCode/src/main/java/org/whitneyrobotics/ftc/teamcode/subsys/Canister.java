@@ -20,8 +20,8 @@ public class Canister {
     public final double LOADER_REST = LOADER_POSITIONS[Loader_Positions.REST.ordinal()];
     public final double LOADER_PUSH = LOADER_POSITIONS[Loader_Positions.PUSH.ordinal()];
 
-    public void operateCanister(boolean gampadInputOrLoaderPowerSwitch) {
-        canisterToggler.changeState(gampadInputOrLoaderPowerSwitch);
+    public void operateCanister(boolean gamepadInput) {
+        canisterToggler.changeState(gamepadInput);
         if (canisterToggler.currentState() == 0) {
             loader.setPosition(LOADER_REST);
         } else {

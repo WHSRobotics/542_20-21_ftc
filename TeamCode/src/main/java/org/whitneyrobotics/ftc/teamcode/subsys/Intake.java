@@ -18,16 +18,16 @@ public class Intake {
     public Intake(HardwareMap intakeWheel) {
         wheelIntake = intakeWheel.get(DcMotorEx.class, "Wheel Intake");
     }
-    public void operateIntakeWheel(boolean gamepadInput) {
-        wheelToggler.changeState(gamepadInput);
-        intakeState = wheelToggler.currentState();
-        switch (intakeState){
-            case 0:
-                wheelIntake.setPower(0);
-                break;
-            case 1:
-                wheelIntake.setPower(INTAKE_POWER);
-                break;
+    public void operate(boolean gamepadInput1, boolean gamepadInput2) {
+        wheelToggler.changeState(gamepadInput1);
+        if (gamepadInput2) {
+            wheelIntake.setPower(-INTAKE_POWER);
+        }
+        else if (wheelToggler.currentState() == 1) {
+            wheelIntake.setPower(INTAKE_POWER);
+        }
+        else {
+            wheelIntake.setPower(0.0);
         }
 
     }

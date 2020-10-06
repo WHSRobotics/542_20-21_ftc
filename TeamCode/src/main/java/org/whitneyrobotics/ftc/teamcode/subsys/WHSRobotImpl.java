@@ -20,6 +20,10 @@ public class WHSRobotImpl{
 
     public Drivetrain drivetrain;
     public IMU imu;
+    public Canister canister;
+    public Intake intake;
+    public Outtake outtake;
+    public Wobble wobble;
 
     SwervePath  currentSwervePath;
     SwerveFollower swerveFollower;
