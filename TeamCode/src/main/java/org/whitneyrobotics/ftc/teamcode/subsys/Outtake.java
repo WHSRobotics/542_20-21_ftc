@@ -71,17 +71,43 @@ public class Outtake {
         return headingToTarget;
     }
     public int launchState;
-    public void operate(boolean togInc, boolean togDec,){
+    public String launchStateDescription;
+    public void operateTargetLaunch(boolean togInc, boolean togDec){
         flyWheelTog.changeState(togInc, togDec);
         launchState = flyWheelTog.currentState();
         switch (launchState){
             case 0:
+                launchStateDescription="Launcher Off";
                 launcher.setPower(0);
                 break;
             case 1:
+                launchStateDescription="Launcher On"
                 launcher.setPower(FLYWHEEL_POWER);
                 break;
         }
+    }
+    public int angleState;
+    public String angleStateDescription;
+    public void operateLaunchAngle(boolean gamepadinput1, boolean gamepadinput2){
+      flapTog.changeState(gamepadinput1, gamepadinput2);
+      angleState = flapTog.currentState();
+      switch (angleState) {
+          case 0:
+              angleStateDescription="Angle 25";
+              flap.setPosition(SERVO_ONE);
+              break;
+          case 1:
+              angleStateDescription="Angle 50";
+              flap.setPosition(SERVO_TWO);
+              break;
+          case 2:
+              angleStateDescription="Angle 75";
+              flap.setPosition(SERVO_THREE);
+              break;
+          default:
+              angleStateDescription="Angle 100";
+              flap.setPosition(SERVO_BIN);
+      }
     }
 
     public void On (){

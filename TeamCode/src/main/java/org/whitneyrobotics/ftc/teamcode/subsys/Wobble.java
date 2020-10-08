@@ -38,31 +38,38 @@ public class Wobble {
     public final int ARM_UP = ARM_POSITIONS[ArmPositions.UP.ordinal()];
     public final int ARM_OVER = ARM_POSITIONS[ArmPositions.OVER.ordinal()];
 
+    public String clawStateDescription;
     public void operateClaw(boolean gamepadInput1) {
         clawToggler.changeState(gamepadInput1);
         if (clawToggler.currentState() == 0) {
             hand.setPosition(CLAW_OPEN);
+            clawStateDescription = "Open";
         } else {
             hand.setPosition(CLAW_CLOSE);
+            clawStateDescription = "Close";
         }
     }
 
     int armState;
-
+    public String armStateDescription;
     public void operateArm(boolean gamepadInput1) {
         armToggler.changeState(gamepadInput1);
         armState = armToggler.currentState();
         switch (armState) {
             case 1: //ARM_DOWN
                 arm.setTargetPosition(ARM_DOWN);
+                armStateDescription = "Arm Down";
                 break;
             case 2: //ARM_UP
                 arm.setTargetPosition(ARM_UP);
+                armStateDescription = "Arm Up";
                 break;
             case 3: //ARM_OVER
                 arm.setTargetPosition(ARM_OVER);
+                armStateDescription = "Arm Over Wall";
             default: //ARM_FOLDED
                 arm.setTargetPosition(ARM_FOLDED);
+                armStateDescription = "Arm Folded in Robot";
         }
     }
 }
