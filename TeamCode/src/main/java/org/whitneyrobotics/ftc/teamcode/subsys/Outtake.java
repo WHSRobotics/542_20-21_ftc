@@ -81,7 +81,7 @@ public class Outtake {
                 launcher.setPower(0);
                 break;
             case 1:
-                launchStateDescription="Launcher On"
+                launchStateDescription="Launcher On";
                 launcher.setPower(FLYWHEEL_POWER);
                 break;
         }
