@@ -16,7 +16,7 @@ public class TrentonTest extends OpMode {
     CRServo crServo;
     
     DcMotor motor2;
-    DcMotor motor3;
+    DcMotor motor4;
 
     @Override
     public void init() {
