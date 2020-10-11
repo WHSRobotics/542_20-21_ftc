@@ -22,6 +22,7 @@ public class TrentonTest extends OpMode {
     public void init() {
         motor1 = hardwareMap.dcMotor.get("motor1");
         regServo = hardwareMap.servo.get("regularServo");
+        motor2 = hardwareMap.dcMotor.get("motor2");
         crServo = hardwareMap.crservo.get("continuousRotationServo");
     }
 
