@@ -154,17 +154,17 @@ public class WHSAuto extends OpMode {
     @Override
     public void init_loop() {
 
-        if (robot.wobbleHeightDetector.getScreenPosition().x < LEFT_MAX) {
+      /*  if (robot.wobbleHeightDetector.getScreenPosition().x < LEFT_MAX) {
             autoOpRingPosition = 2;
         } else if (robot.wobbleHeightDetector.getScreenPosition().x < CENTER_MAX) {
             autoOpRingPosition = 1;
         } else {
             autoOpRingPosition = 0;
-        }
+        }*/
     }
-
-    telemetry.addData("RingStackPosition", autoOpRingPosition);
-
+    public String outtakeState = "hover";
+    public String stateDesc = "";
+    public String subStateDesc = "";
 
     @Override
     public void loop() {
@@ -173,16 +173,16 @@ public class WHSAuto extends OpMode {
 
         switch (outtakeState) {
             case "hover":
-                robot.outtake.hover();
+                //robot.outtake.hover();
                 break;
             case "grab":
-                robot.outtake.grabStone();
+               // robot.outtake.grabStone();
                 break;
             case "outtake1":
-                robot.outtake.autoOuttake(1);
+                //robot.outtake.autoOuttake(1);
                 break;
             case "outtake2":
-                robot.outtake.autoOuttake(2);
+                //robot.outtake.autoOuttake(2);
                 break;
             default:
                 break;
@@ -193,7 +193,7 @@ public class WHSAuto extends OpMode {
                 stateDesc = "Starting auto";
                 advanceState();
                 break;
-            case INITIAL_MOVE_FOUNDATION:
+            case DRIVE_TO_LAUNCH_POINT:
                 stateDesc = "Moving Foundation";
                 switch (subState) {
                     case 0:
@@ -202,53 +202,56 @@ public class WHSAuto extends OpMode {
                         break;
                     case 1:
                         subStateDesc = "Driving to foundation";
-                        motorPowers = startToFoundationSwerve.calculateMotorPowers(robot.getCoordinate(), robot.drivetrain.getWheelVelocities(), true);
-                        if (!startToFoundationSwerve.inProgress()) {
-                            foundationPullerUpToDownTimer.set(GRAB_FOUNDATION_DELAY);
+                        motorPowers = driveToShotLineSwerve.calculateMotorPowers(robot.getCoordinate(), robot.drivetrain.getWheelVelocities(), true);
+                        if (!driveToShotLineSwerve.inProgress()) {
+                            //foundationPullerUpToDownTimer.set(GRAB_FOUNDATION_DELAY);
                             subState++;
                         }
                         break;
                     case 2:
                         subStateDesc = "Grabbing foundation";
-                        robot.foundationPuller.setFoundationPullerPosition(FoundationPuller.PullerPosition.DOWN);
-                        operatingFoundationPullers = true;
-                        if (foundationPullerUpToDownTimer.isExpired()) {
+                        //robot.foundationPuller.setFoundationPullerPosition(FoundationPuller.PullerPosition.DOWN);
+                       // operatingFoundationPullers = true;
+                       // below should be a timer for the specific wobble we're going to
+                       /* if (foundationPullerUpToDownTimer.isExpired()) {
                             subState++;
-                        }
+                        }*/
                         break;
                     case 3:
                         subStateDesc = "Driving to wall";
-                        motorPowers = foundationToWallSwerve.calculateMotorPowers(robot.getCoordinate(), robot.drivetrain.getWheelVelocities(), false);
+                        /*motorPowers = foundationToWallSwerve.calculateMotorPowers(robot.getCoordinate(), robot.drivetrain.getWheelVelocities(), false);
                         if (!foundationToWallSwerve.inProgress()) {
                             subState++;
                         }
-                        break;
+                        break;*/
                     case 4:
                         subStateDesc = "Exit";
                         advanceState();
                         break;
                 }
                 break;
-            case SCAN_SKYSTONE:
+            case LAUNCH_PARTICLES_AND_SCAN_STACK:
                 stateDesc = "Scanning skystone";
                 switch (subState) {
                     case 0:
                         subStateDesc = "Entry";
-                        moveSkystoneGrabberTimer.set(MOVE_SKYSTONE_GRABBER_DELAY);
-                        scanSkystoneTimer.set(SCAN_SKYSTONE_DURATION);
+                        //Timers contain placeholder numbers
+                        launchTimer.set(100);
+                        scannerTimer.set(10);
                         subState++;
                         break;
                     case 1:
                         subStateDesc = "Scanning Skystone";
-                        if (scanSkystoneTimer.isExpired()) {
+                        if (scannerTimer.isExpired()) {
                             if (STARTING_ALLIANCE == BLUE) {
-                                if (robot.skystoneDetector.getScreenPosition().x < LEFT_MAX) {
+                                /*if (robot.skystoneDetector.getScreenPosition().x < LEFT_MAX) {
                                     skystonePosition = 0;
                                 } else if (robot.skystoneDetector.getScreenPosition().x < CENTER_MAX) {
                                     skystonePosition = 1;
                                 } else {
                                     skystonePosition = 2;
-                                }
+                                }*/
+                                //we dont have camera
                             } else if (STARTING_ALLIANCE == RED) {
                                 if (robot.skystoneDetector.getScreenPosition().x < LEFT_MAX) {
                                     skystonePosition = 2;
@@ -421,6 +424,7 @@ public class WHSAuto extends OpMode {
         telemetry.addData("Overhead time ms", robot.webcam.getOverheadTimeMs());
         telemetry.addData("Theoretical max FPS", robot.webcam.getCurrentPipelineMaxFps());
         telemetry.addData("Skystone Position", skystonePosition);
+        telemetry.addData("Auto Ring Position: ", autoOpRingPosition);
     }
 
     @Override
