@@ -13,6 +13,8 @@ import org.whitneyrobotics.ftc.teamcode.subsys.Outtake;
 
 import java.util.Locale;
 
+import static org.whitneyrobotics.ftc.teamcode.subsys.Outtake.Off;
+
 public class WHSAuto extends OpMode {
     WHSRobotImpl robot;
 
@@ -68,13 +70,14 @@ public class WHSAuto extends OpMode {
 
     //State definitions
     static final int INIT = 0;
-    static final int DRIVE_TO_LAUNCH_POINT = 1;
-    static final int LAUNCH_PARTICLES_AND_SCAN_STACK = 2;
-    static final int DROP_OFF_WOBBLE_GOAL = 3;
-    static final int PARK_ON_LAUNCH_LINE = 4;
-    static final int END = 5;
+    static final int SCAN_STACK = 1;
+    static final int DRIVE_TO_LAUNCH_POINT = 2;
+    static final int LAUNCH_PARTICLES = 3;
+    static final int DROP_OFF_WOBBLE_GOAL = 4;
+    static final int PARK_ON_LAUNCH_LINE = 5;
+    static final int END = 6;
 
-    static final int NUMBER_OF_STATES = 6;
+    static final int NUMBER_OF_STATES = 7;
 
     boolean[] stateEnabled = new boolean[NUMBER_OF_STATES];
 
@@ -93,8 +96,9 @@ public class WHSAuto extends OpMode {
 
         public void defineStateEnabledStatus() {
             stateEnabled[INIT] = true;
+            stateEnabled[SCAN_STACK] = true;
             stateEnabled[DRIVE_TO_LAUNCH_POINT] = true;
-            stateEnabled[LAUNCH_PARTICLES_AND_SCAN_STACK] = true;
+            stateEnabled[LAUNCH_PARTICLES] = true;
             stateEnabled[DROP_OFF_WOBBLE_GOAL] = true;
             stateEnabled[PARK_ON_LAUNCH_LINE] = true;
             stateEnabled[END] = true;
@@ -193,51 +197,38 @@ public class WHSAuto extends OpMode {
                 stateDesc = "Starting auto";
                 advanceState();
                 break;
+            case SCAN_STACK:
+                stateDesc = "Scan Stack";
+                advanceState();;
+                break;
             case DRIVE_TO_LAUNCH_POINT:
-                stateDesc = "Moving Foundation";
+                stateDesc = "Driving to the Launch Point";
                 switch (subState) {
                     case 0:
-                        subStateDesc = "Entry";
+                        subStateDesc = "Departure";
                         subState++;
                         break;
                     case 1:
-                        subStateDesc = "Driving to foundation";
+                        subStateDesc = "Entry and Aiming";
                         motorPowers = driveToShotLineSwerve.calculateMotorPowers(robot.getCoordinate(), robot.drivetrain.getWheelVelocities(), true);
                         if (!driveToShotLineSwerve.inProgress()) {
-                            //foundationPullerUpToDownTimer.set(GRAB_FOUNDATION_DELAY);
                             subState++;
                         }
-                        break;
-                    case 2:
-                        subStateDesc = "Grabbing foundation";
-                        //robot.foundationPuller.setFoundationPullerPosition(FoundationPuller.PullerPosition.DOWN);
-                       // operatingFoundationPullers = true;
-                       // below should be a timer for the specific wobble we're going to
-                       /* if (foundationPullerUpToDownTimer.isExpired()) {
-                            subState++;
-                        }*/
-                        break;
-                    case 3:
-                        subStateDesc = "Driving to wall";
-                        /*motorPowers = foundationToWallSwerve.calculateMotorPowers(robot.getCoordinate(), robot.drivetrain.getWheelVelocities(), false);
-                        if (!foundationToWallSwerve.inProgress()) {
-                            subState++;
-                        }
-                        break;*/
-                    case 4:
-                        subStateDesc = "Exit";
-                        advanceState();
                         break;
                 }
                 break;
-            case LAUNCH_PARTICLES_AND_SCAN_STACK:
-                stateDesc = "Scanning skystone";
+            case LAUNCH_PARTICLES:
+                stateDesc = "Ready to Launch";
                 switch (subState) {
                     case 0:
-                        subStateDesc = "Entry";
-                        //Timers contain placeholder numbers
-                        launchTimer.set(100);
-                        scannerTimer.set(10);
+                        //Set Flap to Angle 1
+                        //Launch At Target 1
+                        //Set Flap to Angle 2
+                        //Launch At Target 2
+                        //Set Flap to Angle 3
+                        //Launch At Target 3
+                        //Set Flap to Angle 4
+                        //Launch At Target 4
                         subState++;
                         break;
                     case 1:

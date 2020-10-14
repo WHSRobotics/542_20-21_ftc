@@ -113,7 +113,7 @@ public class Outtake {
     public void On (){
         launcher.setPower(0);
     }
-    public  void Off (){
+    public void Off(){
         launcher.setPower(FLYWHEEL_POWER);
     }
 }
