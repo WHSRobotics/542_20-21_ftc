@@ -10,6 +10,7 @@ import org.whitneyrobotics.ftc.teamcode.lib.util.SimpleTimer;
 import org.whitneyrobotics.ftc.teamcode.subsys.Intake;
 import org.whitneyrobotics.ftc.teamcode.subsys.WHSRobotImpl;
 import org.whitneyrobotics.ftc.teamcode.subsys.Outtake;
+import org.whitneyrobotics.ftc.teamcode.subsys.Wobble;
 
 import java.util.Locale;
 
@@ -177,12 +178,16 @@ public class WHSAuto extends OpMode {
 
         switch (outtakeState) {
             case "hover":
-                //robot.outtake.hover();
+                robot.wobble.setArmPosition(Wobble.ArmPositions.UP);
+                robot.wobble.setClawPosition(Wobble.ClawPositions.OPEN);
                 break;
             case "grab":
+                robot.wobble.setArmPosition(Wobble.ArmPositions.OVER);
+                robot.wobble.setClawPosition(Wobble.ClawPositions.CLOSE);
                // robot.outtake.grabStone();
                 break;
             case "outtake1":
+
                 //robot.outtake.autoOuttake(1);
                 break;
             case "outtake2":
@@ -221,7 +226,6 @@ public class WHSAuto extends OpMode {
                 stateDesc = "Ready to Launch";
                 switch (subState) {
                     case 0:
-                        //Set Flap to Angle 1
                         //Launch At Target 1
                         //Set Flap to Angle 2
                         //Launch At Target 2
@@ -322,6 +326,28 @@ public class WHSAuto extends OpMode {
                                 600);
 
                         advanceState();
+                        break;
+                }
+            case SCORE_WOBBLE:
+                subStateDesc = "scoring wobble goal";
+                switch (outtakeState) {
+                    case "hover":
+                        robot.wobble.setArmPosition(Wobble.ArmPositions.DOWN);
+                        robot.wobble.setClawPosition(Wobble.ClawPositions.OPEN);
+                        break;
+                    case "grab":
+                        //robot.wobble.setArmPosition(Wobble.ArmPositions.OVER);
+                        robot.wobble.setClawPosition(Wobble.ClawPositions.CLOSE);
+                        break;
+                    case "lift":
+                        robot.wobble.setArmPosition(Wobble.ArmPositions.UP);
+                        robot.wobble.setClawPosition(Wobble.ClawPositions.CLOSE);
+                        break;
+                    case "score":
+                        robot.wobble.setArmPosition(Wobble.ArmPositions.OVER);
+                        robot.wobble.setClawPosition(Wobble.ClawPositions.OPEN);
+                        break;
+                    default:
                         break;
                 }
                 break;

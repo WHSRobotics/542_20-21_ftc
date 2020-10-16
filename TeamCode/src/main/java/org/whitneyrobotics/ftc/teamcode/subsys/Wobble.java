@@ -72,4 +72,12 @@ public class Wobble {
                 armStateDescription = "Arm Folded in Robot";
         }
     }
+
+    public void setArmPosition(ArmPositions armPosition){
+        arm.setTargetPosition(ARM_POSITIONS[armPosition.ordinal()]);
+    }
+
+    public void setClawPosition(ClawPositions clawPosition){
+        hand.setPosition(CLAW_POSITIONS[clawPosition.ordinal()]);
+    }
 }
