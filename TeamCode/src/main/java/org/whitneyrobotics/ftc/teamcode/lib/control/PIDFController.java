@@ -64,7 +64,7 @@ public class PIDFController {
                 + constants.getkD() * derivative
                 + constants.getkI() * integral
                 + constants.getkV() * targetVelocity + constants.getkA() * targetAcceleration
-                + constants.getkF().invoke(currentPosition, currentVelocity);
+                + constants.getkF().invoke(currentPosition, currentVelocity) * currentVelocity;
 
         return output;
     }
