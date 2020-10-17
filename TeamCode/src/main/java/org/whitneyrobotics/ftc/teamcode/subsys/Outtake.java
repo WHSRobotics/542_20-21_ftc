@@ -38,11 +38,11 @@ public class Outtake {
     }
     public Toggler flyWheelTog = new Toggler(2);
     public Toggler flapTog = new Toggler (4);
-    public int[] SERVO_POSITIONS = {25,50,75,100};
-    public final int SERVO_ONE = SERVO_POSITIONS[LaunchAngles.BIN25.ordinal()];
-    public final int SERVO_TWO = SERVO_POSITIONS[LaunchAngles.BIN50.ordinal()];
-    public final int SERVO_THREE = SERVO_POSITIONS[LaunchAngles.BIN75.ordinal()];
-    public final int SERVO_BIN = SERVO_POSITIONS[LaunchAngles.BIN100.ordinal()];
+    public int[] FLAP_POSITIONS = {25,50,75,100};
+    public final int SERVO_ONE = FLAP_POSITIONS[LaunchAngles.BIN25.ordinal()];
+    public final int SERVO_TWO = FLAP_POSITIONS[LaunchAngles.BIN50.ordinal()];
+    public final int SERVO_THREE = FLAP_POSITIONS[LaunchAngles.BIN75.ordinal()];
+    public final int SERVO_BIN = FLAP_POSITIONS[LaunchAngles.BIN100.ordinal()];
     public Position triangle;
     public double leg1;
     public double leg2;
@@ -50,6 +50,7 @@ public class Outtake {
     public double targetHeading;
     public boolean above;
     public double headingToTarget;
+
     public double calculateLaunchHeading(Position target, Coordinate robotPos){
         if (robotPos.getY()>target.getY()){
             above = true;
@@ -70,8 +71,10 @@ public class Outtake {
         }
         return headingToTarget;
     }
+
     public int launchState;
     public String launchStateDescription;
+
     public void operateTargetLaunch(boolean togInc, boolean togDec){
         flyWheelTog.changeState(togInc, togDec);
         launchState = flyWheelTog.currentState();
@@ -86,8 +89,10 @@ public class Outtake {
                 break;
         }
     }
+
     public int angleState;
     public String angleStateDescription;
+
     public void operateLaunchAngle(boolean gamepadinput1, boolean gamepadinput2){
       flapTog.changeState(gamepadinput1, gamepadinput2);
       angleState = flapTog.currentState();
@@ -108,6 +113,10 @@ public class Outtake {
               angleStateDescription="Angle 100";
               flap.setPosition(SERVO_BIN);
       }
+    }
+
+    public void setLaunchAngle(LaunchAngles launchAngle){
+        flap.setPosition(FLAP_POSITIONS[launchAngle.ordinal()]);
     }
 
     public void On (){
