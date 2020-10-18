@@ -231,101 +231,26 @@ public class WHSAuto extends OpMode {
                         //Launch At Target 2
                         //Set Flap to Angle 3
                         //Launch At Target 3
-                        //Set Flap to Angle 4
-                        //Launch At Target 4
                         subState++;
                         break;
                     case 1:
-                        subStateDesc = "Scanning Skystone";
-                        if (scannerTimer.isExpired()) {
-                            if (STARTING_ALLIANCE == BLUE) {
-                                /*if (robot.skystoneDetector.getScreenPosition().x < LEFT_MAX) {
-                                    skystonePosition = 0;
-                                } else if (robot.skystoneDetector.getScreenPosition().x < CENTER_MAX) {
-                                    skystonePosition = 1;
-                                } else {
-                                    skystonePosition = 2;
-                                }*/
-                                //we dont have camera
-                            } else if (STARTING_ALLIANCE == RED) {
-                                if (robot.skystoneDetector.getScreenPosition().x < LEFT_MAX) {
-                                    skystonePosition = 2;
-                                } else if (robot.skystoneDetector.getScreenPosition().x < CENTER_MAX) {
-                                    skystonePosition = 1;
-                                } else {
-                                    skystonePosition = 0;
-                                }
-                            }
-                            dropIntakeTimer.set(DROP_INTAKE_DELAY);
-                            subState++;
-                        }
-                        break;
+                        subStateDesc = "Rotate to Target 1";
+                        robot.rotateToTarget();
                     case 2:
-                        subStateDesc = "dropping";
-                        robot.intake.setIntakePusherPosition(Intake.IntakePusherPosition.UP);
-                        if (dropIntakeTimer.isExpired()){
-                            subState++;
-                        }
-                        break;
+                        subStateDesc = "Launch to Target 1";
+                        Outtake.LaunchTargets.POWERSHOT1;
                     case 3:
-                        subStateDesc = "Exit";
-                        Position[] startToSkystoneSwervePositions = {startingCoordinateArray[STARTING_ALLIANCE], skystoneMidpointArray[STARTING_ALLIANCE][skystonePosition], skystonePositionArray[STARTING_ALLIANCE][skystonePosition]};
-                        Position[] skystoneToMidpointJerkSwervePositions = {skystonePositionArray[STARTING_ALLIANCE][skystonePosition], skystoneToFoundationPositionArray[STARTING_ALLIANCE][skystonePosition]};
-                        Position[] midPointToSkystoneJerkSwervePositions = {skystoneToFoundationPositionArray[STARTING_ALLIANCE][skystonePosition], skystonePositionArray[STARTING_ALLIANCE][skystonePosition]};
-
-                        Position[] skystoneToMovedFoundationSwervePositions = {skystonePositionArray[STARTING_ALLIANCE][skystonePosition], skybridgePositionArray[STARTING_ALLIANCE][SKYBRIDGE_CROSSING_POSITION], foundationMovedPositionArray[STARTING_ALLIANCE]};
-                        Position[] skystoneToUnmovedFoundationSwervePositions = {skystoneToFoundationPositionArray[STARTING_ALLIANCE][skystonePosition], skybridgePositionArray[STARTING_ALLIANCE][SKYBRIDGE_CROSSING_POSITION], pullFoundationMidpointArray[STARTING_ALLIANCE], foundationStartingPositionArray[STARTING_ALLIANCE]};
-                        startToSkystoneSwerve = new SwerveToTarget(SwerveConstants.StartToSkystoneSwerveConstants.kP,
-                                SwerveConstants.StartToSkystoneSwerveConstants.kV,
-                                SwerveConstants.StartToSkystoneSwerveConstants.kA,
-                                startToSkystoneSwervePositions,
-                                80,
-                                .2,
-                                SwerveConstants.StartToSkystoneSwerveConstants.velocityConstant,
-                                SwerveConstants.StartToSkystoneSwerveConstants.lookaheadDistance,
-                                300);
-
-                        skystoneToMidpointJerkSwerve = new SwerveToTarget(SwerveConstants.StartToSkystoneSwerveConstants.kP,
-                                SwerveConstants.StartToSkystoneSwerveConstants.kV,
-                                SwerveConstants.StartToSkystoneSwerveConstants.kA,
-                                skystoneToMidpointJerkSwervePositions,
-                                80,
-                                .5,
-                                SwerveConstants.StartToSkystoneSwerveConstants.velocityConstant,
-                                SwerveConstants.StartToSkystoneSwerveConstants.lookaheadDistance,
-                                650);
-
-                        midPointToSkyStoneJerkSwerve = new SwerveToTarget(SwerveConstants.StartToSkystoneSwerveConstants.kP,
-                                SwerveConstants.StartToSkystoneSwerveConstants.kV,
-                                SwerveConstants.StartToSkystoneSwerveConstants.kA,
-                                midPointToSkystoneJerkSwervePositions,
-                                80,
-                                .5,
-                                SwerveConstants.StartToSkystoneSwerveConstants.velocityConstant,
-                                SwerveConstants.StartToSkystoneSwerveConstants.lookaheadDistance,
-                                800);
-
-                        skystoneToMovedFoundationSwerve = new SwerveToTarget(SwerveConstants.SkystoneToMovedFoundationSwerveConstants.kP,
-                                SwerveConstants.SkystoneToMovedFoundationSwerveConstants.kV,
-                                SwerveConstants.SkystoneToMovedFoundationSwerveConstants.kA,
-                                skystoneToMovedFoundationSwervePositions,
-                                80,
-                                0.8,
-                                SwerveConstants.SkystoneToMovedFoundationSwerveConstants.velocityConstant,
-                                SwerveConstants.SkystoneToMovedFoundationSwerveConstants.lookaheadDistance,
-                                800);
-
-                        skystoneToUnmovedFoundationSwerve = new SwerveToTarget(SwerveConstants.SkystoneToUnmovedFoundationSwerveConstants.kP,
-                                SwerveConstants.SkystoneToUnmovedFoundationSwerveConstants.kV,
-                                SwerveConstants.SkystoneToUnmovedFoundationSwerveConstants.kA,
-                                skystoneToUnmovedFoundationSwervePositions,
-                                80,
-                                0.8,
-                                SwerveConstants.SkystoneToUnmovedFoundationSwerveConstants.velocityConstant,
-                                SwerveConstants.SkystoneToUnmovedFoundationSwerveConstants.lookaheadDistance - 110,
-                                600);
-
-                        advanceState();
+                        subStateDesc = "Rotate to Target 2";
+                        robot.rotateToTarget();
+                    case 4:
+                        subStateDesc = "Launch to Target 2";
+                        Outtake.LaunchTargets.POWERSHOT2;
+                    case 5:
+                        subStateDesc = "Rotate to Target 3";
+                        robot.rotateToTarget();
+                    case 6:
+                        subStateDesc = "Launch to Target 3";
+                        Outtake.LaunchTargets.POWERSHOT3;
                         break;
                 }
             case SCORE_WOBBLE:
