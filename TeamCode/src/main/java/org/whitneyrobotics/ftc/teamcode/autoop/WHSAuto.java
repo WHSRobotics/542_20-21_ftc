@@ -14,7 +14,7 @@ import org.whitneyrobotics.ftc.teamcode.subsys.Wobble;
 
 import java.util.Locale;
 
-import static org.whitneyrobotics.ftc.teamcode.subsys.Outtake.Off;
+//import static org.whitneyrobotics.ftc.teamcode.subsys.Outtake.Off;
 
 public class WHSAuto extends OpMode {
     WHSRobotImpl robot;
@@ -109,7 +109,9 @@ public class WHSAuto extends OpMode {
 
         SimpleTimer scannerTimer = new SimpleTimer();
         SimpleTimer driveToLaunchTimer = new SimpleTimer();
-        SimpleTimer launchTimer = new SimpleTimer();
+        SimpleTimer launchTimer1 = new SimpleTimer();
+        SimpleTimer launchTimer2 = new SimpleTimer();
+        SimpleTimer launchTimer3 = new SimpleTimer();
         SimpleTimer driveToWobbleOneTimer = new SimpleTimer();
         SimpleTimer driveToWobbleTwoTimer = new SimpleTimer();
         SimpleTimer driveToWobbleThreeTimer = new SimpleTimer();
@@ -226,11 +228,26 @@ public class WHSAuto extends OpMode {
                 stateDesc = "Ready to Launch";
                 switch (subState) {
                     case 0:
-                        //Launch At Target 1
+                        robot.rotateToTarget(robot.outtake.calculateLaunchHeading(robot.outtake.powershot1, robot.getCoordinate()), false);
+                        launchTimer1.set(500);
+                        while (!launchTimer1.isExpired()) {
+                        robot.outtake.On();
+                        }
+                        robot.outtake.Off();
                         //Set Flap to Angle 2
-                        //Launch At Target 2
+                        robot.rotateToTarget(robot.outtake.calculateLaunchHeading(robot.outtake.powershot1, robot.getCoordinate()), false);
+                        launchTimer2.set(500);
+                        while (!launchTimer2.isExpired()) {
+                            robot.outtake.On();
+                        }
+                        robot.outtake.Off();
                         //Set Flap to Angle 3
-                        //Launch At Target 3
+                        robot.rotateToTarget(robot.outtake.calculateLaunchHeading(robot.outtake.powershot1, robot.getCoordinate()), false);
+                        launchTimer3.set(500);
+                        while (!launchTimer3.isExpired()) {
+                            robot.outtake.On();
+                        }
+                        robot.outtake.Off();
                         subState++;
                         break;
                     case 1:

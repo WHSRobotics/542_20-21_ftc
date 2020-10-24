@@ -22,10 +22,10 @@ public class Outtake {
     public enum LaunchAngles{
         BIN25, BIN50, BIN75, BIN100
     }
-    Position powershot1 = new Position(3.75,28.5); // from right to left fix later
-    Position powershot2 = new Position(11.25,28.5);
-    Position powershot3 = new Position(18.75,28.5);
-    Position bins = new Position(0,0);
+    public Position powershot1 = new Position(3.75,28.5); // from right to left fix later
+    public Position powershot2 = new Position(11.25,28.5);
+    public Position powershot3 = new Position(18.75,28.5);
+    public Position bins = new Position(0,0);
     public Position[] Target_Positions = {powershot1, powershot2, powershot3, bins};
     public final Position Pow1 = Target_Positions[LaunchTargets.POWERSHOT1.ordinal()];
     public final Position Pow2 = Target_Positions[LaunchTargets.POWERSHOT2.ordinal()];
@@ -60,7 +60,7 @@ public class Outtake {
         }
         triangle = new Position(robotPos.getX(), target.getY());
         leg1 = Math.abs(triangle.getY()- robotPos.getY());
-        leg2 = Math.abs(triangle.getX()-target.getX());
+        leg2 = Math.abs(triangle.getX()- target.getX());
         hypotenuse = Math.sqrt(Math.pow(leg1, 2)+Math.pow(leg2,2));
         targetHeading = Math.asin((leg1*Math.sin(90))/hypotenuse);
         if (above){
@@ -71,6 +71,7 @@ public class Outtake {
         }
         return headingToTarget;
     }
+
 
     public int launchState;
     public String launchStateDescription;
@@ -119,10 +120,10 @@ public class Outtake {
         flap.setPosition(FLAP_POSITIONS[launchAngle.ordinal()]);
     }
 
-    public void On (){
+    public void Off (){
         launcher.setPower(0);
     }
-    public void Off(){
+    public void On(){
         launcher.setPower(FLYWHEEL_POWER);
     }
 }
