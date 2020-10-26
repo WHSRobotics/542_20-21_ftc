@@ -11,9 +11,9 @@ import org.whitneyrobotics.ftc.teamcode.lib.util.Toggler;
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
 
 public class Outtake {
-    public final double POWER_SHOT_TARGET_HEIGHT = 584.2;
-    public final double MID_GOAL_HEIGHT = 685.8;
-    public final double HIGH_TARGET_HEIGHT = 901.7;
+    public final double POWER_SHOT_TARGET_HEIGHT = 784.225;
+    public final double MID_GOAL_HEIGHT = 687.3875;
+    public final double HIGH_TARGET_HEIGHT = 901.7; //haven't checked this
     public DcMotorEx launcher;
     public Servo flap;
     public enum LaunchTargets{
@@ -22,11 +22,11 @@ public class Outtake {
     public enum LaunchAngles{
         BIN25, BIN50, BIN75, BIN100
     }
-    public Position powershot1 = new Position(3.75,28.5); // from right to left fix later
-    public Position powershot2 = new Position(11.25,28.5);
-    public Position powershot3 = new Position(18.75,28.5);
-    public Position bins = new Position(0,0);
-    public Position[] Target_Positions = {powershot1, powershot2, powershot3, bins};
+    public final Position powershot1 = new Position(1800,-95.25); // from right to left fix later
+    public final Position powershot2 = new Position(1800,-285.75);
+    public final Position powershot3 = new Position(1800,-476.25);
+    public final Position binsMidpoint = new Position(1800,-890.5875);
+    public Position[] Target_Positions = {powershot1, powershot2, powershot3, binsMidpoint};
     public final Position Pow1 = Target_Positions[LaunchTargets.POWERSHOT1.ordinal()];
     public final Position Pow2 = Target_Positions[LaunchTargets.POWERSHOT2.ordinal()];
     public final Position Pow3 = Target_Positions[LaunchTargets.POWERSHOT3.ordinal()];
@@ -72,6 +72,12 @@ public class Outtake {
         return headingToTarget;
     }
 
+    public static double calculateLaunchSetting (double targetHeight, Position target, Coordinate robotPos){
+        double launchSetting = 0.0;
+        double distanceToTarget = Math.sqrt(Math.pow(target.getX()-robotPos.getX(), 2) + Math.pow(target.getY()-robotPos.getY(), 2));
+        // do later this still returns 0.0
+        return launchSetting;
+    }
 
     public int launchState;
     public String launchStateDescription;

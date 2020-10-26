@@ -112,6 +112,9 @@ public class WHSAuto extends OpMode {
         SimpleTimer launchTimer1 = new SimpleTimer();
         SimpleTimer launchTimer2 = new SimpleTimer();
         SimpleTimer launchTimer3 = new SimpleTimer();
+        SimpleTimer powershot1Timer = new SimpleTimer();
+        SimpleTimer powershot2Timer = new SimpleTimer();
+        SimpleTimer powershot3Timer = new SimpleTimer();
         SimpleTimer driveToWobbleOneTimer = new SimpleTimer();
         SimpleTimer driveToWobbleTwoTimer = new SimpleTimer();
         SimpleTimer driveToWobbleThreeTimer = new SimpleTimer();
@@ -252,25 +255,43 @@ public class WHSAuto extends OpMode {
                         break;
                     case 1:
                         subStateDesc = "Rotate to Target 1";
-                        robot.rotateToTarget();
+                        robot.rotateToTarget(robot.outtake.calculateLaunchHeading(robot.outtake.powershot1, robot.getCoordinate()), false);
+                        subState++;
                     case 2:
                         subStateDesc = "Launch to Target 1";
-                        Outtake.LaunchTargets.POWERSHOT1;
+                        powershot1Timer.set(1000);
+                        while (!powershot1Timer.isExpired()) {
+                            robot.outtake.On();
+                        }
+                        robot.outtake.Off();
+                        subState++;
                     case 3:
                         subStateDesc = "Rotate to Target 2";
-                        robot.rotateToTarget();
+                        robot.rotateToTarget(robot.outtake.calculateLaunchHeading(robot.outtake.powershot2, robot.getCoordinate()), false);
+                        subState++;
                     case 4:
                         subStateDesc = "Launch to Target 2";
-                        Outtake.LaunchTargets.POWERSHOT2;
+                        powershot2Timer.set(1000);
+                        while (!powershot2Timer.isExpired()) {
+                            robot.outtake.On();
+                        }
+                        robot.outtake.Off();
+                        subState++;
                     case 5:
                         subStateDesc = "Rotate to Target 3";
-                        robot.rotateToTarget();
+                        robot.rotateToTarget(robot.outtake.calculateLaunchHeading(robot.outtake.powershot3, robot.getCoordinate()), false);
+                        subState++;
                     case 6:
                         subStateDesc = "Launch to Target 3";
-                        Outtake.LaunchTargets.POWERSHOT3;
+                        powershot3Timer.set(1000);
+                        while (!powershot3Timer.isExpired()) {
+                            robot.outtake.On();
+                        }
+                        robot.outtake.Off();
+                        subState++;
                         break;
                 }
-            case SCORE_WOBBLE:
+            case DROP_OFF_WOBBLE_GOAL:
                 subStateDesc = "scoring wobble goal";
                 switch (outtakeState) {
                     case "hover":
@@ -294,8 +315,10 @@ public class WHSAuto extends OpMode {
                 }
                 break;
 
-            case DRIVE_TO_FOUNDATION:
-                stateDesc = "Driving to foundation";
+            case PARK_ON_LAUNCH_LINE:
+                Position parkingSpot = new Position( 300 ,robot.getCoordinate().getY());
+                robot.driveToTarget(parkingSpot, false);
+               /* stateDesc = "Driving to foundation";
                 switch (subState) {
                     case 0:
                         subStateDesc = "Entry";
@@ -365,16 +388,16 @@ public class WHSAuto extends OpMode {
                         advanceState();
                         break;
                 }
-                break;
+                break;*/
         }
         telemetry.addData("State: ", stateDesc);
         telemetry.addData("Substate: ", subStateDesc);
         telemetry.addData("IMU", robot.imu.getHeading());
-        telemetry.addData("Stone Sensed?", robot.intake.stoneSensed());
+        //telemetry.addData("Stone Sensed?", robot.intake.stoneSensed());
         telemetry.addData("X", robot.getCoordinate().getX());
         telemetry.addData("Y", robot.getCoordinate().getY());
         telemetry.addData("Heading", robot.getCoordinate().getHeading());
-        Telemetry.Item stone_position_x = telemetry.addData("Stone Position X", robot.skystoneDetector.getScreenPosition().x);
+        /*Telemetry.Item stone_position_x = telemetry.addData("Stone Position X", robot.skystoneDetector.getScreenPosition().x);
         telemetry.addData("Stone Position Y", robot.skystoneDetector.getScreenPosition().y);
         telemetry.addData("Frame Count", robot.webcam.getFrameCount());
         telemetry.addData("FPS", String.format(Locale.US, "%.2f", robot.webcam.getFps()));
@@ -383,15 +406,12 @@ public class WHSAuto extends OpMode {
         telemetry.addData("Overhead time ms", robot.webcam.getOverheadTimeMs());
         telemetry.addData("Theoretical max FPS", robot.webcam.getCurrentPipelineMaxFps());
         telemetry.addData("Skystone Position", skystonePosition);
-        telemetry.addData("Auto Ring Position: ", autoOpRingPosition);
+        telemetry.addData("Auto Ring Position: ", autoOpRingPosition);*/
     }
 
     @Override
     public void stop() {
-        robot.intake.setIntakePusherPosition(Intake.IntakePusherPosition.DOWN);
+        //robot.intake.setIntakePusherPosition(Intake.IntakePusherPosition.DOWN);
     }
 }
 
-    }
-
-}
