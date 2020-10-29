@@ -50,7 +50,9 @@ public class Outtake {
     public double targetHeading;
     public boolean above;
     public double headingToTarget;
-
+    public static final double INITIAL_VELOCITY = 7.07;
+    public static final double GRAVITY = -9.8;
+    public static final double LAUNCHER_HEIGHT = 300;
     public double calculateLaunchHeading(Position target, Coordinate robotPos){
         if (robotPos.getY()>target.getY()){
             above = true;
@@ -71,11 +73,21 @@ public class Outtake {
         }
         return headingToTarget;
     }
+    public static double angleCalculator (double xDistance, double yDistance){
+      double angle = 0.0;
+      double repeatedTerm = ((GRAVITY*yDistance*Math.pow(xDistance,2))-(GRAVITY*LAUNCHER_HEIGHT* Math.pow(xDistance, 2)))/Math.pow(INITIAL_VELOCITY, 2);
+      double term1 = Math.pow(xDistance, 2) - repeatedTerm; //x^2 - repeated term
+      double term2 = Math.pow((repeatedTerm-Math.pow(xDistance, 2)), 2); // first half under the smaller square root
+      double term3 = ((Math.pow(GRAVITY, 2)*Math.pow(xDistance, 2))/Math.pow(INITIAL_VELOCITY, 4))*(Math.pow(xDistance, 2)+Math.pow(yDistance, 2)+ Math.pow(LAUNCHER_HEIGHT, 2)-(2*yDistance*LAUNCHER_HEIGHT));// rest of stuff under small rad
+      double smallRoot = Math.sqrt(term2-term3);
+      double bottom = 2 * (Math.pow(xDistance, 2) + Math.pow(yDistance, 2) + Math.pow(LAUNCHER_HEIGHT, 2) - (2 * yDistance * LAUNCHER_HEIGHT));
+      return angle;
+    }
 
     public static double calculateLaunchSetting (double targetHeight, Position target, Coordinate robotPos){
         double launchSetting = 0.0;
         double distanceToTarget = Math.sqrt(Math.pow(target.getX()-robotPos.getX(), 2) + Math.pow(target.getY()-robotPos.getY(), 2));
-        // do later this still returns 0.0
+
         return launchSetting;
     }
 
