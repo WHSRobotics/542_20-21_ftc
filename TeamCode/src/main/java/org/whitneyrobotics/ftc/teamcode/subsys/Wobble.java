@@ -1,6 +1,6 @@
 package org.whitneyrobotics.ftc.teamcode.subsys;
 
-import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -8,7 +8,7 @@ import org.whitneyrobotics.ftc.teamcode.lib.util.Toggler;
 
 public class Wobble {
     private Servo hand;
-    private DcMotorEx arm;
+    private DcMotor arm;
 
     private Toggler clawToggler = new Toggler(2);
 
@@ -16,7 +16,7 @@ public class Wobble {
 
     public Wobble(HardwareMap wobbleMap) {
         hand = wobbleMap.servo.get("clawServo");
-        arm = (DcMotorEx) wobbleMap.dcMotor.get("armMotor");
+        arm = (DcMotor) wobbleMap.dcMotor.get("armMotor");
     }
 
 
@@ -39,8 +39,8 @@ public class Wobble {
     public final int ARM_OVER = ARM_POSITIONS[ArmPositions.OVER.ordinal()];
 
     public String clawStateDescription;
-    public void operateClaw(boolean gamepadInput1) {
-        clawToggler.changeState(gamepadInput1);
+    public void operateClaw(boolean gamepadInput) {
+        clawToggler.changeState(gamepadInput);
         if (clawToggler.currentState() == 0) {
             hand.setPosition(CLAW_OPEN);
             clawStateDescription = "Open";
@@ -52,10 +52,13 @@ public class Wobble {
 
     int armState;
     public String armStateDescription;
-    public void operateArm(boolean gamepadInput1) {
-        armToggler.changeState(gamepadInput1);
+    public void operateArm(boolean gamepadInput) {
+        armToggler.changeState(gamepadInput);
         armState = armToggler.currentState();
         switch (armState) {
+            case 0: //ARM_FOLDED
+                arm.setTargetPosition(ARM_FOLDED);
+                armStateDescription = "Arm Folded in Robot";
             case 1: //ARM_DOWN
                 arm.setTargetPosition(ARM_DOWN);
                 armStateDescription = "Arm Down";
@@ -67,9 +70,7 @@ public class Wobble {
             case 3: //ARM_OVER
                 arm.setTargetPosition(ARM_OVER);
                 armStateDescription = "Arm Over Wall";
-            default: //ARM_FOLDED
-                arm.setTargetPosition(ARM_FOLDED);
-                armStateDescription = "Arm Folded in Robot";
+
         }
     }
 
