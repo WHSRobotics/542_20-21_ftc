@@ -73,23 +73,37 @@ public class Outtake {
         }
         return headingToTarget;
     }
-    public static double angleCalculator (double xDistance, double yDistance){
-      double angle = 0.0;
+    public double calculateLaunchSetting (double xDistance, double yDistance){
+       // calculates angle based on that formula and then determines servo setting
+      double angle;
+      double launchSetting;
       double repeatedTerm = ((GRAVITY*yDistance*Math.pow(xDistance,2))-(GRAVITY*LAUNCHER_HEIGHT* Math.pow(xDistance, 2)))/Math.pow(INITIAL_VELOCITY, 2);
       double term1 = Math.pow(xDistance, 2) - repeatedTerm; //x^2 - repeated term
       double term2 = Math.pow((repeatedTerm-Math.pow(xDistance, 2)), 2); // first half under the smaller square root
       double term3 = ((Math.pow(GRAVITY, 2)*Math.pow(xDistance, 2))/Math.pow(INITIAL_VELOCITY, 4))*(Math.pow(xDistance, 2)+Math.pow(yDistance, 2)+ Math.pow(LAUNCHER_HEIGHT, 2)-(2*yDistance*LAUNCHER_HEIGHT));// rest of stuff under small rad
       double smallRoot = Math.sqrt(term2-term3);
+      double top = term1 + smallRoot; // this could be + or - only testing will tell
       double bottom = 2 * (Math.pow(xDistance, 2) + Math.pow(yDistance, 2) + Math.pow(LAUNCHER_HEIGHT, 2) - (2 * yDistance * LAUNCHER_HEIGHT));
-      return angle;
+      double inputForArccos = Math.sqrt(top/bottom);
+      angle = Math.acos(inputForArccos);
+      launchSetting = angle / 90;
+      return launchSetting;
     }
 
-    public static double calculateLaunchSetting (double targetHeight, Position target, Coordinate robotPos){
-        double launchSetting = 0.0;
-        double distanceToTarget = Math.sqrt(Math.pow(target.getX()-robotPos.getX(), 2) + Math.pow(target.getY()-robotPos.getY(), 2));
+    public double calculateDistanceToTarget(Position target, Coordinate robot){
+        Position thirdPoint = new Position(robot.getX(), target.getY());
+        double firstLeg = target.getX() - thirdPoint.getX();
+        double secondLeg = Math.abs(thirdPoint.getY()-robot.getY());
+        double firstStep = Math.pow(firstLeg, 2) + Math.pow(secondLeg, 2);
+        double distance = Math.sqrt(firstStep);
+        return  distance;
+    }
 
+   /* public static double calculateLaunchSetting (double angle){
+        // uses angleCalculator's output to return servo setting
+        double launchSetting = 0.0
         return launchSetting;
-    }
+    }*/
 
     public int launchState;
     public String launchStateDescription;
