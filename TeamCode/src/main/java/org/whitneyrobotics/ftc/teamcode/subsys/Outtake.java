@@ -44,8 +44,8 @@ public class Outtake {
     public final int SERVO_THREE = FLAP_POSITIONS[LaunchAngles.BIN75.ordinal()];
     public final int SERVO_BIN = FLAP_POSITIONS[LaunchAngles.BIN100.ordinal()];
     public Position triangle;
-    public double leg1;
-    public double leg2;
+    public double robotToTriangle;
+    public double targetToTriangle;
     public double hypotenuse;
     public double targetHeading;
     public boolean above;
@@ -61,10 +61,11 @@ public class Outtake {
             above = false;
         }
         triangle = new Position(robotPos.getX(), target.getY());
-        leg1 = Math.abs(triangle.getY()- robotPos.getY());
-        leg2 = Math.abs(triangle.getX()- target.getX());
-        hypotenuse = Math.sqrt(Math.pow(leg1, 2)+Math.pow(leg2,2));
-        targetHeading = Math.asin((leg1*Math.sin(90))/hypotenuse);
+        robotToTriangle = Math.abs(triangle.getY()- robotPos.getY());
+        targetToTriangle = Math.abs(triangle.getX()- target.getX());
+        hypotenuse = Math.sqrt(Math.pow(robotToTriangle, 2)+Math.pow(targetToTriangle,2));
+        //targetHeading = Math.asin((leg1*Math.sin(90))/hypotenuse);
+        targetHeading = Math.atan(robotToTriangle / targetToTriangle);
         if (above){
             headingToTarget = 180 - targetHeading;
         }
@@ -108,8 +109,8 @@ public class Outtake {
     public int launchState;
     public String launchStateDescription;
 
-    public void operateTargetLaunch(boolean togInc, boolean togDec){
-        flyWheelTog.changeState(togInc, togDec);
+    public void operateTargetLaunch(boolean gamepadInput){
+        flyWheelTog.changeState(gamepadInput);
         launchState = flyWheelTog.currentState();
         switch (launchState){
             case 0:
