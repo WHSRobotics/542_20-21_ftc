@@ -16,9 +16,13 @@ public class RobotConstants {
     public static ControlConstants DRIVE_CONSTANTS = new ControlConstants(1.7, 0.7, 0.8);
     public static ControlConstants ROTATE_CONSTANTS = new ControlConstants(1.1, 0.07542, 0.15);
 
+    //Outtake
+    public static double OUTTAKE_MAX_VELOCITY = 1800;
+    public static ControlConstants.FeedforwardFunction flywheelKF = (double currentPosition, double currentVelocity) ->  1/OUTTAKE_MAX_VELOCITY;
+    public static ControlConstants FLYWHEEL_CONSTANTS = new ControlConstants(1,1,2, flywheelKF);
+
     public static double rotateTestAngle = 180;
     public static boolean rotateOrientation = true;
 
-    //Outtake
-    public static double OUTTAKE_MAX_VELOCITY = 1800;
+
 }
