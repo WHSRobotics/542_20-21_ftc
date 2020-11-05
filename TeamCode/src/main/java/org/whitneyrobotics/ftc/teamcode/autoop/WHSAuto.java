@@ -235,23 +235,23 @@ public class WHSAuto extends OpMode {
                         robot.rotateToTarget(robot.outtake.calculateLaunchHeading(robot.outtake.powershot1, robot.getCoordinate()), false);
                         launchTimer1.set(500);
                         while (!launchTimer1.isExpired()) {
-                        robot.outtake.On();
+                        robot.outtake.setLauncherPower(robot.outtake.FLYWHEEL_POWER);
                         }
-                        robot.outtake.Off();
+                        robot.outtake.setLauncherPower(0);
                         robot.outtake.flap.setPosition(robot.outtake.calculateLaunchSetting(robot.outtake.calculateDistanceToTarget(robot.outtake.powershot2, robot.getCoordinate()), robot.outtake.POWER_SHOT_TARGET_HEIGHT ));
                         robot.rotateToTarget(robot.outtake.calculateLaunchHeading(robot.outtake.powershot2, robot.getCoordinate()), false);
                         launchTimer2.set(500);
                         while (!launchTimer2.isExpired()) {
-                            robot.outtake.On();
+                            robot.outtake.setLauncherPower(robot.outtake.FLYWHEEL_POWER);
                         }
-                        robot.outtake.Off();
+                        robot.outtake.setLauncherPower(0);
                         robot.outtake.flap.setPosition(robot.outtake.calculateLaunchSetting(robot.outtake.calculateDistanceToTarget(robot.outtake.powershot3, robot.getCoordinate()), robot.outtake.POWER_SHOT_TARGET_HEIGHT ));
                         robot.rotateToTarget(robot.outtake.calculateLaunchHeading(robot.outtake.powershot3, robot.getCoordinate()), false);
                         launchTimer3.set(500);
                         while (!launchTimer3.isExpired()) {
-                            robot.outtake.On();
+                            robot.outtake.setLauncherPower(robot.outtake.FLYWHEEL_POWER);
                         }
-                        robot.outtake.Off();
+                        robot.outtake.setLauncherPower(0);
                         subState++;
                         break;
                     case 1:
@@ -262,9 +262,9 @@ public class WHSAuto extends OpMode {
                         subStateDesc = "Launch to Target 1";
                         powershot1Timer.set(1000);
                         while (!powershot1Timer.isExpired()) {
-                            robot.outtake.On();
+                            robot.outtake.setLauncherPower(robot.outtake.FLYWHEEL_POWER);
                         }
-                        robot.outtake.Off();
+                        robot.outtake.setLauncherPower(0);
                         subState++;
                     case 3:
                         subStateDesc = "Rotate to Target 2";
@@ -274,9 +274,9 @@ public class WHSAuto extends OpMode {
                         subStateDesc = "Launch to Target 2";
                         powershot2Timer.set(1000);
                         while (!powershot2Timer.isExpired()) {
-                            robot.outtake.On();
+                            robot.outtake.setLauncherPower(robot.outtake.FLYWHEEL_POWER);
                         }
-                        robot.outtake.Off();
+                        robot.outtake.setLauncherPower(0);
                         subState++;
                     case 5:
                         subStateDesc = "Rotate to Target 3";
@@ -286,9 +286,9 @@ public class WHSAuto extends OpMode {
                         subStateDesc = "Launch to Target 3";
                         powershot3Timer.set(1000);
                         while (!powershot3Timer.isExpired()) {
-                            robot.outtake.On();
+                            robot.outtake.setLauncherPower(robot.outtake.FLYWHEEL_POWER);
                         }
-                        robot.outtake.Off();
+                        robot.outtake.setLauncherPower(0);
                         subState++;
                         break;
                 }

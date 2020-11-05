@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.whitneyrobotics.ftc.teamcode.lib.geometry.Coordinate;
 import org.whitneyrobotics.ftc.teamcode.lib.geometry.Position;
+import org.whitneyrobotics.ftc.teamcode.lib.util.Functions;
 import org.whitneyrobotics.ftc.teamcode.lib.util.Toggler;
 
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
@@ -63,14 +64,14 @@ public class Outtake {
         triangle = new Position(robotPos.getX(), target.getY());
         robotToTriangle = Math.abs(triangle.getY()- robotPos.getY());
         targetToTriangle = Math.abs(triangle.getX()- target.getX());
-        hypotenuse = Math.sqrt(Math.pow(robotToTriangle, 2)+Math.pow(targetToTriangle,2));
+        //hypotenuse = Math.sqrt(Math.pow(robotToTriangle, 2)+Math.pow(targetToTriangle,2));
         //targetHeading = Math.asin((leg1*Math.sin(90))/hypotenuse);
-        targetHeading = Math.atan(robotToTriangle / targetToTriangle);
+        targetHeading = Math.atan(targetToTriangle/robotToTriangle);
         if (above){
-            headingToTarget = 180 - targetHeading;
+            headingToTarget = 270 + targetHeading;
         }
         else{
-            headingToTarget = targetHeading;
+            headingToTarget = 90 - targetHeading;
         }
         return headingToTarget;
     }
@@ -92,12 +93,8 @@ public class Outtake {
     }
 
     public double calculateDistanceToTarget(Position target, Coordinate robot){
-        Position thirdPoint = new Position(robot.getX(), target.getY());
-        double firstLeg = target.getX() - thirdPoint.getX();
-        double secondLeg = Math.abs(thirdPoint.getY()-robot.getY());
-        double firstStep = Math.pow(firstLeg, 2) + Math.pow(secondLeg, 2);
-        double distance = Math.sqrt(firstStep);
-        return  distance;
+        // calculates distacnce between robot and target
+        return Functions.distanceFormula(target.getX(), robot.getX(), target.getX(), robot.getY());
     }
 
    /* public static double calculateLaunchSetting (double angle){
@@ -153,11 +150,8 @@ public class Outtake {
         flap.setPosition(FLAP_POSITIONS[launchAngle.ordinal()]);
     }
 
-    public void Off (){
-        launcher.setPower(0);
-    }
-    public void On(){
-        launcher.setPower(FLYWHEEL_POWER);
+    public void setLauncherPower(double power){
+        launcher.setPower(power);
     }
 
 
