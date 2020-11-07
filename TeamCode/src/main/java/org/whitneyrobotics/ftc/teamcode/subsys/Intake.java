@@ -37,10 +37,7 @@ public class Intake {
 
     }
     // for use in Auto
-    public void On (){
-        wheelIntake.setPower(INTAKE_POWER);
-    }
-    public void Off(){
-        wheelIntake.setPower(0);
+    public void setIntakePower (double power){
+        wheelIntake.setPower(power);
     }
 }
