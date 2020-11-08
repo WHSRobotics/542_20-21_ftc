@@ -14,13 +14,6 @@ public class NewOuttake {
 
     public DcMotorEx flywheel;
     public Servo flapServo;
-    public Position triangle;
-    public double robotToTriangle;
-    public double targetToTriangle;
-    public double hypotenuse;
-    public double targetHeading;
-    public boolean negativeAngleRequired;
-    public double headingToTarget;
     public static final double INITIAL_VELOCITY = 7.07;
     public static final double GRAVITY = -9.8;
     public static final double LAUNCHER_HEIGHT = 300;
@@ -31,32 +24,34 @@ public class NewOuttake {
 
 
     public enum GoalPositions{
-        LOW_GOAL, MEDIUM_GOAL, HIGH_GOAL, POWER_SHOT_TARGET_ONE, POWER_SHOT_TARGET_TWO, POWER_SHOT_TARGET_THREE
+        BIN_GOALS, POWER_SHOT_TARGET_ONE, POWER_SHOT_TARGET_TWO, POWER_SHOT_TARGET_THREE
     }
     public enum LaunchAngles{
-        LOW_25, MEDIUM_50, HIGH_75, P1, P2, P3
+        LOW_BIN, MEDIUM_BIN, HIGH_BIN, P1, P2, P3
     }
     public final Position powershot1 = new Position(1800,-95.25); // from right to left fix later
     public final Position powershot2 = new Position(1800,-285.75);
     public final Position powershot3 = new Position(1800,-476.25);
     public final Position binsMidpoint = new Position(1800,-890.5875);
     public Position[] Target_Positions = {powershot1, powershot2, powershot3, binsMidpoint};
-    public final Position Pow1 = Target_Positions[Outtake.GoalPositions.POWER_SHOT_TARGET_ONE.ordinal()];
-    public final Position Pow2 = Target_Positions[Outtake.GoalPositions.POWERSHOT2.ordinal()];
-    public final Position Pow3 = Target_Positions[Outtake.GoalPositions.POWERSHOT3.ordinal()];
-    public final Position Bin = Target_Positions[Outtake.GoalPositions.BINS.ordinal()];
+    public final Position Pow1 = Target_Positions[GoalPositions.POWER_SHOT_TARGET_ONE.ordinal()];
+    public final Position Pow2 = Target_Positions[GoalPositions.POWER_SHOT_TARGET_TWO.ordinal()];
+    public final Position Pow3 = Target_Positions[GoalPositions.POWER_SHOT_TARGET_THREE.ordinal()];
+    public final Position Bin = Target_Positions[GoalPositions.BIN_GOALS.ordinal()];
 
     public double calculateLaunchHeading(Position target, Coordinate robotPos){
+        boolean negativeAngleRequired;
+        double headingToTarget;
         if (robotPos.getY()>target.getY()){
             negativeAngleRequired = true;
         }
         else {
             negativeAngleRequired = false;
         }
-        triangle = new Position(robotPos.getX(), target.getY());
-        robotToTriangle = Math.abs(triangle.getY()- robotPos.getY());
-        targetToTriangle = Math.abs(triangle.getX()- target.getX());
-        targetHeading = Math.atan(targetToTriangle/robotToTriangle);
+        Position triangle = new Position(robotPos.getX(), target.getY());
+        double robotToTriangle = Math.abs(triangle.getY()- robotPos.getY());
+        double targetToTriangle = Math.abs(triangle.getX()- target.getX());
+        double targetHeading = Math.atan(targetToTriangle/robotToTriangle);
         if (negativeAngleRequired){
             headingToTarget = -(360 - (270 + targetHeading));
         }
@@ -87,7 +82,7 @@ public class NewOuttake {
         return Functions.distanceFormula(target.getX(), robot.getX(), target.getX(), robot.getY());
     }
 
-    //LOW, Medium, High, Powershot
+    //Low, Medium, High, Powershot
     public double[] flapServoPositions = {0.0, 0.25, 0.5, 0.75};
     public double[] targetMotorVelocities = {0.0, 0.33, 0.66, 1.0};
 
