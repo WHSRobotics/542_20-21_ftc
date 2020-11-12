@@ -24,6 +24,7 @@ public class WHSRobotImpl{
     public Intake intake;
     public Outtake outtake;
     public Wobble wobble;
+   public NewOuttake newouttake;
 
     SwervePath  currentSwervePath;
     SwerveFollower swerveFollower;

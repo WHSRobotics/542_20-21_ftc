@@ -9,9 +9,8 @@ import org.whitneyrobotics.ftc.teamcode.lib.purepursuit.swervetotarget.SwerveToT
 import org.whitneyrobotics.ftc.teamcode.lib.util.SimpleTimer;
 import org.whitneyrobotics.ftc.teamcode.subsys.Intake;
 import org.whitneyrobotics.ftc.teamcode.subsys.WHSRobotImpl;
-import org.whitneyrobotics.ftc.teamcode.subsys.Outtake;
+import org.whitneyrobotics.ftc.teamcode.subsys.NewOuttake;
 import org.whitneyrobotics.ftc.teamcode.subsys.Wobble;
-
 import java.util.Locale;
 
 //import static org.whitneyrobotics.ftc.teamcode.subsys.Outtake.Off;
@@ -172,7 +171,7 @@ public class WHSAuto extends OpMode {
             autoOpRingPosition = 0;
         }*/
     }
-    public String outtakeState = "hover";
+    public String newOuttakeState = "hover";
     public String stateDesc = "";
     public String subStateDesc = "";
 
@@ -181,7 +180,7 @@ public class WHSAuto extends OpMode {
         robot.estimateHeading();
         robot.estimatePosition();
 
-        switch (outtakeState) {
+        switch (newOuttakeState) {
             case "hover":
                 robot.wobble.setArmPosition(Wobble.ArmPositions.UP);
                 robot.wobble.setClawPosition(Wobble.ClawPositions.OPEN);
@@ -189,10 +188,10 @@ public class WHSAuto extends OpMode {
             case "grab":
                 robot.wobble.setArmPosition(Wobble.ArmPositions.OVER);
                 robot.wobble.setClawPosition(Wobble.ClawPositions.CLOSE);
-               // robot.outtake.grabStone();
+                robot.
                 break;
             case "outtake1":
-
+                robot.newouttake.setFlapServoPositions(NewOuttake.GoalPositions.POWERSHOT_TARGET);
                 //robot.outtake.autoOuttake(1);
                 break;
             case "outtake2":
@@ -300,7 +299,7 @@ public class WHSAuto extends OpMode {
                         robot.wobble.setClawPosition(Wobble.ClawPositions.OPEN);
                         break;
                     case "grab":
-                        //robot.wobble.setArmPosition(Wobble.ArmPositions.OVER);
+                        robot.wobble.setArmPosition(Wobble.ArmPositions.OVER);
                         robot.wobble.setClawPosition(Wobble.ClawPositions.CLOSE);
                         break;
                     case "lift":
