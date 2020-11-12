@@ -49,26 +49,24 @@ public class Outtake {
     public double targetToTriangle;
     public double hypotenuse;
     public double targetHeading;
-    public boolean above;
+    public boolean negativeAngleRequired;
     public double headingToTarget;
     public static final double INITIAL_VELOCITY = 7.07;
     public static final double GRAVITY = -9.8;
     public static final double LAUNCHER_HEIGHT = 300;
     public double calculateLaunchHeading(Position target, Coordinate robotPos){
         if (robotPos.getY()>target.getY()){
-            above = true;
+            negativeAngleRequired = true;
         }
         else {
-            above = false;
+            negativeAngleRequired = false;
         }
         triangle = new Position(robotPos.getX(), target.getY());
         robotToTriangle = Math.abs(triangle.getY()- robotPos.getY());
         targetToTriangle = Math.abs(triangle.getX()- target.getX());
-        //hypotenuse = Math.sqrt(Math.pow(robotToTriangle, 2)+Math.pow(targetToTriangle,2));
-        //targetHeading = Math.asin((leg1*Math.sin(90))/hypotenuse);
         targetHeading = Math.atan(targetToTriangle/robotToTriangle);
-        if (above){
-            headingToTarget = 270 + targetHeading;
+        if (negativeAngleRequired){
+            headingToTarget = -(360 - (270 + targetHeading));
         }
         else{
             headingToTarget = 90 - targetHeading;
