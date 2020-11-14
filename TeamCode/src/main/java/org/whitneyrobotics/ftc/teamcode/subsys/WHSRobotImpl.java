@@ -10,7 +10,6 @@ import org.whitneyrobotics.ftc.teamcode.lib.purepursuit.swervetotarget.SwerveFol
 import org.whitneyrobotics.ftc.teamcode.lib.purepursuit.swervetotarget.SwervePath;
 import org.whitneyrobotics.ftc.teamcode.lib.util.Functions;
 import org.whitneyrobotics.ftc.teamcode.lib.util.RobotConstants;
-import org.whitneyrobotics.ftc.teamcode.lib.util.SimpleTimer;
 
 /**
  * Created by Jason on 10/20/2017.
@@ -22,9 +21,9 @@ public class WHSRobotImpl{
     public IMU imu;
     public Canister canister;
     public Intake intake;
-    public Outtake outtake;
+    public OldOuttake outtake;
     public Wobble wobble;
-   public NewOuttake newouttake;
+   public Outtake newouttake;
 
     SwervePath  currentSwervePath;
     SwerveFollower swerveFollower;

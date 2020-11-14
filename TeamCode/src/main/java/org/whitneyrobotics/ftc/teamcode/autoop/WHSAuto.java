@@ -2,16 +2,14 @@ package org.whitneyrobotics.ftc.teamcode.autoop;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.whitneyrobotics.ftc.teamcode.lib.geometry.Coordinate;
 import org.whitneyrobotics.ftc.teamcode.lib.geometry.Position;
+import org.whitneyrobotics.ftc.teamcode.lib.purepursuit.swervetotarget.SwervePath;
 import org.whitneyrobotics.ftc.teamcode.lib.purepursuit.swervetotarget.SwerveToTarget;
 import org.whitneyrobotics.ftc.teamcode.lib.util.SimpleTimer;
-import org.whitneyrobotics.ftc.teamcode.subsys.Intake;
 import org.whitneyrobotics.ftc.teamcode.subsys.WHSRobotImpl;
-import org.whitneyrobotics.ftc.teamcode.subsys.NewOuttake;
+import org.whitneyrobotics.ftc.teamcode.subsys.Outtake;
 import org.whitneyrobotics.ftc.teamcode.subsys.Wobble;
-import java.util.Locale;
 
 //import static org.whitneyrobotics.ftc.teamcode.subsys.Outtake.Off;
 
@@ -83,7 +81,8 @@ public class WHSAuto extends OpMode {
 
     int state = INIT;
     int subState = 0;
-
+    int wobblePickupState = 0;
+    String outtakeState = "hover";
     public void advanceState() {
         if (stateEnabled[(state + 1)]) {
             state++;
@@ -155,6 +154,8 @@ public class WHSAuto extends OpMode {
         autoOpLaunchLine[RED][0] = new Position(11,-12);
         autoOpRingPosition[RED][0] = new Position(13, -14);
 
+        
+
 
         instantiateSwerveToTargets();
         robot.setInitialCoordinate(startingOpCoordinateArray[STARTING_ALLIANCE]);
@@ -180,7 +181,7 @@ public class WHSAuto extends OpMode {
         robot.estimateHeading();
         robot.estimatePosition();
 
-        switch (newOuttakeState) {
+       /* switch (newOuttakeState) {
             case "hover":
                 robot.wobble.setArmPosition(Wobble.ArmPositions.UP);
                 robot.wobble.setClawPosition(Wobble.ClawPositions.OPEN);
@@ -188,10 +189,11 @@ public class WHSAuto extends OpMode {
             case "grab":
                 robot.wobble.setArmPosition(Wobble.ArmPositions.OVER);
                 robot.wobble.setClawPosition(Wobble.ClawPositions.CLOSE);
-                robot.
+                robot.wobble.setArmPosition(Wobble.ArmPositions.UP);
                 break;
             case "outtake1":
-                robot.newouttake.setFlapServoPositions(NewOuttake.GoalPositions.POWERSHOT_TARGET);
+                //robot.rotateToTarget(robot.outtake.calculateLaunchHeading(robot.outtake.powershot1, robot.getCoordinate()), false);
+                robot.newouttake.setFlapServoPositions(Outtake.GoalPositions.POWER_SHOT_TARGET_ONE);
                 //robot.outtake.autoOuttake(1);
                 break;
             case "outtake2":
@@ -199,11 +201,25 @@ public class WHSAuto extends OpMode {
                 break;
             default:
                 break;
-        }
+        }*/
 
         switch (state) {
             case INIT:
                 stateDesc = "Starting auto";
+                switch(wobblePickupState){
+                    case 0:
+                        robot.wobble.setArmPosition(Wobble.ArmPositions.DOWN);
+                        wobblePickupState++;
+                        break;
+                    case 1:
+                        robot.wobble.setClawPosition(Wobble.ClawPositions.CLOSE);
+                        wobblePickupState++;
+                        break;
+                    case 2:
+                        robot.wobble.setArmPosition(Wobble.ArmPositions.UP);
+                        wobblePickupState++;
+                        break;
+                }
                 advanceState();
                 break;
             case SCAN_STACK:
