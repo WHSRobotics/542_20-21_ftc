@@ -21,9 +21,9 @@ public class WHSRobotImpl{
     public IMU imu;
     public Canister canister;
     public Intake intake;
-    public OldOuttake outtake;
+    public OldOuttake oldOuttake;
     public Wobble wobble;
-   public Outtake newouttake;
+    public Outtake outtake;
 
     SwervePath  currentSwervePath;
     SwerveFollower swerveFollower;

@@ -13,7 +13,7 @@ public class Intake {
 
     public int intakeState;
 
-    public final double INTAKE_POWER = 0.45;
+    public  double INTAKE_POWER = 0.45; //change to final after testing
 
     public Intake(HardwareMap intakeWheel) {
         wheelIntake = intakeWheel.get(DcMotorEx.class, "Wheel Intake");

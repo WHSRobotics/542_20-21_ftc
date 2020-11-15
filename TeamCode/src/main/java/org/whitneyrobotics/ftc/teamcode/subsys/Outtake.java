@@ -13,12 +13,21 @@ import org.whitneyrobotics.ftc.teamcode.lib.util.RobotConstants;
 public class Outtake {
 
     public DcMotorEx flywheel;
-    public Servo flapServo;
+    public Servo flap;
     public static final double INITIAL_VELOCITY = 7.07;
     public static final double GRAVITY = -9.8;
     public static final double LAUNCHER_HEIGHT = 300;
-
+    public final double FLYWHEEL_POWER = 0.5;
+    public Position launchPoint = new Position(300, -285.75);
     public int[] FLAP_POSITIONS = {25,50,75,100};
+
+
+    public final double POWER_SHOT_TARGET_HEIGHT = 784.225;
+    public final double MID_GOAL_HEIGHT = 687.3875;
+    public final double HIGH_TARGET_HEIGHT = 901.7; //haven't checked this
+
+
+
 
     public PIDFController outtakeController;
 
@@ -89,7 +98,7 @@ public class Outtake {
 
     public Outtake(HardwareMap outtakeMap){
         flywheel = outtakeMap.get(DcMotorEx.class, "flywheel");
-        flapServo = outtakeMap.servo.get("flapServo");
+        flap = outtakeMap.servo.get("flapServo");
         outtakeController = new PIDFController(RobotConstants.FLYWHEEL_CONSTANTS);
     }
 
@@ -99,7 +108,7 @@ public class Outtake {
     }
 
     public void setFlapServoPositions(GoalPositions goalPosition){
-        flapServo.setPosition(flapServoPositions[goalPosition.ordinal()]);
+        flap.setPosition(flapServoPositions[goalPosition.ordinal()]);
    }
 
    public void operateFlywheel(GoalPositions goalPosition){
@@ -111,7 +120,7 @@ public class Outtake {
         flywheel.setPower(outtakeController.getOutput());
    }
     public void setLaunchAngle(OldOuttake.LaunchAngles launchAngle){
-        flapServo.setPosition(FLAP_POSITIONS[launchAngle.ordinal()]);
+        flap.setPosition(FLAP_POSITIONS[launchAngle.ordinal()]);
     }
 
     public void setLauncherPower(double power){

@@ -206,107 +206,96 @@ public class WHSAuto extends OpMode {
         switch (state) {
             case INIT:
                 stateDesc = "Starting auto";
-                switch(wobblePickupState){
+                switch(subState){
                     case 0:
                         robot.wobble.setArmPosition(Wobble.ArmPositions.DOWN);
-                        wobblePickupState++;
+                        subState++;
                         break;
                     case 1:
                         robot.wobble.setClawPosition(Wobble.ClawPositions.CLOSE);
-                        wobblePickupState++;
+                        subState++;
                         break;
                     case 2:
                         robot.wobble.setArmPosition(Wobble.ArmPositions.UP);
-                        wobblePickupState++;
+                        subState++;
                         break;
                 }
                 advanceState();
                 break;
-            case SCAN_STACK:
-                stateDesc = "Scan Stack";
-                advanceState();;
-                break;
             case DRIVE_TO_LAUNCH_POINT:
+                stateDesc = "Scan Stack";
+                robot.driveToTarget(robot.outtake.launchPoint, false);
+                advanceState();
+                break;
+            case SCAN_STACK:
                 stateDesc = "Driving to the Launch Point";
                 switch (subState) {
                     case 0:
-                        subStateDesc = "Departure";
+                        subStateDesc = "scanStack";
                         subState++;
                         break;
                     case 1:
-                        subStateDesc = "Entry and Aiming";
+                        subStateDesc = "Rotating to Launch Heading";
                         motorPowers = driveToShotLineSwerve.calculateMotorPowers(robot.getCoordinate(), robot.drivetrain.getWheelVelocities(), true);
                         if (!driveToShotLineSwerve.inProgress()) {
                             subState++;
                         }
                         break;
+                    case 2:
+
                 }
+                advanceState();
                 break;
             case LAUNCH_PARTICLES:
                 stateDesc = "Ready to Launch";
                 switch (subState) {
                     case 0:
+                        subStateDesc = "Aim Powershot1";
                         robot.outtake.flap.setPosition(robot.outtake.calculateLaunchSetting(robot.outtake.calculateDistanceToTarget(robot.outtake.powershot1, robot.getCoordinate()), robot.outtake.POWER_SHOT_TARGET_HEIGHT ));
                         robot.rotateToTarget(robot.outtake.calculateLaunchHeading(robot.outtake.powershot1, robot.getCoordinate()), false);
+                        subState++;
+                        break;
+                    case 1:
+                        subStateDesc = "Shoot Powershot1";
                         launchTimer1.set(500);
                         while (!launchTimer1.isExpired()) {
-                        robot.outtake.setLauncherPower(robot.outtake.FLYWHEEL_POWER);
+                            robot.outtake.setLauncherPower(robot.outtake.FLYWHEEL_POWER);
                         }
                         robot.outtake.setLauncherPower(0);
+                        subState++;
+                        break;
+                    case 2:
+                        subStateDesc = "Aim Powershot2";
                         robot.outtake.flap.setPosition(robot.outtake.calculateLaunchSetting(robot.outtake.calculateDistanceToTarget(robot.outtake.powershot2, robot.getCoordinate()), robot.outtake.POWER_SHOT_TARGET_HEIGHT ));
                         robot.rotateToTarget(robot.outtake.calculateLaunchHeading(robot.outtake.powershot2, robot.getCoordinate()), false);
+                        subState++;
+                        break;
+                    case 3:
+                        subStateDesc = "Shoot Powershot2";
                         launchTimer2.set(500);
                         while (!launchTimer2.isExpired()) {
                             robot.outtake.setLauncherPower(robot.outtake.FLYWHEEL_POWER);
                         }
                         robot.outtake.setLauncherPower(0);
+                        subState++;
+                        break;
+                    case 4:
+                        subStateDesc = "Aim Powershot3";
                         robot.outtake.flap.setPosition(robot.outtake.calculateLaunchSetting(robot.outtake.calculateDistanceToTarget(robot.outtake.powershot3, robot.getCoordinate()), robot.outtake.POWER_SHOT_TARGET_HEIGHT ));
                         robot.rotateToTarget(robot.outtake.calculateLaunchHeading(robot.outtake.powershot3, robot.getCoordinate()), false);
+                        subState++;
+                        break;
+                    case 5:
+                        subStateDesc = "Shoot Powershot3";
                         launchTimer3.set(500);
                         while (!launchTimer3.isExpired()) {
                             robot.outtake.setLauncherPower(robot.outtake.FLYWHEEL_POWER);
                         }
                         robot.outtake.setLauncherPower(0);
                         subState++;
-                        break;
-                    case 1:
-                        subStateDesc = "Rotate to Target 1";
-                        robot.rotateToTarget(robot.outtake.calculateLaunchHeading(robot.outtake.powershot1, robot.getCoordinate()), false);
-                        subState++;
-                    case 2:
-                        subStateDesc = "Launch to Target 1";
-                        powershot1Timer.set(1000);
-                        while (!powershot1Timer.isExpired()) {
-                            robot.outtake.setLauncherPower(robot.outtake.FLYWHEEL_POWER);
-                        }
-                        robot.outtake.setLauncherPower(0);
-                        subState++;
-                    case 3:
-                        subStateDesc = "Rotate to Target 2";
-                        robot.rotateToTarget(robot.outtake.calculateLaunchHeading(robot.outtake.powershot2, robot.getCoordinate()), false);
-                        subState++;
-                    case 4:
-                        subStateDesc = "Launch to Target 2";
-                        powershot2Timer.set(1000);
-                        while (!powershot2Timer.isExpired()) {
-                            robot.outtake.setLauncherPower(robot.outtake.FLYWHEEL_POWER);
-                        }
-                        robot.outtake.setLauncherPower(0);
-                        subState++;
-                    case 5:
-                        subStateDesc = "Rotate to Target 3";
-                        robot.rotateToTarget(robot.outtake.calculateLaunchHeading(robot.outtake.powershot3, robot.getCoordinate()), false);
-                        subState++;
-                    case 6:
-                        subStateDesc = "Launch to Target 3";
-                        powershot3Timer.set(1000);
-                        while (!powershot3Timer.isExpired()) {
-                            robot.outtake.setLauncherPower(robot.outtake.FLYWHEEL_POWER);
-                        }
-                        robot.outtake.setLauncherPower(0);
-                        subState++;
-                        break;
                 }
+                advanceState();
+                break;
             case DROP_OFF_WOBBLE_GOAL:
                 subStateDesc = "scoring wobble goal";
                 switch (outtakeState) {
@@ -329,6 +318,7 @@ public class WHSAuto extends OpMode {
                     default:
                         break;
                 }
+                advanceState();
                 break;
 
             case PARK_ON_LAUNCH_LINE:
@@ -403,8 +393,8 @@ public class WHSAuto extends OpMode {
                         subStateDesc = "Exit";
                         advanceState();
                         break;
-                }
-                break;*/
+                }*/
+                break;
         }
         telemetry.addData("State: ", stateDesc);
         telemetry.addData("Substate: ", subStateDesc);
