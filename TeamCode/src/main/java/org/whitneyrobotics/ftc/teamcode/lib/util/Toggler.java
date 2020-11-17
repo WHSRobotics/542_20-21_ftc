@@ -37,6 +37,9 @@ public class Toggler
         numberOfStates = stateNum;
     }
 
+    public Toggler(String stateNum) {
+    }
+
     /**
      * The current state that the toggler is in
      * @return Current state value, as an int

@@ -1,10 +1,15 @@
 package org.whitneyrobotics.ftc.teamcode.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+
+import org.whitneyrobotics.ftc.teamcode.lib.geometry.Position;
+import org.whitneyrobotics.ftc.teamcode.lib.util.Toggler;
 import org.whitneyrobotics.ftc.teamcode.subsys.WHSRobotImpl;
 
 public class WHSTeleOp extends OpMode {
      WHSRobotImpl robot;
+    public Toggler targetTog = new Toggler(6);
+    public Position currentTarget;
 
     @Override
     public void init()  {
@@ -40,6 +45,8 @@ public class WHSTeleOp extends OpMode {
             robot.drivetrain.operateMecanumDriveScaled(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, robot.getCoordinate().getHeading());
         }
         //Outtake
-        //if (gamepad2.)
+        /*if (gamepad2.) {
+            robot.outtake.calculateLaunchHeading(robot.getCoordinate(), )
+        }*/
     }
 }
