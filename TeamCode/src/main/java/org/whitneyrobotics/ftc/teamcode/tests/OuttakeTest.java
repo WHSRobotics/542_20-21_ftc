@@ -32,7 +32,7 @@ public class OuttakeTest extends OpMode {
 
         flywheelPower = flywheelTestTog.currentState()/100;
         flapSetting = flapTestTog.currentState()/100;
-        
+
         flywheel.setPower(flywheelPower);
         flap.setPosition(flapSetting);
     }
