@@ -45,8 +45,17 @@ public class WHSTeleOp extends OpMode {
             robot.drivetrain.operateMecanumDriveScaled(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, robot.getCoordinate().getHeading());
         }
         //Outtake
-        /*if (gamepad2.) {
-            robot.outtake.calculateLaunchHeading(robot.getCoordinate(), )
+        /*if (gamepad2.dpad_up) {
+            if (gamepad2.dpad_left)
+            robot.rotateToTarget(robot.outtake.calculateLaunchHeading(robot.outtake.powershot1, robot.getCoordinate()), false);
+            robot.outtake.flap.setPosition(robot.outtake.calculateLaunchSetting(robot.outtake.calculateDistanceToTarget(robot.outtake.powershot1, robot.getCoordinate()), robot.outtake.POWER_SHOT_TARGET_HEIGHT));
         }*/
+        //Wobble
+        if(gamepad1.dpad_up){
+            robot.wobble.operateArm(gamepad1.dpad_up);
+        }
+        if (gamepad1.dpad_down){
+            robot.wobble.operateClaw(gamepad1.dpad_down);
+        }
     }
 }

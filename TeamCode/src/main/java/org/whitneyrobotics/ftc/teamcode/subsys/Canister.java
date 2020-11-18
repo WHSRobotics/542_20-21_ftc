@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.whitneyrobotics.ftc.teamcode.lib.util.SimpleTimer;
 import org.whitneyrobotics.ftc.teamcode.lib.util.Toggler;
 
 public class Canister {
@@ -30,6 +31,7 @@ public class Canister {
     public final double LOADER_REST = LOADER_POSITIONS[Loader_Positions.REST.ordinal()];
     public final double LOADER_PUSH = LOADER_POSITIONS[Loader_Positions.PUSH.ordinal()];
 
+    public SimpleTimer loadTimer = new SimpleTimer();
 
     public final double PLATFORM_FLYWHEEL = PLATFORM_POSITIONS[Platform_Positions.FLYWHEEL.ordinal()];
     public final double PLATFORM_WOBBLE = PLATFORM_POSITIONS[Platform_Positions.WOBBLE.ordinal()];
@@ -37,6 +39,7 @@ public class Canister {
 
     public String canisterState;
     public String platformState;
+
     public void operateCanister(boolean gamepadInputLoader, boolean gamepadInputPlatform ) {
         canisterToggler.changeState(gamepadInputLoader);
         platformToggler.changeState(gamepadInputPlatform);
@@ -64,5 +67,14 @@ public class Canister {
             }
         }
     }
+
+    public void loadRing(){
+        loadTimer.set(500);
+        while (!loadTimer.isExpired()){
+            loader.setPosition(LOADER_PUSH);
+        }
+        loader.setPosition(LOADER_REST);
+    }
+
 
 }

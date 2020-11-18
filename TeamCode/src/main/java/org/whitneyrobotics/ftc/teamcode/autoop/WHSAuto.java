@@ -250,7 +250,8 @@ public class WHSAuto extends OpMode {
                 stateDesc = "Ready to Launch";
                 switch (subState) {
                     case 0:
-                        subStateDesc = "Aim Powershot1";
+                        subStateDesc = "Load Ring and Aim Powershot1";
+                        robot.canister.loadRing();
                         robot.outtake.flap.setPosition(robot.outtake.calculateLaunchSetting(robot.outtake.calculateDistanceToTarget(robot.outtake.powershot1, robot.getCoordinate()), robot.outtake.POWER_SHOT_TARGET_HEIGHT ));
                         robot.rotateToTarget(robot.outtake.calculateLaunchHeading(robot.outtake.powershot1, robot.getCoordinate()), false);
                         subState++;
@@ -265,7 +266,8 @@ public class WHSAuto extends OpMode {
                         subState++;
                         break;
                     case 2:
-                        subStateDesc = "Aim Powershot2";
+                        subStateDesc = "Load Ring and Aim Powershot2";
+                        robot.canister.loadRing();
                         robot.outtake.flap.setPosition(robot.outtake.calculateLaunchSetting(robot.outtake.calculateDistanceToTarget(robot.outtake.powershot2, robot.getCoordinate()), robot.outtake.POWER_SHOT_TARGET_HEIGHT ));
                         robot.rotateToTarget(robot.outtake.calculateLaunchHeading(robot.outtake.powershot2, robot.getCoordinate()), false);
                         subState++;
@@ -280,7 +282,8 @@ public class WHSAuto extends OpMode {
                         subState++;
                         break;
                     case 4:
-                        subStateDesc = "Aim Powershot3";
+                        subStateDesc = "Load Ring and Aim Powershot3";
+                        robot.canister.loadRing();
                         robot.outtake.flap.setPosition(robot.outtake.calculateLaunchSetting(robot.outtake.calculateDistanceToTarget(robot.outtake.powershot3, robot.getCoordinate()), robot.outtake.POWER_SHOT_TARGET_HEIGHT ));
                         robot.rotateToTarget(robot.outtake.calculateLaunchHeading(robot.outtake.powershot3, robot.getCoordinate()), false);
                         subState++;
