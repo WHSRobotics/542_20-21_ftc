@@ -24,7 +24,7 @@ public class Outtake {
 
     public final double POWER_SHOT_TARGET_HEIGHT = 784.225;
     public final double MID_GOAL_HEIGHT = 687.3875;
-    public final double HIGH_TARGET_HEIGHT = 901.7; //haven't checked this
+    public final double HIGH_GOAL_HEIGHT = 901.7; //haven't checked this
 
 
 

@@ -3,13 +3,21 @@ package org.whitneyrobotics.ftc.teamcode.teleop;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.whitneyrobotics.ftc.teamcode.lib.geometry.Position;
+import org.whitneyrobotics.ftc.teamcode.lib.util.SimpleTimer;
 import org.whitneyrobotics.ftc.teamcode.lib.util.Toggler;
 import org.whitneyrobotics.ftc.teamcode.subsys.WHSRobotImpl;
 
 public class WHSTeleOp extends OpMode {
      WHSRobotImpl robot;
-    public Toggler targetTog = new Toggler(6);
+    public Toggler targetTog = new Toggler(4);
+    public Toggler binToggler = new Toggler(2);
+    public String  currentTargetWord;
+    public String currentBinWord;
     public Position currentTarget;
+    public double shootingHeight;
+    public SimpleTimer launchTimer = new SimpleTimer();
+    public final int LAUNCH_TIME = 500;
+
 
     @Override
     public void init()  {
@@ -45,11 +53,46 @@ public class WHSTeleOp extends OpMode {
             robot.drivetrain.operateMecanumDriveScaled(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, robot.getCoordinate().getHeading());
         }
         //Outtake
-        /*if (gamepad2.dpad_up) {
-            if (gamepad2.dpad_left)
-            robot.rotateToTarget(robot.outtake.calculateLaunchHeading(robot.outtake.powershot1, robot.getCoordinate()), false);
-            robot.outtake.flap.setPosition(robot.outtake.calculateLaunchSetting(robot.outtake.calculateDistanceToTarget(robot.outtake.powershot1, robot.getCoordinate()), robot.outtake.POWER_SHOT_TARGET_HEIGHT));
-        }*/
+        targetTog.changeState(gamepad2.dpad_up, gamepad2.dpad_down);
+        binToggler.changeState(gamepad2.dpad_right, gamepad2.dpad_left);
+        if (targetTog.currentState()==0){
+            currentTargetWord = "Powershot 1";
+            currentTarget = robot.outtake.powershot1;
+            shootingHeight = robot.outtake.POWER_SHOT_TARGET_HEIGHT;
+        }
+        else if (targetTog.currentState()==1){
+            currentTargetWord = "Powershot 2";
+            currentTarget = robot.outtake.powershot2;
+            shootingHeight = robot.outtake.POWER_SHOT_TARGET_HEIGHT;
+        }
+        else if (targetTog.currentState()==2){
+            currentTargetWord = "Powershot 3";
+            currentTarget = robot.outtake.powershot3;
+            shootingHeight = robot.outtake.POWER_SHOT_TARGET_HEIGHT;
+
+        }
+        else{
+            currentTargetWord = "Bins";
+            currentTarget = robot.outtake.binsMidpoint;
+            if(binToggler.currentState()==0){
+                currentBinWord = "Medium";
+                shootingHeight = robot.outtake.MID_GOAL_HEIGHT;
+            }
+            else{
+                currentBinWord = "High";
+                shootingHeight = robot.outtake.HIGH_GOAL_HEIGHT;
+
+            }
+        }
+        if (gamepad2.a){
+            robot.rotateToTarget(robot.outtake.calculateLaunchHeading(currentTarget, robot.getCoordinate()),false);
+            robot.outtake.flap.setPosition(robot.outtake.calculateLaunchSetting(robot.outtake.calculateDistanceToTarget(currentTarget, robot.getCoordinate()), shootingHeight));
+            launchTimer.set(LAUNCH_TIME);
+            if(!launchTimer.isExpired()){
+                robot.outtake.setLauncherPower(robot.outtake.FLYWHEEL_POWER);
+            }
+            robot.outtake.setLauncherPower(0);
+        }
         //Wobble
         if(gamepad1.dpad_up){
             robot.wobble.operateArm(gamepad1.dpad_up);
