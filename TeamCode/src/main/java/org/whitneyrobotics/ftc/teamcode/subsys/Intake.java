@@ -2,12 +2,15 @@ package org.whitneyrobotics.ftc.teamcode.subsys;
 
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.whitneyrobotics.ftc.teamcode.lib.util.Toggler;
 
 public class Intake {
 
     private DcMotorEx wheelIntake;
+
+    private Servo dropdown;
 
     private Toggler wheelToggler = new Toggler(2);
 
@@ -17,6 +20,9 @@ public class Intake {
 
     public Intake(HardwareMap intakeWheel) {
         wheelIntake = intakeWheel.get(DcMotorEx.class, "Wheel Intake");
+    }
+    public enum dropdown_positions{
+        UNPUSHED, PUSHED
     }
 
     public String intakeStateDescription;

@@ -36,8 +36,8 @@ public class WHSAuto extends OpMode {
 
     int powerShotPosition = CENTER;
 
-    Coordinate[] startingOpCoordinateArray = new Coordinate [1];
-    Position[][] autoOpScanningDistanceArray = new Position[1200][-1800];
+    Coordinate[] startingOpCoordinateArray = new Coordinate [2];
+    Position[][] autoOpScanningDistanceArray = new Position[2][2];
     Position[][] autoOpPowerShotLineArray = new Position[-100][-200];
     Position[][] autoOpWobblePositionOne = new Position[300][-1500];
     Position[][] autoOpWobblePositionTwo = new Position[900][-900];
@@ -153,8 +153,8 @@ public class WHSAuto extends OpMode {
         autoOpWobblePositionThree[RED][0] = new Position(9, -10);
         autoOpLaunchLine[RED][0] = new Position(11,-12);
         autoOpRingPosition[RED][0] = new Position(13, -14);
-
-        
+        startingOpCoordinateArray[INSIDE] = new Coordinate (-1800, -600, 0);
+        startingOpCoordinateArray[OUTSIDE] = new Coordinate (-1800, -900, 0);
 
 
         instantiateSwerveToTargets();
