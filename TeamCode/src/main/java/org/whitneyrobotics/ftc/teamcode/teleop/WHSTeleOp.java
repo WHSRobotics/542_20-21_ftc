@@ -11,12 +11,16 @@ public class WHSTeleOp extends OpMode {
      WHSRobotImpl robot;
     public Toggler targetTog = new Toggler(4);
     public Toggler binToggler = new Toggler(2);
-    public String  currentTargetWord;
-    public String currentBinWord;
     public Position currentTarget;
     public double shootingHeight;
     public SimpleTimer launchTimer = new SimpleTimer();
     public final int LAUNCH_TIME = 500;
+
+    public String  currentTargetWord;
+    public String currentBinWord;
+    public String intakeStatus;
+
+
 
 
     @Override
@@ -26,14 +30,17 @@ public class WHSTeleOp extends OpMode {
 
     @Override
     public void loop(){
-    //Intake
+        //Intake
         if (gamepad1.right_trigger >0.01) {
+            intakeStatus = "Normal Intake";
             robot.intake.operate(gamepad1.right_trigger > 0.01, gamepad1.left_trigger == 0.0);
         }
         else if (gamepad1.left_trigger >0.01) {
+            intakeStatus = "Reverse Intake";
             robot.intake.operate(gamepad1.right_trigger > 0.01, gamepad1.left_trigger > 0.01);
         }
         else {
+            intakeStatus = "Power Off";
             robot.intake.operate(gamepad1.right_trigger == 0, gamepad1.left_trigger == 0);
         }
 
@@ -100,5 +107,13 @@ public class WHSTeleOp extends OpMode {
         if (gamepad1.dpad_down){
             robot.wobble.operateClaw(gamepad1.dpad_down);
         }
+        telemetry.addData("Intake State: ", intakeStatus);
+        telemetry.addData("Canister Loader State: ", robot.canister.canisterState);
+        telemetry.addData("Canister Platform Orientation: ", robot.canister.platformState);
+        telemetry.addData("Robot Current Position: ", robot.drivetrain.getAllEncoderPositions());
+        telemetry.addData("Current Target: ", currentTargetWord);
+        telemetry.addData("Current Bin(if Current Target is at Bins): ", currentBinWord);
+        telemetry.addData("Wobble Arm State: ", robot.wobble.armStateDescription);
+        telemetry.addData("Wobble Claw State: ", robot.wobble.clawStateDescription);
     }
 }
