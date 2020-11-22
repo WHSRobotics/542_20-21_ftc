@@ -35,6 +35,8 @@ public class WobbleTest extends OpMode {
 
         hand.setPosition(handPos);
         arm.setPower(armPower);
-        
+
+        telemetry.addData("Hand Pos: ", handPos);
+        telemetry.addData("Arm Pow: ", armPower);
     }
 }

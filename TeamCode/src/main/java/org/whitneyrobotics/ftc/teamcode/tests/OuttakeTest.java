@@ -35,5 +35,8 @@ public class OuttakeTest extends OpMode {
 
         flywheel.setPower(flywheelPower);
         flap.setPosition(flapSetting);
+
+        telemetry.addData("Flywheel Power: ", flywheelPower);
+        telemetry.addData("Flap Setting: ", flapSetting);
     }
 }

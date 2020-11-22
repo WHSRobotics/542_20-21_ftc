@@ -4,11 +4,9 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.whitneyrobotics.ftc.teamcode.lib.geometry.Coordinate;
 import org.whitneyrobotics.ftc.teamcode.lib.geometry.Position;
-import org.whitneyrobotics.ftc.teamcode.lib.purepursuit.swervetotarget.SwervePath;
 import org.whitneyrobotics.ftc.teamcode.lib.purepursuit.swervetotarget.SwerveToTarget;
 import org.whitneyrobotics.ftc.teamcode.lib.util.SimpleTimer;
 import org.whitneyrobotics.ftc.teamcode.subsys.WHSRobotImpl;
-import org.whitneyrobotics.ftc.teamcode.subsys.Outtake;
 import org.whitneyrobotics.ftc.teamcode.subsys.Wobble;
 
 //import static org.whitneyrobotics.ftc.teamcode.subsys.Outtake.Off;
@@ -21,7 +19,7 @@ public class WHSAuto extends OpMode {
     static final int INSIDE = 0;
     static final int OUTSIDE = 1;
 
-    static final int STARTING_POSITION = 0;
+    static final int STARTING_POSITION = INSIDE;
     public static final int STARTING_ALLIANCE = RED;
     static final double STARTING_COORDINATE_X = 1200;
     static final double STARTING_COORDINATE_Y = -1800;
@@ -34,16 +32,15 @@ public class WHSAuto extends OpMode {
     static final int CENTER = 1;
     static final int RIGHT = 2;
 
+    public static int wobblePosition = 0; //placeholder
     int powerShotPosition = CENTER;
 
-    Coordinate[] startingOpCoordinateArray = new Coordinate [2];
-    Position[][] autoOpScanningDistanceArray = new Position[2][2];
-    Position[][] autoOpPowerShotLineArray = new Position[-100][-200];
-    Position[][] autoOpWobblePositionOne = new Position[300][-1500];
-    Position[][] autoOpWobblePositionTwo = new Position[900][-900];
-    Position[][] autoOpWobblePositionThree = new Position[1500][-1500];
-    Position[][] autoOpLaunchLine = new Position[-100][-200];
-    Position[][] autoOpRingPosition = new Position[-600][-900];
+    Coordinate[] startingCoordinateArray = new Coordinate [2];//starting coordinate
+    Position[][] scanningDistanceArray = new Position[2][2];//scanning diatances
+    Position[] shootingPositionArray = new Position[2];// points whrere robot sits to shoot powershots
+    Position[][] wobblePositionArray = new Position[2][3];// wobble boxes
+    Position[][] parkingPositionArray = new Position[2][3];//parking spots
+    Position[] ringPosition = new Position[2];//ring stack postions
 
     SwerveToTarget driveToShotLineSwerve;
     SwerveToTarget driveToWobblePositionOneSwerve;
@@ -54,13 +51,13 @@ public class WHSAuto extends OpMode {
     SwerveToTarget driveToLaunchLineFromWobbleThreeSwerve;
 
     private void instantiateSwerveToTargets() {
-        Position [][] driveToShotLineSwervePositions = {autoOpScanningDistanceArray[STARTING_ALLIANCE], autoOpPowerShotLineArray[STARTING_ALLIANCE]};
-        Position [][] driveToWobblePositionOneSwervePositions = {autoOpPowerShotLineArray[STARTING_ALLIANCE], autoOpWobblePositionOne[STARTING_ALLIANCE]};
-        Position [][] driveToWobblePositionTwoSwervePositions = {autoOpPowerShotLineArray[STARTING_ALLIANCE], autoOpWobblePositionTwo[STARTING_ALLIANCE]};
-        Position [][] driveToWobblePositionThreeSwervePositions = {autoOpPowerShotLineArray[STARTING_ALLIANCE], autoOpWobblePositionThree[STARTING_ALLIANCE]};
-        Position [][] driveToLaunchLineFromWobbleOneSwervePositions = {autoOpWobblePositionOne[STARTING_ALLIANCE], autoOpLaunchLine[STARTING_ALLIANCE]};
-        Position [][] driveToLaunchLineFromWobbleTwoSwervePositions = {autoOpWobblePositionTwo[STARTING_ALLIANCE], autoOpLaunchLine[STARTING_ALLIANCE]};
-        Position [][] driveToLaunchLineFromWobbleThreeSwervePositions = {autoOpWobblePositionThree[STARTING_ALLIANCE], autoOpLaunchLine[STARTING_ALLIANCE]};
+        Position [] driveToShotLineSwervePositions = {scanningDistanceArray[STARTING_ALLIANCE][STARTING_POSITION], shootingPositionArray[STARTING_ALLIANCE]};
+        Position [] driveToWobblePositionOneSwervePositions = {shootingPositionArray[STARTING_ALLIANCE], wobblePositionArray[STARTING_ALLIANCE][0]};
+        Position [] driveToWobblePositionTwoSwervePositions = {shootingPositionArray[STARTING_ALLIANCE], wobblePositionArray[STARTING_ALLIANCE][1]};
+        Position [] driveToWobblePositionThreeSwervePositions = {shootingPositionArray[STARTING_ALLIANCE], wobblePositionArray[STARTING_ALLIANCE][2]};
+        Position [] driveToLaunchLineFromWobbleOneSwervePositions = {wobblePositionArray[STARTING_ALLIANCE][0], parkingPositionArray[STARTING_ALLIANCE][wobblePosition]};
+        Position [] driveToLaunchLineFromWobbleTwoSwervePositions = {wobblePositionArray[STARTING_ALLIANCE][1], parkingPositionArray[STARTING_ALLIANCE][wobblePosition]};
+        Position [] driveToLaunchLineFromWobbleThreeSwervePositions = {wobblePositionArray[STARTING_ALLIANCE][2], parkingPositionArray[STARTING_ALLIANCE][wobblePosition]};
     }
 
   //insert Swerve to Target Here
@@ -143,22 +140,22 @@ public class WHSAuto extends OpMode {
             robot.drivetrain.resetEncoders();
             defineStateEnabledStatus();
 
-        startingOpCoordinateArray[RED] = new Coordinate(STARTING_COORDINATE_X, -1571, 90);
+        startingCoordinateArray[RED] = new Coordinate(STARTING_COORDINATE_X, -1571, 90);
 
         //all coordinates here are placeholders, change later
-        autoOpScanningDistanceArray[RED][0] = new Position(1, -2);
-        autoOpPowerShotLineArray[RED][0] =new Position(3, -4);
-        autoOpWobblePositionOne[RED][0] = new Position(5,-6);
-        autoOpWobblePositionTwo[RED][0] = new Position(7,-8);
-        autoOpWobblePositionThree[RED][0] = new Position(9, -10);
-        autoOpLaunchLine[RED][0] = new Position(11,-12);
-        autoOpRingPosition[RED][0] = new Position(13, -14);
-        startingOpCoordinateArray[INSIDE] = new Coordinate (-1800, -600, 0);
-        startingOpCoordinateArray[OUTSIDE] = new Coordinate (-1800, -900, 0);
+        scanningDistanceArray[RED][INSIDE] = new Position(1, -2);
+        shootingPositionArray[RED] =new Position(3, -4);
+        wobblePositionArray[STARTING_ALLIANCE][0] = new Position(5,-6);
+        wobblePositionArray[STARTING_ALLIANCE][1] = new Position(7,-8);
+        wobblePositionArray[STARTING_ALLIANCE][2] = new Position(9, -10);
+        parkingPositionArray[RED][wobblePosition] = new Position(11,-12);
+        ringPosition[RED] = new Position(13, -14);
+        startingCoordinateArray[INSIDE] = new Coordinate (-1800, -600, 0);
+        startingCoordinateArray[OUTSIDE] = new Coordinate (-1800, -900, 0);
 
 
         instantiateSwerveToTargets();
-        robot.setInitialCoordinate(startingOpCoordinateArray[STARTING_ALLIANCE]);
+        robot.setInitialCoordinate(startingCoordinateArray[STARTING_ALLIANCE]);
     }
 
     @Override
@@ -220,6 +217,7 @@ public class WHSAuto extends OpMode {
                         subState++;
                         break;
                 }
+                robot.intake.setDropdown(robot.intake.DROPDOWN_DOWN);
                 advanceState();
                 break;
             case DRIVE_TO_LAUNCH_POINT:
@@ -398,6 +396,8 @@ public class WHSAuto extends OpMode {
                         break;
                 }*/
                 break;
+            case END:
+                robot.intake.setDropdown(robot.intake.dropdownUp);
         }
         telemetry.addData("State: ", stateDesc);
         telemetry.addData("Substate: ", subStateDesc);

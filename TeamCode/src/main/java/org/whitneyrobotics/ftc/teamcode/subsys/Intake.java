@@ -20,10 +20,19 @@ public class Intake {
 
     public Intake(HardwareMap intakeWheel) {
         wheelIntake = intakeWheel.get(DcMotorEx.class, "Wheel Intake");
+        dropdown = intakeWheel.servo.get("Intake Dropdown");
     }
-    public enum dropdown_positions{
-        UNPUSHED, PUSHED
+    public enum dropdown_position {
+        UP, DOWN
     }
+
+    public static final double DROPDOWN_UP = 0; //placeholder
+    public static final double DROPDOWN_DOWN = 0.5; //placeholder
+
+    public double[] dropdownPositions ={DROPDOWN_UP, DROPDOWN_DOWN};
+
+    public double dropdownUp = dropdownPositions[dropdown_position.UP.ordinal()];
+    public  double dropdownDown = dropdownPositions[dropdown_position.DOWN.ordinal()];
 
     public String intakeStateDescription;
     public void operate(boolean gamepadInput1, boolean gamepadInput2) {
@@ -43,6 +52,9 @@ public class Intake {
 
     }
     // for use in Auto
+    public void setDropdown(double position){ ;
+        dropdown.setPosition(position);
+    }
     public void setIntakePower (double power){
         wheelIntake.setPower(power);
     }

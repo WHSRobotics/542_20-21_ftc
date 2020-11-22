@@ -33,5 +33,7 @@ public class CanisterTest extends OpMode {
         platformSetting = platformTestTog.currentState()/100;
         loader.setPosition(loaderSetting);
         platform.setPosition(platformSetting);
+        telemetry.addData("Loader Setting:" , loaderSetting);
+        telemetry.addData("Platform Setting: ", platformSetting);
     }
 }
