@@ -14,6 +14,8 @@ public class Intake {
 
     private Toggler wheelToggler = new Toggler(2);
 
+    private Toggler dropdownToggler = new Toggler(2);
+
     public int intakeState;
 
     public  double INTAKE_POWER = 0.45; //change to final after testing
@@ -22,17 +24,17 @@ public class Intake {
         wheelIntake = intakeWheel.get(DcMotorEx.class, "Wheel Intake");
         dropdown = intakeWheel.servo.get("Intake Dropdown");
     }
-    public enum dropdown_position {
+    public enum DropdownPositions {
         UP, DOWN
     }
 
-    public static final double DROPDOWN_UP = 0; //placeholder
-    public static final double DROPDOWN_DOWN = 0.5; //placeholder
+    /*public static final double DROPDOWN_UP = 0; //placeholder
+    public static final double DROPDOWN_DOWN = 0.5; //placeholder*/
 
-    public double[] dropdownPositions ={DROPDOWN_UP, DROPDOWN_DOWN};
+    public double[] dropdownPositions ={0, 0.5};
 
-    public double dropdownUp = dropdownPositions[dropdown_position.UP.ordinal()];
-    public  double dropdownDown = dropdownPositions[dropdown_position.DOWN.ordinal()];
+    /*public double dropdownUp = dropdownPositions[DropdownPositions.UP.ordinal()];
+    public  double dropdownDown = dropdownPositions[DropdownPositions.DOWN.ordinal()];*/
 
     public String intakeStateDescription;
     public void operate(boolean gamepadInput1, boolean gamepadInput2) {
@@ -52,9 +54,20 @@ public class Intake {
 
     }
     // for use in Auto
-    public void setDropdown(double position){ ;
+    /*public void setDropdown(double position){ ;
         dropdown.setPosition(position);
+    }*/
+
+    // For use in Auto
+    public void setDropdown (DropdownPositions dropdownPosition, boolean gamepadInput1){
+        dropdownToggler.changeState(gamepadInput1);
+        if (dropdownToggler.currentState() == 0) {
+            dropdown.setPosition(dropdownPositions[DropdownPositions.UP.ordinal()]);
+        } else {
+            dropdown.setPosition(dropdownPositions[DropdownPositions.DOWN.ordinal()]);
+        }
     }
+
     public void setIntakePower (double power){
         wheelIntake.setPower(power);
     }
