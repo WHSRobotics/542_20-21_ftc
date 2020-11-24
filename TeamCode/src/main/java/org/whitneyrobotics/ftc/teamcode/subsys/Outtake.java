@@ -86,7 +86,6 @@ public class Outtake {
         launchSetting = angle / 90;
         return launchSetting;
     }
-
     public double calculateDistanceToTarget(Position target, Coordinate robot){
         // calculates distacnce between robot and target
         return Functions.distanceFormula(target.getX(), robot.getX(), target.getX(), robot.getY());

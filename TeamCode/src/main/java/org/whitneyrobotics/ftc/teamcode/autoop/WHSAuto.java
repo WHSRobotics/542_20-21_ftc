@@ -6,6 +6,7 @@ import org.whitneyrobotics.ftc.teamcode.lib.geometry.Coordinate;
 import org.whitneyrobotics.ftc.teamcode.lib.geometry.Position;
 import org.whitneyrobotics.ftc.teamcode.lib.purepursuit.swervetotarget.SwerveToTarget;
 import org.whitneyrobotics.ftc.teamcode.lib.util.SimpleTimer;
+import org.whitneyrobotics.ftc.teamcode.subsys.Intake;
 import org.whitneyrobotics.ftc.teamcode.subsys.WHSRobotImpl;
 import org.whitneyrobotics.ftc.teamcode.subsys.Wobble;
 
@@ -205,19 +206,22 @@ public class WHSAuto extends OpMode {
                 stateDesc = "Starting auto";
                 switch(subState){
                     case 0:
+                        subStateDesc = "Lower Arm";
                         robot.wobble.setArmPosition(Wobble.ArmPositions.DOWN);
                         subState++;
                         break;
                     case 1:
+                        subStateDesc = "Clinch Wobble";
                         robot.wobble.setClawPosition(Wobble.ClawPositions.CLOSE);
                         subState++;
                         break;
                     case 2:
+                        subStateDesc = "Raise Arm";
                         robot.wobble.setArmPosition(Wobble.ArmPositions.UP);
                         subState++;
                         break;
                 }
-                robot.intake.setDropdown(robot.intake.DROPDOWN_DOWN);
+                robot.intake.setDropdown(Intake.DropdownPositions.DOWN);
                 advanceState();
                 break;
             case DRIVE_TO_LAUNCH_POINT:
@@ -239,8 +243,6 @@ public class WHSAuto extends OpMode {
                             subState++;
                         }
                         break;
-                    case 2:
-
                 }
                 advanceState();
                 break;
@@ -298,31 +300,36 @@ public class WHSAuto extends OpMode {
                 advanceState();
                 break;
             case DROP_OFF_WOBBLE_GOAL:
-                subStateDesc = "scoring wobble goal";
-                switch (outtakeState) {
-                    case "hover":
+                stateDesc = "Scoring wobble goal";
+                switch (subState) {
+                    case 0:
+                       subStateDesc="Move to Wobble Box";
+                       // Write code after camera
+                        subState++;
+                        break;
+                    case 1:
+                        subStateDesc = "Lower Arm and Realease";
                         robot.wobble.setArmPosition(Wobble.ArmPositions.DOWN);
                         robot.wobble.setClawPosition(Wobble.ClawPositions.OPEN);
+                        subState++;
                         break;
-                    case "grab":
-                        robot.wobble.setArmPosition(Wobble.ArmPositions.OVER);
-                        robot.wobble.setClawPosition(Wobble.ClawPositions.CLOSE);
-                        break;
-                    case "lift":
+                    case 2:
+                        subStateDesc = "Raise Arm";
                         robot.wobble.setArmPosition(Wobble.ArmPositions.UP);
-                        robot.wobble.setClawPosition(Wobble.ClawPositions.CLOSE);
+                        subState++;
                         break;
-                    case "score":
+                    /*case "score":
                         robot.wobble.setArmPosition(Wobble.ArmPositions.OVER);
                         robot.wobble.setClawPosition(Wobble.ClawPositions.OPEN);
                         break;
                     default:
-                        break;
+                        break;*/
                 }
                 advanceState();
                 break;
 
             case PARK_ON_LAUNCH_LINE:
+                stateDesc = "Park";
                 Position parkingSpot = new Position( 300 ,robot.getCoordinate().getY());
                 robot.driveToTarget(parkingSpot, false);
                /* stateDesc = "Driving to foundation";
@@ -397,7 +404,8 @@ public class WHSAuto extends OpMode {
                 }*/
                 break;
             case END:
-                robot.intake.setDropdown(robot.intake.dropdownUp);
+                stateDesc = "Ending Auto";
+                robot.intake.setDropdown(Intake.DropdownPositions.UP);
         }
         telemetry.addData("State: ", stateDesc);
         telemetry.addData("Substate: ", subStateDesc);

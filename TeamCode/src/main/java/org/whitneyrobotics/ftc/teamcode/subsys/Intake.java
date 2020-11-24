@@ -59,13 +59,8 @@ public class Intake {
     }*/
 
     // For use in Auto
-    public void setDropdown (DropdownPositions dropdownPosition, boolean gamepadInput1){
-        dropdownToggler.changeState(gamepadInput1);
-        if (dropdownToggler.currentState() == 0) {
-            dropdown.setPosition(dropdownPositions[DropdownPositions.UP.ordinal()]);
-        } else {
-            dropdown.setPosition(dropdownPositions[DropdownPositions.DOWN.ordinal()]);
-        }
+    public void setDropdown (DropdownPositions dropdownPosition){
+        dropdown.setPosition(dropdownPositions[dropdownPosition.ordinal()]);
     }
 
     public void setIntakePower (double power){
