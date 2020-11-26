@@ -18,7 +18,7 @@ public class Outtake {
     public static final double GRAVITY = -9.8;
     public static final double LAUNCHER_HEIGHT = 300;
     public final double FLYWHEEL_POWER = 0.5;
-    public Position launchPoint = new Position(300, -285.75);
+    public Position launchPoint = new Position(300, -285.75);// optimize during testing
     public int[] FLAP_POSITIONS = {25,50,75,100};
 
 
@@ -91,9 +91,9 @@ public class Outtake {
         return Functions.distanceFormula(target.getX(), robot.getX(), target.getX(), robot.getY());
     }
 
-    //Low, Medium, High, Powershot
-    public double[] flapServoPositions = {0.0, 0.25, 0.5, 0.75};
-    public double[] targetMotorVelocities = {0.0, 0.33, 0.66, 1.0};
+    //Bins, P1, P2, P3
+    public double[] flapServoPositions = {0.0, 0.25, 0.5, 0.75}; //test
+    public double[] targetMotorVelocities = {0.0, 0.33, 0.66, 1.0}; //test to get to 7.07 m/s
 
     public Outtake(HardwareMap outtakeMap){
         flywheel = outtakeMap.get(DcMotorEx.class, "flywheel");
@@ -118,9 +118,9 @@ public class Outtake {
         outtakeController.calculate(error, 10, currentVelocity);
         flywheel.setPower(outtakeController.getOutput());
    }
-    public void setLaunchAngle(OldOuttake.LaunchAngles launchAngle){
+   /* public void setLaunchAngle(OldOuttake.LaunchAngles launchAngle){
         flap.setPosition(FLAP_POSITIONS[launchAngle.ordinal()]);
-    }
+    }*/
 
     public void setLauncherPower(double power){
         flywheel.setPower(power);

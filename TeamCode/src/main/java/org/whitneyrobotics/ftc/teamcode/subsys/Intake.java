@@ -31,7 +31,7 @@ public class Intake {
     /*public static final double DROPDOWN_UP = 0; //placeholder
     public static final double DROPDOWN_DOWN = 0.5; //placeholder*/
 
-    public double[] dropdownPositions ={0, 0.5};
+    public double[] dropdownPositions ={0, 0.5};//placeholders test pls
 
     /*public double dropdownUp = dropdownPositions[DropdownPositions.UP.ordinal()];
     public  double dropdownDown = dropdownPositions[DropdownPositions.DOWN.ordinal()];*/

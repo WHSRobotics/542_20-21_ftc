@@ -7,6 +7,7 @@ import org.whitneyrobotics.ftc.teamcode.lib.geometry.Position;
 import org.whitneyrobotics.ftc.teamcode.lib.purepursuit.swervetotarget.SwerveToTarget;
 import org.whitneyrobotics.ftc.teamcode.lib.util.SimpleTimer;
 import org.whitneyrobotics.ftc.teamcode.subsys.Intake;
+import org.whitneyrobotics.ftc.teamcode.subsys.Outtake;
 import org.whitneyrobotics.ftc.teamcode.subsys.WHSRobotImpl;
 import org.whitneyrobotics.ftc.teamcode.subsys.Wobble;
 
@@ -225,12 +226,12 @@ public class WHSAuto extends OpMode {
                 advanceState();
                 break;
             case DRIVE_TO_LAUNCH_POINT:
-                stateDesc = "Scan Stack";
+                stateDesc = "Driving to the Launch Point";
                 robot.driveToTarget(robot.outtake.launchPoint, false);
                 advanceState();
                 break;
             case SCAN_STACK:
-                stateDesc = "Driving to the Launch Point";
+                stateDesc = "Scan Stack";
                 switch (subState) {
                     case 0:
                         subStateDesc = "scanStack";
@@ -252,7 +253,6 @@ public class WHSAuto extends OpMode {
                     case 0:
                         subStateDesc = "Load Ring and Aim Powershot1";
                         robot.canister.loadRing();
-                        robot.outtake.flap.setPosition(robot.outtake.calculateLaunchSetting(robot.outtake.calculateDistanceToTarget(robot.outtake.powershot1, robot.getCoordinate()), robot.outtake.POWER_SHOT_TARGET_HEIGHT ));
                         robot.rotateToTarget(robot.outtake.calculateLaunchHeading(robot.outtake.powershot1, robot.getCoordinate()), false);
                         subState++;
                         break;
@@ -260,7 +260,7 @@ public class WHSAuto extends OpMode {
                         subStateDesc = "Shoot Powershot1";
                         launchTimer1.set(500);
                         while (!launchTimer1.isExpired()) {
-                            robot.outtake.setLauncherPower(robot.outtake.FLYWHEEL_POWER);
+                            robot.outtake.operate(Outtake.GoalPositions.POWER_SHOT_TARGET_ONE);
                         }
                         robot.outtake.setLauncherPower(0);
                         subState++;
@@ -268,7 +268,6 @@ public class WHSAuto extends OpMode {
                     case 2:
                         subStateDesc = "Load Ring and Aim Powershot2";
                         robot.canister.loadRing();
-                        robot.outtake.flap.setPosition(robot.outtake.calculateLaunchSetting(robot.outtake.calculateDistanceToTarget(robot.outtake.powershot2, robot.getCoordinate()), robot.outtake.POWER_SHOT_TARGET_HEIGHT ));
                         robot.rotateToTarget(robot.outtake.calculateLaunchHeading(robot.outtake.powershot2, robot.getCoordinate()), false);
                         subState++;
                         break;
@@ -276,7 +275,7 @@ public class WHSAuto extends OpMode {
                         subStateDesc = "Shoot Powershot2";
                         launchTimer2.set(500);
                         while (!launchTimer2.isExpired()) {
-                            robot.outtake.setLauncherPower(robot.outtake.FLYWHEEL_POWER);
+                            robot.outtake.operate(Outtake.GoalPositions.POWER_SHOT_TARGET_TWO);
                         }
                         robot.outtake.setLauncherPower(0);
                         subState++;
@@ -284,7 +283,6 @@ public class WHSAuto extends OpMode {
                     case 4:
                         subStateDesc = "Load Ring and Aim Powershot3";
                         robot.canister.loadRing();
-                        robot.outtake.flap.setPosition(robot.outtake.calculateLaunchSetting(robot.outtake.calculateDistanceToTarget(robot.outtake.powershot3, robot.getCoordinate()), robot.outtake.POWER_SHOT_TARGET_HEIGHT ));
                         robot.rotateToTarget(robot.outtake.calculateLaunchHeading(robot.outtake.powershot3, robot.getCoordinate()), false);
                         subState++;
                         break;
@@ -292,7 +290,7 @@ public class WHSAuto extends OpMode {
                         subStateDesc = "Shoot Powershot3";
                         launchTimer3.set(500);
                         while (!launchTimer3.isExpired()) {
-                            robot.outtake.setLauncherPower(robot.outtake.FLYWHEEL_POWER);
+                            robot.outtake.operate(Outtake.GoalPositions.POWER_SHOT_TARGET_THREE);
                         }
                         robot.outtake.setLauncherPower(0);
                         subState++;
@@ -315,7 +313,7 @@ public class WHSAuto extends OpMode {
                         break;
                     case 2:
                         subStateDesc = "Raise Arm";
-                        robot.wobble.setArmPosition(Wobble.ArmPositions.UP);
+                        robot.wobble.setArmPosition(Wobble.ArmPositions.FOLDED);
                         subState++;
                         break;
                     /*case "score":
@@ -402,10 +400,12 @@ public class WHSAuto extends OpMode {
                         advanceState();
                         break;
                 }*/
+                advanceState();
                 break;
             case END:
                 stateDesc = "Ending Auto";
                 robot.intake.setDropdown(Intake.DropdownPositions.UP);
+                break;
         }
         telemetry.addData("State: ", stateDesc);
         telemetry.addData("Substate: ", subStateDesc);

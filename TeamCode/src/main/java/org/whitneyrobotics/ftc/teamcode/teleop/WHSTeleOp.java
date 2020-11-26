@@ -95,7 +95,7 @@ public class WHSTeleOp extends OpMode {
             robot.rotateToTarget(robot.outtake.calculateLaunchHeading(currentTarget, robot.getCoordinate()),false);
             robot.outtake.flap.setPosition(robot.outtake.calculateLaunchSetting(robot.outtake.calculateDistanceToTarget(currentTarget, robot.getCoordinate()), shootingHeight));
             launchTimer.set(LAUNCH_TIME);
-            if(!launchTimer.isExpired()){
+            while(!launchTimer.isExpired()){
                 robot.outtake.setLauncherPower(robot.outtake.FLYWHEEL_POWER);
             }
             robot.outtake.setLauncherPower(0);
