@@ -1,6 +1,5 @@
 package org.whitneyrobotics.ftc.teamcode.subsys;
 
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -10,7 +9,7 @@ import org.whitneyrobotics.ftc.teamcode.lib.util.Toggler;
 public class Canister {
     private Servo loader;
     private Servo platform;
-    private Toggler canisterToggler = new Toggler(2);
+    private Toggler loaderToggler = new Toggler(2);
     public Toggler platformToggler = new Toggler(2);
     public Canister(HardwareMap canisterMap) {
         loader = canisterMap.servo.get("loaderServo");
@@ -23,47 +22,44 @@ public class Canister {
         REST, PUSH
     }
 
-    public double[] LOADER_POSITIONS = {0, 90}; // rest, push
-    public double[] PLATFORM_POSITIONS = {0, 90}; // flywheel, wobble
+    public double[] LOADER_POSITIONS = {0, 0.90}; // rest, push
+    public double[] PLATFORM_POSITIONS = {0, 0.90}; // flywheel, wobble
 
 
 
-    public final double LOADER_REST = LOADER_POSITIONS[Loader_Positions.REST.ordinal()];
-    public final double LOADER_PUSH = LOADER_POSITIONS[Loader_Positions.PUSH.ordinal()];
+
 
     public SimpleTimer loadTimer = new SimpleTimer();
 
-    public final double PLATFORM_FLYWHEEL = PLATFORM_POSITIONS[Platform_Positions.FLYWHEEL.ordinal()];
-    public final double PLATFORM_WOBBLE = PLATFORM_POSITIONS[Platform_Positions.WOBBLE.ordinal()];
 
 
     public String canisterState;
     public String platformState;
 
     public void operateCanister(boolean gamepadInputLoader, boolean gamepadInputPlatform ) {
-        canisterToggler.changeState(gamepadInputLoader);
+        loaderToggler.changeState(gamepadInputLoader);
         platformToggler.changeState(gamepadInputPlatform);
-        if (canisterToggler.currentState() == 0) {
+        if (loaderToggler.currentState() == 0) {
             canisterState = "Loader Off";
-            loader.setPosition(LOADER_REST);
+            loader.setPosition(LOADER_POSITIONS[Loader_Positions.REST.ordinal()]);
             if (platformToggler.currentState()==0){
                 platformState = "Flywheel";
-                platform.setPosition(PLATFORM_FLYWHEEL);
+                platform.setPosition(PLATFORM_POSITIONS[Platform_Positions.FLYWHEEL.ordinal()]);
             }
             else {
                 platformState = "Wobble";
-                platform.setPosition(PLATFORM_WOBBLE);
+                platform.setPosition(PLATFORM_POSITIONS[Platform_Positions.WOBBLE.ordinal()]);
             }
         } else {
             canisterState = "Loader On";
-            loader.setPosition(LOADER_PUSH);
+            loader.setPosition(LOADER_POSITIONS[Loader_Positions.PUSH.ordinal()]);
             if (platformToggler.currentState()==0){
                 platformState = "Flywheel";
-                platform.setPosition(PLATFORM_FLYWHEEL);
+                platform.setPosition(PLATFORM_POSITIONS[Platform_Positions.FLYWHEEL.ordinal()]);
             }
             else {
                 platformState = "Wobble";
-                platform.setPosition(PLATFORM_WOBBLE);
+                platform.setPosition(PLATFORM_POSITIONS[Platform_Positions.WOBBLE.ordinal()]);
             }
         }
     }
@@ -71,10 +67,11 @@ public class Canister {
     public void loadRing(){
         loadTimer.set(500);
         while (!loadTimer.isExpired()){
-            loader.setPosition(LOADER_PUSH);
+            loader.setPosition(LOADER_POSITIONS[Loader_Positions.PUSH.ordinal()]);
         }
-        loader.setPosition(LOADER_REST);
+        loader.setPosition(LOADER_POSITIONS[Loader_Positions.REST.ordinal()]);
     }
 
-
+    public void setLoaderPosition(double position){loader.setPosition(position);}
+    public void setPlatformPosition(double position){platform.setPosition(position);}
 }

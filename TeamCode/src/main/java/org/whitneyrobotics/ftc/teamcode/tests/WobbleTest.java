@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.whitneyrobotics.ftc.teamcode.lib.util.Toggler;
+import org.whitneyrobotics.ftc.teamcode.subsys.Wobble;
 
 public class WobbleTest extends OpMode {
 
@@ -14,13 +15,12 @@ public class WobbleTest extends OpMode {
     public Toggler handTog;
     public Toggler armTog;
 
-    public double handPos;
-    public double armPower;
+    public Wobble testWobble;
+
 
     @Override
     public void init() {
-        hand = hardwareMap.servo.get("clawServo");
-        arm = (DcMotor) hardwareMap.dcMotor.get("armMotor");
+        testWobble = new Wobble(hardwareMap);
         handTog = new Toggler(100);
         armTog = new Toggler(100);
     }
@@ -30,13 +30,10 @@ public class WobbleTest extends OpMode {
         handTog.changeState(gamepad1.dpad_up, gamepad1.dpad_down);
         armTog.changeState(gamepad1.dpad_right, gamepad1.dpad_left);
 
-        handPos = handTog.currentState()/100;
-        armPower = armTog.currentState()/100;
+        testWobble.setHandPosition(handTog.currentState()/100);
+        testWobble.setArmTarget(armTog.currentState()*5);
 
-        hand.setPosition(handPos);
-        arm.setPower(armPower);
-
-        telemetry.addData("Hand Pos: ", handPos);
-        telemetry.addData("Arm Pow: ", armPower);
+        telemetry.addData("Hand Pos: ", handTog.currentState()/100);
+        telemetry.addData("Arm Targ: ", armTog.currentState()*5);
     }
 }

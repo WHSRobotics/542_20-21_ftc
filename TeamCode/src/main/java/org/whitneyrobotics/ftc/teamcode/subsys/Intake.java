@@ -16,8 +16,6 @@ public class Intake {
 
     private Toggler dropdownToggler = new Toggler(2);
 
-    public int intakeState;
-
     public  double INTAKE_POWER = 0.45; //change to final after testing
 
     public Intake(HardwareMap intakeWheel) {
@@ -63,7 +61,9 @@ public class Intake {
         dropdown.setPosition(dropdownPositions[dropdownPosition.ordinal()]);
     }
 
+    //
     public void setIntakePower (double power){
         wheelIntake.setPower(power);
     }
+    public void setDropdownPosition(double position){dropdown.setPosition(position);}
 }

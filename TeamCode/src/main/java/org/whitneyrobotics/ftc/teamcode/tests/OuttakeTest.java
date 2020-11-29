@@ -5,21 +5,18 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.whitneyrobotics.ftc.teamcode.lib.util.Toggler;
+import org.whitneyrobotics.ftc.teamcode.subsys.Outtake;
 
 public class OuttakeTest extends OpMode {
-    public DcMotorEx flywheel;
-    public Servo flap;
+
+    public Outtake testOuttake;
 
     public Toggler flywheelTestTog;
     public Toggler flapTestTog;
 
-    public double flywheelPower;
-    public double flapSetting;
-
     @Override
     public void init() {
-        flywheel = hardwareMap.get(DcMotorEx.class, "flywheel");
-        flap = hardwareMap.servo.get("flapServo");
+        testOuttake = new Outtake(hardwareMap);
 
         flywheelTestTog = new Toggler(100);
         flapTestTog = new Toggler(100);
@@ -30,13 +27,10 @@ public class OuttakeTest extends OpMode {
         flywheelTestTog.changeState(gamepad2.right_trigger>0.01, gamepad2.left_trigger>0.01);
         flapTestTog.changeState(gamepad2.right_bumper, gamepad2.left_bumper);
 
-        flywheelPower = flywheelTestTog.currentState()/100;
-        flapSetting = flapTestTog.currentState()/100;
+        testOuttake.setLauncherPower(flywheelTestTog.currentState()/100);
+        testOuttake.setFlapPosition(flapTestTog.currentState()/100);
 
-        flywheel.setPower(flywheelPower);
-        flap.setPosition(flapSetting);
-
-        telemetry.addData("Flywheel Power: ", flywheelPower);
-        telemetry.addData("Flap Setting: ", flapSetting);
+        telemetry.addData("Flywheel Power: ", flywheelTestTog.currentState()/100);
+        telemetry.addData("Flap Setting: ", flapTestTog.currentState()/100);
     }
 }

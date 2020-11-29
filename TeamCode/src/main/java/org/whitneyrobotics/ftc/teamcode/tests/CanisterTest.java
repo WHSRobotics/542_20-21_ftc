@@ -7,19 +7,15 @@ import org.whitneyrobotics.ftc.teamcode.lib.util.Toggler;
 import org.whitneyrobotics.ftc.teamcode.subsys.Canister;
 
 public class CanisterTest extends OpMode {
-    private Servo loader;
-    private Servo platform;
+    private Canister testCanister;
 
     public Toggler platformTestTog;
     public Toggler loaderTestTog;
 
-    public double loaderSetting;
-    public double platformSetting;
 
     @Override
     public void init() {
-        loader = hardwareMap.servo.get("loaderServo");
-        platform = hardwareMap.servo.get("platformServo");
+        testCanister = new Canister(hardwareMap);
         platformTestTog = new Toggler(100);
         loaderTestTog = new Toggler(100);
 
@@ -29,11 +25,12 @@ public class CanisterTest extends OpMode {
     public void loop() {
         loaderTestTog.changeState(gamepad1.dpad_up, gamepad1.dpad_down);
         platformTestTog.changeState(gamepad1.dpad_right, gamepad1.dpad_left);
-        loaderSetting = loaderTestTog.currentState()/100;
-        platformSetting = platformTestTog.currentState()/100;
-        loader.setPosition(loaderSetting);
-        platform.setPosition(platformSetting);
-        telemetry.addData("Loader Setting:" , loaderSetting);
-        telemetry.addData("Platform Setting: ", platformSetting);
+
+
+        testCanister.setLoaderPosition(loaderTestTog.currentState()/100);
+        testCanister.setPlatformPosition(platformTestTog.currentState()/100);
+
+        telemetry.addData("Loader Setting:" , loaderTestTog.currentState()/100);
+        telemetry.addData("Platform Setting: ", platformTestTog.currentState()/100);
     }
 }

@@ -37,6 +37,12 @@ public class WHSAuto extends OpMode {
     public static int wobblePosition = 0; //placeholder
     int powerShotPosition = CENTER;
 
+    public Position launchPoint = new Position(300, -285.75);// optimize during testing
+    public final Position powershot1 = new Position(1800,-95.25); // from right to left fix later
+    public final Position powershot2 = new Position(1800,-285.75);
+    public final Position powershot3 = new Position(1800,-476.25);
+    public final Position binsMidpoint = new Position(1800,-890.5875);
+
     Coordinate[] startingCoordinateArray = new Coordinate [2];//starting coordinate
     Position[][] scanningDistanceArray = new Position[2][2];//scanning diatances
     Position[] shootingPositionArray = new Position[2];// points whrere robot sits to shoot powershots
@@ -227,7 +233,7 @@ public class WHSAuto extends OpMode {
                 break;
             case DRIVE_TO_LAUNCH_POINT:
                 stateDesc = "Driving to the Launch Point";
-                robot.driveToTarget(robot.outtake.launchPoint, false);
+                robot.driveToTarget(launchPoint, false);
                 advanceState();
                 break;
             case SCAN_STACK:
@@ -251,46 +257,46 @@ public class WHSAuto extends OpMode {
                 stateDesc = "Ready to Launch";
                 switch (subState) {
                     case 0:
-                        subStateDesc = "Load Ring and Aim Powershot1";
+                        subStateDesc = "Load Ring and Aim Left Powershot";
                         robot.canister.loadRing();
-                        robot.rotateToTarget(robot.outtake.calculateLaunchHeading(robot.outtake.powershot1, robot.getCoordinate()), false);
+                        robot.rotateToTarget(robot.outtake.calculateLaunchHeading(powershot1, robot.getCoordinate()), false);
                         subState++;
                         break;
                     case 1:
-                        subStateDesc = "Shoot Powershot1";
+                        subStateDesc = "Shoot Left Powershot";
                         launchTimer1.set(500);
                         while (!launchTimer1.isExpired()) {
-                            robot.outtake.operate(Outtake.GoalPositions.POWER_SHOT_TARGET_ONE);
+                            robot.outtake.operate(Outtake.GoalPositions.LEFT_POWER_SHOT);
                         }
                         robot.outtake.setLauncherPower(0);
                         subState++;
                         break;
                     case 2:
-                        subStateDesc = "Load Ring and Aim Powershot2";
+                        subStateDesc = "Load Ring and Aim Center Powershot";
                         robot.canister.loadRing();
-                        robot.rotateToTarget(robot.outtake.calculateLaunchHeading(robot.outtake.powershot2, robot.getCoordinate()), false);
+                        robot.rotateToTarget(robot.outtake.calculateLaunchHeading(powershot2, robot.getCoordinate()), false);
                         subState++;
                         break;
                     case 3:
-                        subStateDesc = "Shoot Powershot2";
+                        subStateDesc = "Shoot Center Powershot";
                         launchTimer2.set(500);
                         while (!launchTimer2.isExpired()) {
-                            robot.outtake.operate(Outtake.GoalPositions.POWER_SHOT_TARGET_TWO);
+                            robot.outtake.operate(Outtake.GoalPositions.CENTER_POWER_SHOT);
                         }
                         robot.outtake.setLauncherPower(0);
                         subState++;
                         break;
                     case 4:
-                        subStateDesc = "Load Ring and Aim Powershot3";
+                        subStateDesc = "Load Ring and Aim Right Powershot";
                         robot.canister.loadRing();
-                        robot.rotateToTarget(robot.outtake.calculateLaunchHeading(robot.outtake.powershot3, robot.getCoordinate()), false);
+                        robot.rotateToTarget(robot.outtake.calculateLaunchHeading(powershot3, robot.getCoordinate()), false);
                         subState++;
                         break;
                     case 5:
-                        subStateDesc = "Shoot Powershot3";
+                        subStateDesc = "Shoot Right Powershot";
                         launchTimer3.set(500);
                         while (!launchTimer3.isExpired()) {
-                            robot.outtake.operate(Outtake.GoalPositions.POWER_SHOT_TARGET_THREE);
+                            robot.outtake.operate(Outtake.GoalPositions.RIGHT_POWER_SHOT);
                         }
                         robot.outtake.setLauncherPower(0);
                         subState++;

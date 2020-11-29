@@ -5,14 +5,15 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.whitneyrobotics.ftc.teamcode.lib.geometry.Position;
 import org.whitneyrobotics.ftc.teamcode.lib.util.SimpleTimer;
 import org.whitneyrobotics.ftc.teamcode.lib.util.Toggler;
+import org.whitneyrobotics.ftc.teamcode.subsys.Outtake;
 import org.whitneyrobotics.ftc.teamcode.subsys.WHSRobotImpl;
 
 public class WHSTeleOp extends OpMode {
      WHSRobotImpl robot;
     public Toggler targetTog = new Toggler(4);
-    public Toggler binToggler = new Toggler(2);
-    public Position currentTarget;
-    public double shootingHeight;
+    public Toggler binToggler = new Toggler(3);
+    public Outtake.GoalPositions currentTarget;
+    public Position currentTargetPos;
     public SimpleTimer launchTimer = new SimpleTimer();
     public final int LAUNCH_TIME = 500;
 
@@ -20,7 +21,10 @@ public class WHSTeleOp extends OpMode {
     public String currentBinWord;
     public String intakeStatus;
 
-
+    public final Position powershot1 = new Position(1800,-95.25); // from right to left fix later
+    public final Position powershot2 = new Position(1800,-285.75);
+    public final Position powershot3 = new Position(1800,-476.25);
+    public final Position binsMidpoint = new Position(1800,-890.5875);
 
 
     @Override
@@ -63,40 +67,42 @@ public class WHSTeleOp extends OpMode {
         targetTog.changeState(gamepad2.dpad_up, gamepad2.dpad_down);
         binToggler.changeState(gamepad2.dpad_right, gamepad2.dpad_left);
         if (targetTog.currentState()==0){
-            currentTargetWord = "Powershot 1";
-            currentTarget = robot.outtake.powershot1;
-            shootingHeight = robot.outtake.POWER_SHOT_TARGET_HEIGHT;
+            currentTargetWord = "Left Powershot";
+            currentTarget = Outtake.GoalPositions.LEFT_POWER_SHOT;
+            currentTargetPos = powershot1;
         }
         else if (targetTog.currentState()==1){
-            currentTargetWord = "Powershot 2";
-            currentTarget = robot.outtake.powershot2;
-            shootingHeight = robot.outtake.POWER_SHOT_TARGET_HEIGHT;
+            currentTargetWord = "Center Powershot";
+            currentTarget = Outtake.GoalPositions.CENTER_POWER_SHOT;
+            currentTargetPos = powershot2;
         }
         else if (targetTog.currentState()==2){
-            currentTargetWord = "Powershot 3";
-            currentTarget = robot.outtake.powershot3;
-            shootingHeight = robot.outtake.POWER_SHOT_TARGET_HEIGHT;
+            currentTargetWord = "Right Powershot";
+            currentTarget = Outtake.GoalPositions.RIGHT_POWER_SHOT;
+            currentTargetPos = powershot3;
 
         }
         else{
             currentTargetWord = "Bins";
-            currentTarget = robot.outtake.binsMidpoint;
+            currentTargetPos = binsMidpoint;
             if(binToggler.currentState()==0){
-                currentBinWord = "Medium";
-                shootingHeight = robot.outtake.MID_GOAL_HEIGHT;
+                currentTarget = Outtake.GoalPositions.LOW_BIN;
+                currentBinWord = "Low";
             }
-            else{
+            else if (binToggler.currentState()==1){
+                currentTarget = Outtake.GoalPositions.MEDIUM_BIN;
+                currentBinWord = "Medium";
+            }
+            else {
+                currentTarget = Outtake.GoalPositions.HIGH_BIN;
                 currentBinWord = "High";
-                shootingHeight = robot.outtake.HIGH_GOAL_HEIGHT;
-
             }
         }
         if (gamepad2.a){
-            robot.rotateToTarget(robot.outtake.calculateLaunchHeading(currentTarget, robot.getCoordinate()),false);
-            robot.outtake.flap.setPosition(robot.outtake.calculateLaunchSetting(robot.outtake.calculateDistanceToTarget(currentTarget, robot.getCoordinate()), shootingHeight));
+            robot.rotateToTarget(robot.outtake.calculateLaunchHeading(currentTargetPos, robot.getCoordinate()), false);
             launchTimer.set(LAUNCH_TIME);
-            while(!launchTimer.isExpired()){
-                robot.outtake.setLauncherPower(robot.outtake.FLYWHEEL_POWER);
+            while (!launchTimer.isExpired()) {
+                robot.outtake.operate(currentTarget);
             }
             robot.outtake.setLauncherPower(0);
         }
