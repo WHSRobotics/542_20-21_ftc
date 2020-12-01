@@ -18,9 +18,11 @@ public class Intake {
 
     public  double INTAKE_POWER = 0.45; //change to final after testing
 
-    public Intake(HardwareMap intakeWheel) {
-        wheelIntake = intakeWheel.get(DcMotorEx.class, "Wheel Intake");
-        dropdown = intakeWheel.servo.get("Intake Dropdown");
+    public String dropdownStatus;
+
+    public Intake(HardwareMap intakeMap) {
+        wheelIntake = intakeMap.get(DcMotorEx.class, "Wheel Intake");
+        dropdown = intakeMap.servo.get("Intake Dropdown");
     }
     public enum DropdownPositions {
         UP, DOWN
@@ -60,8 +62,20 @@ public class Intake {
     public void setDropdown (DropdownPositions dropdownPosition){
         dropdown.setPosition(dropdownPositions[dropdownPosition.ordinal()]);
     }
+    //TeleOp
+    public void manualDropdown(boolean dropdownInput){
+        dropdownToggler.changeState(dropdownInput);
+        if (dropdownToggler.currentState()==0){
+            dropdown.setPosition(dropdownPositions[DropdownPositions.UP.ordinal()]);
+            dropdownStatus = "Intake Up";
+        }
+        else {
+            dropdown.setPosition(dropdownPositions[DropdownPositions.DOWN.ordinal()]);
+            dropdownStatus = "Intake Down";
+        }
+    }
 
-    //
+    //testing
     public void setIntakePower (double power){
         wheelIntake.setPower(power);
     }

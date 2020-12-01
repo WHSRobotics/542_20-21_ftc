@@ -1,5 +1,6 @@
 package org.whitneyrobotics.ftc.teamcode.autoop;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.whitneyrobotics.ftc.teamcode.lib.geometry.Coordinate;
@@ -13,6 +14,7 @@ import org.whitneyrobotics.ftc.teamcode.subsys.Wobble;
 
 //import static org.whitneyrobotics.ftc.teamcode.subsys.Outtake.Off;
 
+@Autonomous(name = "WHS Auto", group = "Auto")
 public class WHSAuto extends OpMode {
     WHSRobotImpl robot;
 
@@ -44,11 +46,13 @@ public class WHSAuto extends OpMode {
     public final Position binsMidpoint = new Position(1800,-890.5875);
 
     Coordinate[] startingCoordinateArray = new Coordinate [2];//starting coordinate
-    Position[][] scanningDistanceArray = new Position[2][2];//scanning diatances
+
     Position[] shootingPositionArray = new Position[2];// points whrere robot sits to shoot powershots
+    Position[] ringPosition = new Position[2];//ring stack postions
+
+    Position[][] scanningDistanceArray = new Position[2][2];//scanning diatances
     Position[][] wobblePositionArray = new Position[2][3];// wobble boxes
     Position[][] parkingPositionArray = new Position[2][3];//parking spots
-    Position[] ringPosition = new Position[2];//ring stack postions
 
     SwerveToTarget driveToShotLineSwerve;
     SwerveToTarget driveToWobblePositionOneSwerve;
@@ -115,9 +119,6 @@ public class WHSAuto extends OpMode {
         SimpleTimer launchTimer1 = new SimpleTimer();
         SimpleTimer launchTimer2 = new SimpleTimer();
         SimpleTimer launchTimer3 = new SimpleTimer();
-        SimpleTimer powershot1Timer = new SimpleTimer();
-        SimpleTimer powershot2Timer = new SimpleTimer();
-        SimpleTimer powershot3Timer = new SimpleTimer();
         SimpleTimer driveToWobbleOneTimer = new SimpleTimer();
         SimpleTimer driveToWobbleTwoTimer = new SimpleTimer();
         SimpleTimer driveToWobbleThreeTimer = new SimpleTimer();
@@ -227,8 +228,13 @@ public class WHSAuto extends OpMode {
                         robot.wobble.setArmPosition(Wobble.ArmPositions.UP);
                         subState++;
                         break;
+                    case 3:
+                        subStateDesc = "Dropping Intake";
+                        robot.intake.setDropdown(Intake.DropdownPositions.DOWN);
+                        break;
+                    default:
+                        break;
                 }
-                robot.intake.setDropdown(Intake.DropdownPositions.DOWN);
                 advanceState();
                 break;
             case DRIVE_TO_LAUNCH_POINT:
@@ -240,7 +246,7 @@ public class WHSAuto extends OpMode {
                 stateDesc = "Scan Stack";
                 switch (subState) {
                     case 0:
-                        subStateDesc = "scanStack";
+                        subStateDesc = "Scan Stack";
                         subState++;
                         break;
                     case 1:
@@ -249,6 +255,8 @@ public class WHSAuto extends OpMode {
                         if (!driveToShotLineSwerve.inProgress()) {
                             subState++;
                         }
+                        break;
+                    default:
                         break;
                 }
                 advanceState();
@@ -299,7 +307,9 @@ public class WHSAuto extends OpMode {
                             robot.outtake.operate(Outtake.GoalPositions.RIGHT_POWER_SHOT);
                         }
                         robot.outtake.setLauncherPower(0);
-                        subState++;
+                        break;
+                    default:
+                        break;
                 }
                 advanceState();
                 break;
@@ -320,13 +330,13 @@ public class WHSAuto extends OpMode {
                     case 2:
                         subStateDesc = "Raise Arm";
                         robot.wobble.setArmPosition(Wobble.ArmPositions.FOLDED);
-                        subState++;
                         break;
-                    /*case "score":
+
+                    default:
+                        break;
+                        /*case "score":
                         robot.wobble.setArmPosition(Wobble.ArmPositions.OVER);
                         robot.wobble.setClawPosition(Wobble.ClawPositions.OPEN);
-                        break;
-                    default:
                         break;*/
                 }
                 advanceState();
@@ -411,6 +421,8 @@ public class WHSAuto extends OpMode {
             case END:
                 stateDesc = "Ending Auto";
                 robot.intake.setDropdown(Intake.DropdownPositions.UP);
+                break;
+            default:
                 break;
         }
         telemetry.addData("State: ", stateDesc);

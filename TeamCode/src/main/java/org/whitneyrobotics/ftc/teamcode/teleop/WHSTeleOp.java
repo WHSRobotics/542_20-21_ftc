@@ -1,6 +1,7 @@
 package org.whitneyrobotics.ftc.teamcode.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.whitneyrobotics.ftc.teamcode.lib.geometry.Position;
 import org.whitneyrobotics.ftc.teamcode.lib.util.SimpleTimer;
@@ -8,6 +9,7 @@ import org.whitneyrobotics.ftc.teamcode.lib.util.Toggler;
 import org.whitneyrobotics.ftc.teamcode.subsys.Outtake;
 import org.whitneyrobotics.ftc.teamcode.subsys.WHSRobotImpl;
 
+@TeleOp(name = "WHS TeleOp", group = "TeleOp")
 public class WHSTeleOp extends OpMode {
      WHSRobotImpl robot;
     public Toggler targetTog = new Toggler(4);
@@ -47,7 +49,9 @@ public class WHSTeleOp extends OpMode {
             intakeStatus = "Power Off";
             robot.intake.operate(gamepad1.right_trigger == 0, gamepad1.left_trigger == 0);
         }
-
+        if (gamepad1.a){
+            robot.intake.manualDropdown(gamepad1.a);
+        }
         //Canister
         if (gamepad2.x || gamepad2.y) {
             robot.canister.operateCanister(gamepad2.x, gamepad2.y);
@@ -114,6 +118,7 @@ public class WHSTeleOp extends OpMode {
             robot.wobble.operateClaw(gamepad1.dpad_down);
         }
         telemetry.addData("Intake State: ", intakeStatus);
+        telemetry.addData("Intake Position",robot.intake.dropdownStatus);
         telemetry.addData("Canister Loader State: ", robot.canister.canisterState);
         telemetry.addData("Canister Platform Orientation: ", robot.canister.platformState);
         telemetry.addData("Robot Current Position: ", robot.drivetrain.getAllEncoderPositions());

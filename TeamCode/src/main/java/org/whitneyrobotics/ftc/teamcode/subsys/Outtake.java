@@ -14,7 +14,7 @@ public class Outtake {
 
     public DcMotorEx flywheel;
     public Servo flap;
-    public final double FLYWHEEL_POWER = 0.5;
+    public final static double FLYWHEEL_POWER = 0.5;
     //public int[] FLAP_POSITIONS = {25,50,75,100};
 
     /*public final double POWER_SHOT_TARGET_HEIGHT = 784.225;
@@ -90,6 +90,8 @@ public class Outtake {
     public void setLauncherPower(double power){
         flywheel.setPower(power);
     }
-    public void setFlapPosition (double position){flap.setPosition(position);}
+    public void setFlapPosition (double position){
+        flap.setPosition(position);
+    }
 
 }
