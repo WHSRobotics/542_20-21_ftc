@@ -53,6 +53,7 @@ public class Wobble {
             case 0: //ARM_FOLDED
                 arm.setTargetPosition(ARM_POSITIONS[ArmPositions.FOLDED.ordinal()]);
                 armStateDescription = "Arm Folded in Robot";
+                break;
             case 1: //ARM_DOWN
                 arm.setTargetPosition(ARM_POSITIONS[ArmPositions.DOWN.ordinal()]);
                 armStateDescription = "Arm Down";
@@ -64,7 +65,9 @@ public class Wobble {
             case 3: //ARM_OVER
                 arm.setTargetPosition(ARM_POSITIONS[ArmPositions.OVER.ordinal()]);
                 armStateDescription = "Arm Over Wall";
-
+                break;
+            default:
+                break;
         }
     }
 

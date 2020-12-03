@@ -36,31 +36,27 @@ public class Canister {
     public String canisterState;
     public String platformState;
 
-    public void operateCanister(boolean gamepadInputLoader, boolean gamepadInputPlatform ) {
+    public void operateLoader(boolean gamepadInputLoader) {
         loaderToggler.changeState(gamepadInputLoader);
-        platformToggler.changeState(gamepadInputPlatform);
         if (loaderToggler.currentState() == 0) {
             canisterState = "Loader Off";
             loader.setPosition(LOADER_POSITIONS[Loader_Positions.REST.ordinal()]);
-            if (platformToggler.currentState()==0){
-                platformState = "Flywheel";
-                platform.setPosition(PLATFORM_POSITIONS[Platform_Positions.FLYWHEEL.ordinal()]);
-            }
-            else {
-                platformState = "Wobble";
-                platform.setPosition(PLATFORM_POSITIONS[Platform_Positions.WOBBLE.ordinal()]);
-            }
         } else {
             canisterState = "Loader On";
             loader.setPosition(LOADER_POSITIONS[Loader_Positions.PUSH.ordinal()]);
-            if (platformToggler.currentState()==0){
-                platformState = "Flywheel";
-                platform.setPosition(PLATFORM_POSITIONS[Platform_Positions.FLYWHEEL.ordinal()]);
-            }
-            else {
-                platformState = "Wobble";
-                platform.setPosition(PLATFORM_POSITIONS[Platform_Positions.WOBBLE.ordinal()]);
-            }
+
+        }
+    }
+
+    public void operatePlatform(boolean gamepadInputPlatform ){
+        platformToggler.changeState(gamepadInputPlatform);
+        if (platformToggler.currentState()==0){
+            platformState = "Flywheel";
+            platform.setPosition(PLATFORM_POSITIONS[Platform_Positions.FLYWHEEL.ordinal()]);
+        }
+        else {
+            platformState = "Wobble";
+            platform.setPosition(PLATFORM_POSITIONS[Platform_Positions.WOBBLE.ordinal()]);
         }
     }
 

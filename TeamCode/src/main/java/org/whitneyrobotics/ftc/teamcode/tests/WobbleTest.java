@@ -11,8 +11,6 @@ import org.whitneyrobotics.ftc.teamcode.subsys.Wobble;
 @TeleOp(name = "Wobble Test", group = "Tests")
 public class WobbleTest extends OpMode {
 
-    public Servo hand;
-    public DcMotor arm;
 
     public Toggler handTog;
     public Toggler armTog;

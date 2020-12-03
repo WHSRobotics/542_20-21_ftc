@@ -54,10 +54,12 @@ public class WHSTeleOp extends OpMode {
         }
         //Canister
         if (gamepad2.x || gamepad2.y) {
-            robot.canister.operateCanister(gamepad2.x, gamepad2.y);
+            robot.canister.operateLoader(gamepad2.x);
+            robot.canister.operatePlatform(gamepad2.y);
         }
         else {
-            robot.canister.operateCanister(false, false);
+            robot.canister.operateLoader(false);
+            robot.canister.operatePlatform(false);
         }
         //Drivetrain
         robot.estimateHeading();
