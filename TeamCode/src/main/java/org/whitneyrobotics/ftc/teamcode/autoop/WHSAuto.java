@@ -272,11 +272,7 @@ public class WHSAuto extends OpMode {
                         break;
                     case 1:
                         subStateDesc = "Shoot Left Powershot";
-                        launchTimer1.set(500);
-                        while (!launchTimer1.isExpired()) {
-                            robot.outtake.operate(Outtake.GoalPositions.LEFT_POWER_SHOT);
-                        }
-                        robot.outtake.setLauncherPower(0);
+                        robot.outtake.launchToTarget(Outtake.GoalPositions.LEFT_POWER_SHOT);
                         subState++;
                         break;
                     case 2:
@@ -287,11 +283,7 @@ public class WHSAuto extends OpMode {
                         break;
                     case 3:
                         subStateDesc = "Shoot Center Powershot";
-                        launchTimer2.set(500);
-                        while (!launchTimer2.isExpired()) {
-                            robot.outtake.operate(Outtake.GoalPositions.CENTER_POWER_SHOT);
-                        }
-                        robot.outtake.setLauncherPower(0);
+                        robot.outtake.launchToTarget(Outtake.GoalPositions.CENTER_POWER_SHOT);
                         subState++;
                         break;
                     case 4:
@@ -302,11 +294,7 @@ public class WHSAuto extends OpMode {
                         break;
                     case 5:
                         subStateDesc = "Shoot Right Powershot";
-                        launchTimer3.set(500);
-                        while (!launchTimer3.isExpired()) {
-                            robot.outtake.operate(Outtake.GoalPositions.RIGHT_POWER_SHOT);
-                        }
-                        robot.outtake.setLauncherPower(0);
+                        robot.outtake.launchToTarget(Outtake.GoalPositions.RIGHT_POWER_SHOT);
                         break;
                     default:
                         break;

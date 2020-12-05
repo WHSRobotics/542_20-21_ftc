@@ -9,12 +9,15 @@ import org.whitneyrobotics.ftc.teamcode.lib.geometry.Coordinate;
 import org.whitneyrobotics.ftc.teamcode.lib.geometry.Position;
 import org.whitneyrobotics.ftc.teamcode.lib.util.Functions;
 import org.whitneyrobotics.ftc.teamcode.lib.util.RobotConstants;
+import org.whitneyrobotics.ftc.teamcode.lib.util.SimpleTimer;
 
 public class Outtake {
 
     public DcMotorEx flywheel;
     public Servo flap;
     public final static double FLYWHEEL_POWER = 0.5;
+    public SimpleTimer launchTimer = new SimpleTimer();
+    public final double LAUNCH_TIME = 500; //millisecs
     //public int[] FLAP_POSITIONS = {25,50,75,100};
 
     /*public final double POWER_SHOT_TARGET_HEIGHT = 784.225;
@@ -85,7 +88,13 @@ public class Outtake {
    /* public void setLaunchAngle(OldOuttake.LaunchAngles launchAngle){
         flap.setPosition(FLAP_POSITIONS[launchAngle.ordinal()]);
     }*/
-
+    public void launchToTarget(GoalPositions goal){
+        launchTimer.set(LAUNCH_TIME);
+        while (!launchTimer.isExpired()){
+            operate(goal);
+        }
+        setLauncherPower(0);
+    }
 
     public void setLauncherPower(double power){
         flywheel.setPower(power);

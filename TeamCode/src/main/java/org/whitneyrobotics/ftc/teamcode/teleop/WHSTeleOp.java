@@ -12,7 +12,6 @@ import org.whitneyrobotics.ftc.teamcode.subsys.WHSRobotImpl;
 @TeleOp(name = "WHS TeleOp", group = "TeleOp")
 public class WHSTeleOp extends OpMode {
      WHSRobotImpl robot;
-    public Toggler targetTog = new Toggler(4);
     public Toggler binToggler = new Toggler(3);
     public Outtake.GoalPositions currentTarget;
     public Position currentTargetPos;
@@ -20,7 +19,6 @@ public class WHSTeleOp extends OpMode {
     public final int LAUNCH_TIME = 500;
 
     public String  currentTargetWord;
-    public String currentBinWord;
     public String intakeStatus;
 
     public final Position powershot1 = new Position(1800,-95.25); // from right to left fix later
@@ -70,47 +68,42 @@ public class WHSTeleOp extends OpMode {
             robot.drivetrain.operateMecanumDriveScaled(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, robot.getCoordinate().getHeading());
         }
         //Outtake
-        targetTog.changeState(gamepad2.dpad_up, gamepad2.dpad_down);
         binToggler.changeState(gamepad2.dpad_right, gamepad2.dpad_left);
-        if (targetTog.currentState()==0){
+        if (gamepad2.dpad_left){
             currentTargetWord = "Left Powershot";
             currentTarget = Outtake.GoalPositions.LEFT_POWER_SHOT;
             currentTargetPos = powershot1;
         }
-        else if (targetTog.currentState()==1){
+        if (gamepad2.dpad_up){
             currentTargetWord = "Center Powershot";
             currentTarget = Outtake.GoalPositions.CENTER_POWER_SHOT;
             currentTargetPos = powershot2;
         }
-        else if (targetTog.currentState()==2){
+        if (gamepad2.dpad_right){
             currentTargetWord = "Right Powershot";
             currentTarget = Outtake.GoalPositions.RIGHT_POWER_SHOT;
             currentTargetPos = powershot3;
 
         }
-        else{
-            currentTargetWord = "Bins";
+        if (gamepad2.dpad_down){
             currentTargetPos = binsMidpoint;
-            if(binToggler.currentState()==0){
-                currentTarget = Outtake.GoalPositions.LOW_BIN;
-                currentBinWord = "Low";
-            }
-            else if (binToggler.currentState()==1){
-                currentTarget = Outtake.GoalPositions.MEDIUM_BIN;
-                currentBinWord = "Medium";
-            }
-            else {
-                currentTarget = Outtake.GoalPositions.HIGH_BIN;
-                currentBinWord = "High";
-            }
+            currentTarget = Outtake.GoalPositions.LOW_BIN;
+            currentTargetWord = "Low Bin";
+
+        }
+        if(gamepad2.left_bumper){
+            currentTargetPos = binsMidpoint;
+            currentTarget = Outtake.GoalPositions.MEDIUM_BIN;
+            currentTargetWord = "Medium Bin";
+        }
+        if (gamepad2.right_bumper){
+            currentTargetPos = binsMidpoint;
+            currentTarget = Outtake.GoalPositions.HIGH_BIN;
+            currentTargetWord = "High Bin";
         }
         if (gamepad2.a){
             robot.rotateToTarget(robot.outtake.calculateLaunchHeading(currentTargetPos, robot.getCoordinate()), false);
-            launchTimer.set(LAUNCH_TIME);
-            while (!launchTimer.isExpired()) {
-                robot.outtake.operate(currentTarget);
-            }
-            robot.outtake.setLauncherPower(0);
+            robot.outtake.launchToTarget(currentTarget);
         }
         //Wobble
         if(gamepad1.dpad_up){
@@ -125,7 +118,6 @@ public class WHSTeleOp extends OpMode {
         telemetry.addData("Canister Platform Orientation: ", robot.canister.platformState);
         telemetry.addData("Robot Current Position: ", robot.drivetrain.getAllEncoderPositions());
         telemetry.addData("Current Target: ", currentTargetWord);
-        telemetry.addData("Current Bin(if Current Target is at Bins): ", currentBinWord);
         telemetry.addData("Wobble Arm State: ", robot.wobble.armStateDescription);
         telemetry.addData("Wobble Claw State: ", robot.wobble.clawStateDescription);
     }
