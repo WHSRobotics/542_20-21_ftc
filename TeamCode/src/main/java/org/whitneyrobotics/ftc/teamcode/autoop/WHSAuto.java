@@ -18,26 +18,28 @@ import org.whitneyrobotics.ftc.teamcode.subsys.Wobble;
 public class WHSAuto extends OpMode {
     WHSRobotImpl robot;
 
+    // Starting color and inside/outside array values
     static final int RED = 0;
     static final int BLUE = 1;
     static final int INSIDE = 0;
     static final int OUTSIDE = 1;
 
+    // Starting information
     static final int STARTING_POSITION = INSIDE;
     public static final int STARTING_ALLIANCE = RED;
     static final double STARTING_COORDINATE_X = 1200;
     static final double STARTING_COORDINATE_Y = -1800;
     static final boolean PARTNER_MOVED_WOBBLE = false;
 
+    // ?? Anyone who knows... comment this?
     static final double LEFT_MAX = 80;
     static final double CENTER_MAX = 165;
 
-    static final int LEFT = 0;
+    /*static final int LEFT = 0;
     static final int CENTER = 1;
-    static final int RIGHT = 2;
+    static final int RIGHT = 2;*/
 
     public static int wobblePosition = 0; //placeholder
-    int powerShotPosition = CENTER;
 
     public Position launchPoint = new Position(300, -285.75);// optimize during testing
     public final Position powershot1 = new Position(1800,-95.25); // from right to left fix later
@@ -81,7 +83,7 @@ public class WHSAuto extends OpMode {
     static final int DRIVE_TO_LAUNCH_POINT = 2;
     static final int LAUNCH_PARTICLES = 3;
     static final int DROP_OFF_WOBBLE_GOAL = 4;
-    static final int PARK_ON_LAUNCH_LINE = 5;
+    static final int PARK_ON_STARTING_LINE = 5;
     static final int END = 6;
 
     static final int NUMBER_OF_STATES = 7;
@@ -90,8 +92,10 @@ public class WHSAuto extends OpMode {
 
     int state = INIT;
     int subState = 0;
-    int wobblePickupState = 0;
-    String outtakeState = "hover";
+
+    /*int wobblePickupState = 0;
+    String outtakeState = "hover";*/
+
     public void advanceState() {
         if (stateEnabled[(state + 1)]) {
             state++;
@@ -108,38 +112,27 @@ public class WHSAuto extends OpMode {
             stateEnabled[DRIVE_TO_LAUNCH_POINT] = true;
             stateEnabled[LAUNCH_PARTICLES] = true;
             stateEnabled[DROP_OFF_WOBBLE_GOAL] = true;
-            stateEnabled[PARK_ON_LAUNCH_LINE] = true;
+            stateEnabled[PARK_ON_STARTING_LINE] = true;
             stateEnabled[END] = true;
         }
 
         //timers
-
-        SimpleTimer scannerTimer = new SimpleTimer();
-        SimpleTimer driveToLaunchTimer = new SimpleTimer();
-        SimpleTimer launchTimer1 = new SimpleTimer();
-        SimpleTimer launchTimer2 = new SimpleTimer();
-        SimpleTimer launchTimer3 = new SimpleTimer();
-        SimpleTimer driveToWobbleOneTimer = new SimpleTimer();
-        SimpleTimer driveToWobbleTwoTimer = new SimpleTimer();
-        SimpleTimer driveToWobbleThreeTimer = new SimpleTimer();
+        SimpleTimer scannerTimer = new SimpleTimer(); // implement in SCAN STACK code
+        SimpleTimer wobblePickupArmDownTimer = new SimpleTimer();
+        SimpleTimer wobblePickupClawCloseTimer = new SimpleTimer();
         SimpleTimer putDownWobble = new SimpleTimer();
-        SimpleTimer driveToLaunchLineFromWobbleOne = new SimpleTimer();
-        SimpleTimer driveToLaunchLineFromWobbleTwo = new SimpleTimer();
-        SimpleTimer driveToLaunchLineFromWobbleThree = new SimpleTimer();
         SimpleTimer stopAutoOP = new SimpleTimer();
 
-    private final double DRIVE_TO_LAUNCH = 1.0;
-    private final double LAUNCH_DELAY = 1.0;
-    private final double DRIVE_TO_WOBBLE_ONE_DELAY = 1.0;
-    private final double DRIVE_TO_WOBBLE_TWO_DELAY = 1.0;
-    private final double DRIVE_TO_WOBBLE_THREE_DELAY = 1.0;
-    private final double PUT_DOWN_WOBBLE = 1.5;
-    private final double DRIVE_TO_LAUNCH_FROM_WOBBLE_ONE_DELAY = 1.0;
-    private final double DRIVE_TO_LAUNCH_FROM_WOBBLE_TWO_DELAY = 1.0;
-    private final double DRIVE_TO_LAUNCH_FROM_THREE_ONE_DELAY = 1.0;
-    private final double STOP_AT_LAUNCH_DELAY = 0.75;
+    private final double WOBBLE_PICKUP_ARM_DOWN_DELAY = 1.0; // optimize in testing
+    private final double WOBBLE_PICKUP_CLAW_CLOSE_DELAY = 1.0; // optimize in testing
+    private final double PUT_DOWN_WOBBLE_DELAY = 1.5; // optimize in testing
+    private final double STOP_AUTOOP_DELAY = 0.25;
+
+    private final double SECONDS_TO_MILLISECONDS = 1000.0;
 
     double[] motorPowers = {0.0, 0.0};
+
+
 
 
 
@@ -178,7 +171,7 @@ public class WHSAuto extends OpMode {
             autoOpRingPosition = 0;
         }*/
     }
-    public String newOuttakeState = "hover";
+
     public String stateDesc = "";
     public String subStateDesc = "";
 
@@ -215,12 +208,18 @@ public class WHSAuto extends OpMode {
                 switch(subState){
                     case 0:
                         subStateDesc = "Lower Arm";
-                        robot.wobble.setArmPosition(Wobble.ArmPositions.DOWN);
+                        wobblePickupArmDownTimer.set(WOBBLE_PICKUP_ARM_DOWN_DELAY * SECONDS_TO_MILLISECONDS);
+                        if (!wobblePickupArmDownTimer.isExpired()) {
+                            robot.wobble.setArmPosition(Wobble.ArmPositions.DOWN);
+                        }
                         subState++;
                         break;
                     case 1:
                         subStateDesc = "Clinch Wobble";
-                        robot.wobble.setClawPosition(Wobble.ClawPositions.CLOSE);
+                        wobblePickupClawCloseTimer.set(WOBBLE_PICKUP_CLAW_CLOSE_DELAY * SECONDS_TO_MILLISECONDS);
+                        if (!wobblePickupClawCloseTimer.isExpired()) {
+                            robot.wobble.setClawPosition(Wobble.ClawPositions.CLOSE);
+                        }
                         subState++;
                         break;
                     case 2:
@@ -235,11 +234,6 @@ public class WHSAuto extends OpMode {
                     default:
                         break;
                 }
-                advanceState();
-                break;
-            case DRIVE_TO_LAUNCH_POINT:
-                stateDesc = "Driving to the Launch Point";
-                robot.driveToTarget(launchPoint, false);
                 advanceState();
                 break;
             case SCAN_STACK:
@@ -259,6 +253,11 @@ public class WHSAuto extends OpMode {
                     default:
                         break;
                 }
+                advanceState();
+                break;
+            case DRIVE_TO_LAUNCH_POINT:
+                stateDesc = "Driving to the Launch Point";
+                robot.driveToTarget(launchPoint, false);
                 advanceState();
                 break;
             case LAUNCH_PARTICLES:
@@ -307,12 +306,16 @@ public class WHSAuto extends OpMode {
                     case 0:
                        subStateDesc="Move to Wobble Box";
                        // Write code after camera
+
                         subState++;
                         break;
                     case 1:
                         subStateDesc = "Lower Arm and Realease";
-                        robot.wobble.setArmPosition(Wobble.ArmPositions.DOWN);
-                        robot.wobble.setClawPosition(Wobble.ClawPositions.OPEN);
+                        putDownWobble.set(PUT_DOWN_WOBBLE_DELAY * SECONDS_TO_MILLISECONDS);
+                        if (!putDownWobble.isExpired()) {
+                            robot.wobble.setArmPosition(Wobble.ArmPositions.DOWN);
+                            robot.wobble.setClawPosition(Wobble.ClawPositions.OPEN);
+                        }
                         subState++;
                         break;
                     case 2:
@@ -330,7 +333,7 @@ public class WHSAuto extends OpMode {
                 advanceState();
                 break;
 
-            case PARK_ON_LAUNCH_LINE:
+            case PARK_ON_STARTING_LINE:
                 stateDesc = "Park";
                 Position parkingSpot = new Position( 300 ,robot.getCoordinate().getY());
                 robot.driveToTarget(parkingSpot, false);
@@ -404,7 +407,10 @@ public class WHSAuto extends OpMode {
                         advanceState();
                         break;
                 }*/
-                advanceState();
+                stopAutoOP.set(STOP_AUTOOP_DELAY * SECONDS_TO_MILLISECONDS);
+                if (!stopAutoOP.isExpired()) {
+                    advanceState();
+                }
                 break;
             case END:
                 stateDesc = "Ending Auto";
