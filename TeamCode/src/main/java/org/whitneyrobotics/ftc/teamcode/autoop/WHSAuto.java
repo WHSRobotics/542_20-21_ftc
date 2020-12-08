@@ -120,15 +120,27 @@ public class WHSAuto extends OpMode {
         SimpleTimer scannerTimer = new SimpleTimer(); // implement in SCAN STACK code
         SimpleTimer wobblePickupArmDownTimer = new SimpleTimer();
         SimpleTimer wobblePickupClawCloseTimer = new SimpleTimer();
+        SimpleTimer wobbleArmRaiseTimer = new SimpleTimer();
+        SimpleTimer dropDownTimer = new SimpleTimer();
+        SimpleTimer leftPowershotAimTimer = new SimpleTimer();
+        SimpleTimer centerPowershotAimTimer = new SimpleTimer();
+        SimpleTimer rightPowershotAimTimer = new SimpleTimer();
         SimpleTimer putDownWobble = new SimpleTimer();
         SimpleTimer stopAutoOP = new SimpleTimer();
+        SimpleTimer resetDropdownTimer = new SimpleTimer();
 
-    private final double WOBBLE_PICKUP_ARM_DOWN_DELAY = 1.0; // optimize in testing
-    private final double WOBBLE_PICKUP_CLAW_CLOSE_DELAY = 1.0; // optimize in testing
-    private final double PUT_DOWN_WOBBLE_DELAY = 1.5; // optimize in testing
-    private final double STOP_AUTOOP_DELAY = 0.25;
+    //test all of these
+    private final double WOBBLE_PICKUP_ARM_DOWN_DELAY = 1000.0; // optimize in testing
+    private final double WOBBLE_PICKUP_CLAW_CLOSE_DELAY = 1000.0; // optimize in testing
+    private final double WOBBLE_ARM_RAISE_DELAY = 1000.0;
+    private final double DROPDOWN_DELAY = 1000.0; //test
+    private final double POWERSHOT_AIM_DELAY = 1000.0;
+    private final double PUT_DOWN_WOBBLE_DELAY = 1000.0; // optimize in testing
+    private final double STOP_AUTOOP_DELAY = 1000.0;
+    private final double RESET_DROPDOWN_DELAY = 1000.0;
 
-    private final double SECONDS_TO_MILLISECONDS = 1000.0;
+
+    //private final double SECONDS_TO_MILLISECONDS = 1000.0;
 
     double[] motorPowers = {0.0, 0.0};
 
@@ -208,28 +220,34 @@ public class WHSAuto extends OpMode {
                 switch(subState){
                     case 0:
                         subStateDesc = "Lower Arm";
-                        wobblePickupArmDownTimer.set(WOBBLE_PICKUP_ARM_DOWN_DELAY * SECONDS_TO_MILLISECONDS);
-                        if (!wobblePickupArmDownTimer.isExpired()) {
+                        wobblePickupArmDownTimer.set(WOBBLE_PICKUP_ARM_DOWN_DELAY );
+                        while (!wobblePickupArmDownTimer.isExpired()) {
                             robot.wobble.setArmPosition(Wobble.ArmPositions.DOWN);
                         }
                         subState++;
                         break;
                     case 1:
                         subStateDesc = "Clinch Wobble";
-                        wobblePickupClawCloseTimer.set(WOBBLE_PICKUP_CLAW_CLOSE_DELAY * SECONDS_TO_MILLISECONDS);
-                        if (!wobblePickupClawCloseTimer.isExpired()) {
+                        wobblePickupClawCloseTimer.set(WOBBLE_PICKUP_CLAW_CLOSE_DELAY);
+                        while (!wobblePickupClawCloseTimer.isExpired()) {
                             robot.wobble.setClawPosition(Wobble.ClawPositions.CLOSE);
                         }
                         subState++;
                         break;
                     case 2:
                         subStateDesc = "Raise Arm";
-                        robot.wobble.setArmPosition(Wobble.ArmPositions.UP);
+                        wobbleArmRaiseTimer.set(WOBBLE_ARM_RAISE_DELAY);
+                        while (!wobbleArmRaiseTimer.isExpired()) {
+                            robot.wobble.setArmPosition(Wobble.ArmPositions.UP);
+                        }
                         subState++;
                         break;
                     case 3:
                         subStateDesc = "Dropping Intake";
-                        robot.intake.setDropdown(Intake.DropdownPositions.DOWN);
+                        dropDownTimer.set(DROPDOWN_DELAY);
+                        while (!dropDownTimer.isExpired()) {
+                            robot.intake.setDropdown(Intake.DropdownPositions.DOWN);
+                        }
                         break;
                     default:
                         break;
@@ -256,6 +274,7 @@ public class WHSAuto extends OpMode {
                 advanceState();
                 break;
             case DRIVE_TO_LAUNCH_POINT:
+                // make this a swerve to target
                 stateDesc = "Driving to the Launch Point";
                 robot.driveToTarget(launchPoint, false);
                 advanceState();
@@ -266,7 +285,10 @@ public class WHSAuto extends OpMode {
                     case 0:
                         subStateDesc = "Load Ring and Aim Left Powershot";
                         robot.canister.loadRing();
-                        robot.rotateToTarget(robot.outtake.calculateLaunchHeading(powershot1, robot.getCoordinate()), false);
+                        leftPowershotAimTimer.set(POWERSHOT_AIM_DELAY);
+                        while (!leftPowershotAimTimer.isExpired()) {
+                            robot.rotateToTarget(robot.outtake.calculateLaunchHeading(powershot1, robot.getCoordinate()), false);
+                        }
                         subState++;
                         break;
                     case 1:
@@ -277,7 +299,10 @@ public class WHSAuto extends OpMode {
                     case 2:
                         subStateDesc = "Load Ring and Aim Center Powershot";
                         robot.canister.loadRing();
-                        robot.rotateToTarget(robot.outtake.calculateLaunchHeading(powershot2, robot.getCoordinate()), false);
+                        centerPowershotAimTimer.set(POWERSHOT_AIM_DELAY);
+                        while (!centerPowershotAimTimer.isExpired()) {
+                            robot.rotateToTarget(robot.outtake.calculateLaunchHeading(powershot2, robot.getCoordinate()), false);
+                        }
                         subState++;
                         break;
                     case 3:
@@ -288,7 +313,10 @@ public class WHSAuto extends OpMode {
                     case 4:
                         subStateDesc = "Load Ring and Aim Right Powershot";
                         robot.canister.loadRing();
-                        robot.rotateToTarget(robot.outtake.calculateLaunchHeading(powershot3, robot.getCoordinate()), false);
+                        rightPowershotAimTimer.set(POWERSHOT_AIM_DELAY);
+                        while(!rightPowershotAimTimer.isExpired()) {
+                            robot.rotateToTarget(robot.outtake.calculateLaunchHeading(powershot3, robot.getCoordinate()), false);
+                        }
                         subState++;
                         break;
                     case 5:
@@ -311,7 +339,7 @@ public class WHSAuto extends OpMode {
                         break;
                     case 1:
                         subStateDesc = "Lower Arm and Realease";
-                        putDownWobble.set(PUT_DOWN_WOBBLE_DELAY * SECONDS_TO_MILLISECONDS);
+                        putDownWobble.set(PUT_DOWN_WOBBLE_DELAY);
                         if (!putDownWobble.isExpired()) {
                             robot.wobble.setArmPosition(Wobble.ArmPositions.DOWN);
                             robot.wobble.setClawPosition(Wobble.ClawPositions.OPEN);
@@ -336,6 +364,7 @@ public class WHSAuto extends OpMode {
             case PARK_ON_STARTING_LINE:
                 stateDesc = "Park";
                 Position parkingSpot = new Position( 300 ,robot.getCoordinate().getY());
+                // make swerve to target
                 robot.driveToTarget(parkingSpot, false);
                /* stateDesc = "Driving to foundation";
                 switch (subState) {
@@ -407,14 +436,17 @@ public class WHSAuto extends OpMode {
                         advanceState();
                         break;
                 }*/
-                stopAutoOP.set(STOP_AUTOOP_DELAY * SECONDS_TO_MILLISECONDS);
+                stopAutoOP.set(STOP_AUTOOP_DELAY);
                 if (!stopAutoOP.isExpired()) {
                     advanceState();
                 }
                 break;
             case END:
                 stateDesc = "Ending Auto";
-                robot.intake.setDropdown(Intake.DropdownPositions.UP);
+                resetDropdownTimer.set(RESET_DROPDOWN_DELAY);
+                while (!resetDropdownTimer.isExpired()) {
+                    robot.intake.setDropdown(Intake.DropdownPositions.UP);
+                }
                 break;
             default:
                 break;
