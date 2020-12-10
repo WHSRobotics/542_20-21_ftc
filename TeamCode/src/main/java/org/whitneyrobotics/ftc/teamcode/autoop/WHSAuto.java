@@ -41,7 +41,7 @@ public class WHSAuto extends OpMode {
 
     public static int wobblePosition = 0; //placeholder
 
-    public Position launchPoint = new Position(300, -285.75);// optimize during testing
+    //public Position launchPoint = new Position(300, -285.75);// optimize during testing
     public final Position powershot1 = new Position(1800,-95.25); // from right to left fix later
     public final Position powershot2 = new Position(1800,-285.75);
     public final Position powershot3 = new Position(1800,-476.25);
@@ -276,7 +276,6 @@ public class WHSAuto extends OpMode {
             case DRIVE_TO_LAUNCH_POINT:
                 // make this a swerve to target
                 stateDesc = "Driving to the Launch Point";
-                robot.driveToTarget(launchPoint, false);
                 advanceState();
                 break;
             case LAUNCH_PARTICLES:
@@ -365,7 +364,6 @@ public class WHSAuto extends OpMode {
                 stateDesc = "Park";
                 Position parkingSpot = new Position( 300 ,robot.getCoordinate().getY());
                 // make swerve to target
-                robot.driveToTarget(parkingSpot, false);
                /* stateDesc = "Driving to foundation";
                 switch (subState) {
                     case 0:
