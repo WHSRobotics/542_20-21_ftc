@@ -48,12 +48,12 @@ public class Outtake {
         Position triangle = new Position(robotPos.getX(), target.getY());
         double robotToTriangle = Math.abs(triangle.getY()- robotPos.getY());
         double targetToTriangle = Math.abs(triangle.getX()- target.getX());
-        double targetHeading = Math.atan(targetToTriangle/robotToTriangle);
+        double targetAngle = Math.atan(targetToTriangle/robotToTriangle);
         if (robotPos.getY()>target.getY()){
-            headingToTarget = targetHeading - 90;
+            headingToTarget = targetAngle - 90;
         }
         else{
-            headingToTarget = 90 - targetHeading;
+            headingToTarget = 90 - targetAngle;
         }
         return headingToTarget;
     }
@@ -89,6 +89,7 @@ public class Outtake {
         flap.setPosition(FLAP_POSITIONS[launchAngle.ordinal()]);
     }*/
     public void launchToTarget(GoalPositions goal){
+        // launch at goal
         launchTimer.set(LAUNCH_TIME);
         while (!launchTimer.isExpired()){
             operate(goal);
