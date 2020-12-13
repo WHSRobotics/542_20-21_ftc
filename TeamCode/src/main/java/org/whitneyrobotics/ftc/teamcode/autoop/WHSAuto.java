@@ -27,8 +27,8 @@ public class WHSAuto extends OpMode {
     // Starting information
     static final int STARTING_POSITION = INSIDE;
     public static final int STARTING_ALLIANCE = RED;
-    static final double STARTING_COORDINATE_X = 1200;
-    static final double STARTING_COORDINATE_Y = -1800;
+    static final double STARTING_COORDINATE_X = -1500;
+    static final double STARTING_COORDINATE_Y = -600;
     static final boolean PARTNER_MOVED_WOBBLE = false;
 
     // ?? Anyone who knows... comment this?
