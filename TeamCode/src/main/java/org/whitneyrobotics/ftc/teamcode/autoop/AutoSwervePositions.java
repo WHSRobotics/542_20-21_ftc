@@ -14,9 +14,13 @@ public class AutoSwervePositions {
     public static Position p1StartToShotline = new Position(-1500, -600);
     public static Position p2StartToShotLine = new Position(-600, 0);
     public static Position p3StartToShotLine = new Position(0, -300);
+    //shotlineToWobble1
+    public static Position p1ShotlineToWobble1 = new Position(0, -300);
+    public static Position p2ShotlineToWobble2 = new Position(300, -1500);
 
     // swerve Lookahed Distances
     public static double startToShotlineLookaheadDist = 350; // in mm
+    public static double shotlineToWobble1LookahedDist = 350; //in mm
 
     // swerve spacing
     public static double startToShotlineWaypointSpacing = 80; // in mm

@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.whitneyrobotics.ftc.teamcode.lib.geometry.Coordinate;
 import org.whitneyrobotics.ftc.teamcode.lib.geometry.Position;
 import org.whitneyrobotics.ftc.teamcode.lib.purepursuit.FollowerConstants;
+import org.whitneyrobotics.ftc.teamcode.lib.purepursuit.PathGenerator;
 import org.whitneyrobotics.ftc.teamcode.lib.purepursuit.swervetotarget.SwervePath;
 import org.whitneyrobotics.ftc.teamcode.lib.purepursuit.swervetotarget.SwervePathGenerationConstants;
 import org.whitneyrobotics.ftc.teamcode.lib.purepursuit.swervetotarget.SwerveToTarget;
@@ -182,6 +183,9 @@ public class WHSAuto extends OpMode {
 
         instantiateSwerveToTargets();
         robot.setInitialCoordinate(startingCoordinateArray[STARTING_ALLIANCE]);
+
+        // intit swerveToTargets
+        startToShotline = PathGenerator.generateSwervePath(AutoSwervePositions.getPath(AutoSwervePositions.startToShotlinePath), startToShotlineFollowerConstants, startToShotlinePathGenConstants);
     }
 
     @Override
@@ -286,9 +290,12 @@ public class WHSAuto extends OpMode {
                 advanceState();
                 break;
             case DRIVE_TO_LAUNCH_POINT:
-                // make this a swerve to target
                 stateDesc = "Driving to the Launch Point";
-                advanceState();
+                robot.updatePath(startToShotline);
+                robot.swerveToTarget();
+                if (!robot.swerveInProgress()){
+                    advanceState();
+                }
                 break;
             case LAUNCH_PARTICLES:
                 stateDesc = "Ready to Launch";
