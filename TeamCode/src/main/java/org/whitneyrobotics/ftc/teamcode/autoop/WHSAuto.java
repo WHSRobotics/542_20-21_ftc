@@ -7,6 +7,7 @@ import org.whitneyrobotics.ftc.teamcode.lib.geometry.Coordinate;
 import org.whitneyrobotics.ftc.teamcode.lib.geometry.Position;
 import org.whitneyrobotics.ftc.teamcode.lib.purepursuit.FollowerConstants;
 import org.whitneyrobotics.ftc.teamcode.lib.purepursuit.swervetotarget.SwervePath;
+import org.whitneyrobotics.ftc.teamcode.lib.purepursuit.swervetotarget.SwervePathGenerationConstants;
 import org.whitneyrobotics.ftc.teamcode.lib.purepursuit.swervetotarget.SwerveToTarget;
 import org.whitneyrobotics.ftc.teamcode.lib.util.SimpleTimer;
 import org.whitneyrobotics.ftc.teamcode.subsys.Intake;
@@ -68,7 +69,12 @@ public class WHSAuto extends OpMode {
 
     SwervePath startToShotline;
 
+    // Initialize FollowerConstants
     FollowerConstants startToShotlineFollowerConstants = new FollowerConstants(AutoSwervePositions.startToShotlineLookaheadDist, false);
+
+    // Initialize SwervePathGenerationConstants
+    SwervePathGenerationConstants startToShotlinePathGenConstants = new SwervePathGenerationConstants(AutoSwervePositions.startToShotlineWaypointSpacing, AutoSwervePositions.startToShotlineWeightSmooth, AutoSwervePositions.startToShotlineTurnSpeed, AutoSwervePositions.startToShotlineMaxVelocity);
+
 
     private void instantiateSwerveToTargets() {
         Position [] driveToShotLineSwervePositions = {scanningDistanceArray[STARTING_ALLIANCE][STARTING_POSITION], shootingPositionArray[STARTING_ALLIANCE]};

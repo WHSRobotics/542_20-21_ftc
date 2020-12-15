@@ -6,8 +6,16 @@ import java.util.ArrayList;
 
 public class AutoSwervePositions {
 
-    //Swerve Lookahed Distances
-    public static double startToShotlineLookaheadDist = 350;
+    // swerve Lookahed Distances
+    public static double startToShotlineLookaheadDist = 350; // in mm
+    // swerve spacing
+    public static double startToShotlineWaypointSpacing = 80; // in mm
+    // swerve weight smooth
+    public static double startToShotlineWeightSmooth = 0.5;
+    // swerve turn speed
+    public static double startToShotlineTurnSpeed = 750;
+    // swerve max velocity
+    public static double startToShotlineMaxVelocity = 3; // 1 - 5
     // declare positions here put spaces between each path you are generating for and label which path it is for
     // test path
     public static Position p1Test = new Position(1,2);
