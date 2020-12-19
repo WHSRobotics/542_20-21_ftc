@@ -69,12 +69,30 @@ public class WHSAuto extends OpMode {
     SwerveToTarget driveToLaunchLineFromWobbleThreeSwerve;
 
     SwervePath startToShotline;
+    SwervePath shotLineToWobbleOne;
+    SwervePath shotlineToWobbleTwo;
+    SwervePath shotlineToWobbleThree;
+    SwervePath wobbleOneToShotline;
+    SwervePath wobbleTwoToShotline;
+    SwervePath wobbleThreeToShotline;
 
     // Initialize FollowerConstants
     FollowerConstants startToShotlineFollowerConstants = new FollowerConstants(AutoSwervePositions.startToShotlineLookaheadDist, false);
+    FollowerConstants shotlineToWobbleOneFollowerConstants = new FollowerConstants(AutoSwervePositions.shotlineToWobble1LookaheadDist, false);
+    FollowerConstants shotlineToWobbleTwoFollowerConstants = new FollowerConstants(AutoSwervePositions.shotlineToWobble2LookahadDist, false);
+    FollowerConstants shotlineToWobbleThreeFollowerConstants = new FollowerConstants(AutoSwervePositions.shotlineToWobble3LookaheadDist, false);
+    FollowerConstants wobbleOneToParkFollowerConstants = new FollowerConstants(AutoSwervePositions.wobble1ToParkLookaheadDist, true);
+    FollowerConstants wobbleTwoToParkFollowerConstants = new FollowerConstants(AutoSwervePositions.wobble2ToParkLookaheadDist, true);
+    FollowerConstants wobbleThreeToParkFollowerConstants = new FollowerConstants(AutoSwervePositions.wobble3ToParkLookaheadDist, true);
 
     // Initialize SwervePathGenerationConstants
     SwervePathGenerationConstants startToShotlinePathGenConstants = new SwervePathGenerationConstants(AutoSwervePositions.startToShotlineWaypointSpacing, AutoSwervePositions.startToShotlineWeightSmooth, AutoSwervePositions.startToShotlineTurnSpeed, AutoSwervePositions.startToShotlineMaxVelocity);
+    SwervePathGenerationConstants shotlineToWobbleOneGenerationConstants = new SwervePathGenerationConstants(AutoSwervePositions.shotlineToWobble1Spacing, AutoSwervePositions.shotlineToWobble1WeightSmooth, AutoSwervePositions.shotlineToWobble1TurnSpeed, AutoSwervePositions.shotlineToWobble1MaxVelocity);
+    SwervePathGenerationConstants shotlineToWobbleTwoGenerationConstants = new SwervePathGenerationConstants(AutoSwervePositions.shotlineToWobble2Spacing, AutoSwervePositions.shotlineToWobble2WeightSmooth, AutoSwervePositions.shotlineToWobble2TurnSpeed, AutoSwervePositions.shotlineToWobble2MaxVelocity);
+    SwervePathGenerationConstants shotlineToWobbleThreeGenerationConstants = new SwervePathGenerationConstants(AutoSwervePositions.shotlineToWobble3Spacing, AutoSwervePositions.shotlineToWobble3WeightSmooth, AutoSwervePositions.shotlineToWobble3TurnSpeed, AutoSwervePositions.shotlineToWobble3MaxVelocity);
+    SwervePathGenerationConstants wobbleOneToParkGenerationConstants = new SwervePathGenerationConstants(AutoSwervePositions.wobble1ToParkSpacing, AutoSwervePositions.wobble1ToParkWeightSmooth, AutoSwervePositions.wobble1ToParkTurnSpeed, AutoSwervePositions.wobble1ToParkMaxVelocity);
+    SwervePathGenerationConstants wobbleTwoToParkGenerationConstants = new SwervePathGenerationConstants(AutoSwervePositions.wobble2ToParkSpacing, AutoSwervePositions.wobble2ToParkWeightSmooth, AutoSwervePositions.wobble2ToParkTurnSpeed, AutoSwervePositions.wobble2ToParkMaxVelocity);
+    SwervePathGenerationConstants wobbleThreeToParkGenerationConstants = new SwervePathGenerationConstants(AutoSwervePositions.wobble3ToParkSpacing, AutoSwervePositions.wobble3ToParkWeightSmooth, AutoSwervePositions.wobble3ToParkTurnSpeed, AutoSwervePositions.wobble3ToParkMaxVelocity);
 
 
     private void instantiateSwerveToTargets() {
@@ -186,6 +204,12 @@ public class WHSAuto extends OpMode {
 
         // intit swerveToTargets
         startToShotline = PathGenerator.generateSwervePath(AutoSwervePositions.getPath(AutoSwervePositions.startToShotlinePath), startToShotlineFollowerConstants, startToShotlinePathGenConstants);
+        shotLineToWobbleOne = PathGenerator.generateSwervePath(AutoSwervePositions.getPath(AutoSwervePositions.shotlineToWobble1Path), shotlineToWobbleOneFollowerConstants, shotlineToWobbleOneGenerationConstants);
+        shotlineToWobbleTwo = PathGenerator.generateSwervePath(AutoSwervePositions.getPath(AutoSwervePositions.shotlineToWobble2Path), shotlineToWobbleTwoFollowerConstants, shotlineToWobbleTwoGenerationConstants);
+        shotlineToWobbleThree = PathGenerator.generateSwervePath(AutoSwervePositions.getPath(AutoSwervePositions.shotlineToWobble3Path), shotlineToWobbleThreeFollowerConstants, shotlineToWobbleThreeGenerationConstants);
+        wobbleOneToShotline = PathGenerator.generateSwervePath(AutoSwervePositions.getPath(AutoSwervePositions.wobble1ToParkPath), wobbleOneToParkFollowerConstants, wobbleOneToParkGenerationConstants);
+        wobbleTwoToShotline = PathGenerator.generateSwervePath(AutoSwervePositions.getPath(AutoSwervePositions.wobble2ToParkPath), wobbleTwoToParkFollowerConstants, wobbleTwoToParkGenerationConstants);
+        wobbleThreeToShotline = PathGenerator.generateSwervePath(AutoSwervePositions.getPath(AutoSwervePositions.wobble3ToParkPath), wobbleThreeToParkFollowerConstants, wobbleThreeToParkGenerationConstants);
     }
 
     @Override
@@ -351,9 +375,19 @@ public class WHSAuto extends OpMode {
                 switch (subState) {
                     case 0:
                        subStateDesc="Move to Wobble Box";
-                       // Write code after camera
-
-                        subState++;
+                       if (wobblePosition==0){
+                           robot.updatePath(shotLineToWobbleOne);
+                       }
+                       else if(wobblePosition==1){
+                           robot.updatePath(shotlineToWobbleTwo);
+                       }
+                       else{
+                           robot.updatePath(shotlineToWobbleThree);
+                       }
+                        robot.swerveToTarget();
+                       if (!robot.swerveInProgress()) {
+                           subState++;
+                       }
                         break;
                     case 1:
                         subStateDesc = "Lower Arm and Realease";
@@ -381,7 +415,16 @@ public class WHSAuto extends OpMode {
 
             case PARK_ON_STARTING_LINE:
                 stateDesc = "Park";
-                Position parkingSpot = new Position( 300 ,robot.getCoordinate().getY());
+                if (wobblePosition==0){
+                    robot.updatePath(wobbleOneToShotline);
+                }
+                else if(wobblePosition==1){
+                    robot.updatePath(wobbleTwoToShotline);
+                }
+                else{
+                    robot.updatePath(wobbleThreeToShotline);
+                }
+                robot.swerveToTarget();
                 // make swerve to target
                /* stateDesc = "Driving to foundation";
                 switch (subState) {
@@ -453,9 +496,11 @@ public class WHSAuto extends OpMode {
                         advanceState();
                         break;
                 }*/
-                stopAutoOP.set(STOP_AUTOOP_DELAY);
-                if (!stopAutoOP.isExpired()) {
-                    advanceState();
+                if (!robot.swerveInProgress()) {
+                    stopAutoOP.set(STOP_AUTOOP_DELAY);
+                    if (!stopAutoOP.isExpired()) {
+                        advanceState();
+                    }
                 }
                 break;
             case END:
