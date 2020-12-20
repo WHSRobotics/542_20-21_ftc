@@ -4,83 +4,78 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.whitneyrobotics.ftc.teamcode.lib.control.PIDFController;
 import org.whitneyrobotics.ftc.teamcode.lib.util.Toggler;
 
 public class Wobble {
-    private Servo hand;
-    private DcMotor arm;
 
-    private Toggler clawToggler = new Toggler(2);
+    private Servo claw;
+    private DcMotor horizontalMotor;
+    private DcMotor verticalMotor;
+    //PID
+    private PIDFController horizontalMotorPID;
+    private PIDFController verticalMotorPID;
 
-    private Toggler armToggler = new Toggler(4);
+    private Toggler clawTog = new Toggler(2);
+    private Toggler horizontalPulleyTog = new Toggler(3);
+    private Toggler verticalPulleyTog = new Toggler(2);
 
     public Wobble(HardwareMap wobbleMap) {
-        hand = wobbleMap.servo.get("clawServo");
-        arm = (DcMotor) wobbleMap.dcMotor.get("armMotor");
+        horizontalMotor = wobbleMap.dcMotor.get("horizontalMotor");
+        verticalMotor = wobbleMap.dcMotor.get("verticalMotor");
+        claw = wobbleMap.servo.get("clawServo");
     }
-
 
     public enum ClawPositions {
         OPEN, CLOSE
     }
-
-    public enum ArmPositions {
-        FOLDED, OVER, UP, DOWN
+    public enum HorizontalPositions {
+        PLACEHOLDER1, PLACEHOLDER2
     }
 
-    public double[] CLAW_POSITIONS = {0, 90}; // rest, push
+    public enum VerticalPositions {
+        PLACEHOLDER3, PLACEHOLDER4
+    }
 
-    public int[] ARM_POSITIONS = {0, 1, 2, 3}; //folded, down, up, over in order change position once motor information and tick information is released
+    public double[] CLAW_POSITIONS = {0, 90}; // rest, push, placeholders
+    public int[] VERTICAL_POSITIONS = {0, 1};//placeholders
+    public int[] HORIZONTAL_POSITIONS = {0, 0};//placeholders
 
     public String clawStateDescription;
     public void operateClaw(boolean gamepadInput) {
-        clawToggler.changeState(gamepadInput);
-        if (clawToggler.currentState() == 0) {
-            hand.setPosition(CLAW_POSITIONS[ClawPositions.OPEN.ordinal()]);
+        clawTog.changeState(gamepadInput);
+        if (clawTog.currentState() == 0) {
+            claw.setPosition(CLAW_POSITIONS[ClawPositions.OPEN.ordinal()]);
             clawStateDescription = "Open";
         } else {
-            hand.setPosition(CLAW_POSITIONS[ClawPositions.CLOSE.ordinal()]);
+            claw.setPosition(CLAW_POSITIONS[ClawPositions.CLOSE.ordinal()]);
             clawStateDescription = "Close";
         }
     }
 
-    int armState;
-    public String armStateDescription;
-    public void operateArm(boolean gamepadInput) {
-        armToggler.changeState(gamepadInput);
-        armState = armToggler.currentState();
-        switch (armState) {
-            case 0: //ARM_FOLDED
-                arm.setTargetPosition(ARM_POSITIONS[ArmPositions.FOLDED.ordinal()]);
-                armStateDescription = "Arm Folded in Robot";
-                break;
-            case 1: //ARM_DOWN
-                arm.setTargetPosition(ARM_POSITIONS[ArmPositions.DOWN.ordinal()]);
-                armStateDescription = "Arm Down";
-                break;
-            case 2: //ARM_UP
-                arm.setTargetPosition(ARM_POSITIONS[ArmPositions.UP.ordinal()]);
-                armStateDescription = "Arm Up";
-                break;
-            case 3: //ARM_OVER
-                arm.setTargetPosition(ARM_POSITIONS[ArmPositions.OVER.ordinal()]);
-                armStateDescription = "Arm Over Wall";
-                break;
-            default:
-                break;
+    public void verticalMovement(boolean gamepadInput){
+        verticalPulleyTog.changeState(gamepadInput);
+        if (verticalPulleyTog.currentState() == 0 ) {
+            verticalMotor.setTargetPosition(VERTICAL_POSITIONS[VerticalPositions.PLACEHOLDER3.ordinal()]);
+        }
+        else {
+            verticalMotor.setTargetPosition(VERTICAL_POSITIONS[VerticalPositions.PLACEHOLDER4.ordinal()]);
         }
     }
 
-
-
-    public void setArmPosition(ArmPositions armPosition){
-        arm.setTargetPosition(ARM_POSITIONS[armPosition.ordinal()]);
+    public void horizontalMovement(boolean gamepadInput){
+        horizontalPulleyTog.changeState(gamepadInput);
+        if (horizontalPulleyTog.currentState() == 1 ) {
+            horizontalMotor.setTargetPosition(HORIZONTAL_POSITIONS[HorizontalPositions.PLACEHOLDER1.ordinal()]);
+        }
+        else {
+            horizontalMotor.setTargetPosition(VERTICAL_POSITIONS[HorizontalPositions.PLACEHOLDER2.ordinal()]);
+        }
     }
 
     public void setClawPosition(ClawPositions clawPosition){
-        hand.setPosition(CLAW_POSITIONS[clawPosition.ordinal()]);
+        claw.setPosition(CLAW_POSITIONS[clawPosition.ordinal()]);
     }
 
-    public void setArmTarget(int target){arm.setTargetPosition(target);}
-    public void setHandPosition(double position){hand.setPosition(position);}
+    public void setHandPosition(double position){claw.setPosition(position);}
 }
