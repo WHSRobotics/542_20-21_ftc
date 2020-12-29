@@ -19,24 +19,26 @@ public class Intake {
     public  double INTAKE_POWER = 0.45; //change to final after testing
 
     public String dropdownStatus;
+    public String intakeStateDescription;
+
+    public enum DropdownPositions {
+        UP, DOWN
+    }
+
+    public double[] dropdownPositions ={0, 0.5};//placeholders test pls
 
     public Intake(HardwareMap intakeMap) {
         wheelIntake = intakeMap.get(DcMotorEx.class, "Wheel Intake");
         dropdown = intakeMap.servo.get("Intake Dropdown");
     }
-    public enum DropdownPositions {
-        UP, DOWN
-    }
+
 
     /*public static final double DROPDOWN_UP = 0; //placeholder
     public static final double DROPDOWN_DOWN = 0.5; //placeholder*/
 
-    public double[] dropdownPositions ={0, 0.5};//placeholders test pls
-
     /*public double dropdownUp = dropdownPositions[DropdownPositions.UP.ordinal()];
     public  double dropdownDown = dropdownPositions[DropdownPositions.DOWN.ordinal()];*/
 
-    public String intakeStateDescription;
     public void operate(boolean gamepadInput1, boolean gamepadInput2) {
         wheelToggler.changeState(gamepadInput1);
         if (gamepadInput2) {

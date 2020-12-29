@@ -11,39 +11,36 @@ public class Canister {
     private Servo platform;
     private Toggler loaderToggler = new Toggler(2);
     public Toggler platformToggler = new Toggler(2);
-    public Canister(HardwareMap canisterMap) {
-        loader = canisterMap.servo.get("loaderServo");
-        platform = canisterMap.servo.get("platform");
-    }
-    public enum Platform_Positions{
+
+    public enum PlatformPositions {
         FLYWHEEL, WOBBLE
     }
-    public enum Loader_Positions {
+
+    public enum LoaderPositions {
         REST, PUSH
     }
 
     public double[] LOADER_POSITIONS = {0, 0.90}; // rest, push
     public double[] PLATFORM_POSITIONS = {0, 0.90}; // flywheel, wobble
 
-
-
-
-
     public SimpleTimer loadTimer = new SimpleTimer();
-
-
 
     public String canisterState;
     public String platformState;
+
+    public Canister(HardwareMap canisterMap) {
+        loader = canisterMap.servo.get("loaderServo");
+        platform = canisterMap.servo.get("platform");
+    }
 
     public void operateLoader(boolean gamepadInputLoader) {
         loaderToggler.changeState(gamepadInputLoader);
         if (loaderToggler.currentState() == 0) {
             canisterState = "Loader Off";
-            loader.setPosition(LOADER_POSITIONS[Loader_Positions.REST.ordinal()]);
+            loader.setPosition(LOADER_POSITIONS[LoaderPositions.REST.ordinal()]);
         } else {
             canisterState = "Loader On";
-            loader.setPosition(LOADER_POSITIONS[Loader_Positions.PUSH.ordinal()]);
+            loader.setPosition(LOADER_POSITIONS[LoaderPositions.PUSH.ordinal()]);
 
         }
     }
@@ -52,20 +49,21 @@ public class Canister {
         platformToggler.changeState(gamepadInputPlatform);
         if (platformToggler.currentState()==0){
             platformState = "Flywheel";
-            platform.setPosition(PLATFORM_POSITIONS[Platform_Positions.FLYWHEEL.ordinal()]);
+            platform.setPosition(PLATFORM_POSITIONS[PlatformPositions.FLYWHEEL.ordinal()]);
         }
         else {
             platformState = "Wobble";
-            platform.setPosition(PLATFORM_POSITIONS[Platform_Positions.WOBBLE.ordinal()]);
+            platform.setPosition(PLATFORM_POSITIONS[PlatformPositions.WOBBLE.ordinal()]);
         }
     }
 
     public void loadRing(){
         loadTimer.set(500);
-        while (!loadTimer.isExpired()){
-            loader.setPosition(LOADER_POSITIONS[Loader_Positions.PUSH.ordinal()]);
+        if (!loadTimer.isExpired()){
+            loader.setPosition(LOADER_POSITIONS[LoaderPositions.PUSH.ordinal()]);
+        } else {
+            loader.setPosition(LOADER_POSITIONS[LoaderPositions.REST.ordinal()]);
         }
-        loader.setPosition(LOADER_POSITIONS[Loader_Positions.REST.ordinal()]);
     }
 
     public void setLoaderPosition(double position){loader.setPosition(position);}
