@@ -12,11 +12,16 @@ import org.whitneyrobotics.ftc.teamcode.subsys.WHSRobotImpl;
 @TeleOp(name = "WHS TeleOp", group = "TeleOp")
 public class WHSTeleOp extends OpMode {
      WHSRobotImpl robot;
+
     public Toggler binToggler = new Toggler(3);
+    public Toggler shootingTimerTog = new Toggler (3);
+
     public Outtake.GoalPositions currentTarget;
     public Position currentTargetPos;
-    public SimpleTimer launchTimer = new SimpleTimer();
-    public final int LAUNCH_TIME = 500;
+
+    public SimpleTimer rotateTimer = new SimpleTimer();
+
+    public final int ROTATE_TIME = 500;
 
     public String  currentTargetWord;
     public String intakeStatus;
@@ -74,38 +79,52 @@ public class WHSTeleOp extends OpMode {
             currentTarget = Outtake.GoalPositions.LEFT_POWER_SHOT;
             currentTargetPos = powershot1;
         }
-        if (gamepad2.dpad_up){
+        else if (gamepad2.dpad_up){
             currentTargetWord = "Center Powershot";
             currentTarget = Outtake.GoalPositions.CENTER_POWER_SHOT;
             currentTargetPos = powershot2;
         }
-        if (gamepad2.dpad_right){
+        else if (gamepad2.dpad_right){
             currentTargetWord = "Right Powershot";
             currentTarget = Outtake.GoalPositions.RIGHT_POWER_SHOT;
             currentTargetPos = powershot3;
 
         }
-        if (gamepad2.dpad_down){
+        else if (gamepad2.dpad_down){
             currentTargetPos = binsMidpoint;
             currentTarget = Outtake.GoalPositions.LOW_BIN;
             currentTargetWord = "Low Bin";
 
         }
-        if(gamepad2.left_bumper){
+        else if(gamepad2.left_bumper){
             currentTargetPos = binsMidpoint;
             currentTarget = Outtake.GoalPositions.MEDIUM_BIN;
             currentTargetWord = "Medium Bin";
         }
-        if (gamepad2.right_bumper){
+        else if (gamepad2.right_bumper){
             currentTargetPos = binsMidpoint;
             currentTarget = Outtake.GoalPositions.HIGH_BIN;
             currentTargetWord = "High Bin";
         }
+
         if (gamepad2.a){
-            robot.rotateToTarget(robot.outtake.calculateLaunchHeading(currentTargetPos, robot.getCoordinate()), false);
-            robot.outtake.launchToTarget(currentTarget);
+            if (shootingTimerTog.currentState() == 0){
+                rotateTimer.set(ROTATE_TIME);
+                shootingTimerTog.changeState(true);
+            } else if (shootingTimerTog.currentState() == 1){
+                robot.rotateToTarget(robot.outtake.calculateLaunchHeading(currentTargetPos, robot.getCoordinate()), false);
+                if (rotateTimer.isExpired()){
+                    shootingTimerTog.changeState(true);
+                }
+            } else {
+                robot.outtake.launchToTarget(currentTarget);
+                if (robot.outtake.launchTimer.isExpired()){
+                    shootingTimerTog.changeState(true);
+                }
+            }
         }
-        //Wobble
+
+        //Wobble - currently redoing wobble
         if(gamepad1.dpad_up){
             robot.wobble.operateArm(gamepad1.dpad_up);
         }

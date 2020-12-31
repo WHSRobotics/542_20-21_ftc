@@ -60,6 +60,7 @@ public class WHSAuto extends OpMode {
     Position[][] wobblePositionArray = new Position[2][3];// wobble boxes
     Position[][] parkingPositionArray = new Position[2][2];//parking spots
 
+    /*
     SwerveToTarget driveToShotLineSwerve;
     SwerveToTarget driveToWobblePositionOneSwerve;
     SwerveToTarget driveToWobblePositionTwoSwerve;
@@ -67,7 +68,9 @@ public class WHSAuto extends OpMode {
     SwerveToTarget driveToLaunchLineFromWobbleOneSwerve;
     SwerveToTarget driveToLaunchLineFromWobbleTwoSwerve;
     SwerveToTarget driveToLaunchLineFromWobbleThreeSwerve;
+     */
 
+    /*
     SwervePath startToShotline;
     SwervePath shotLineToWobbleOne;
     SwervePath shotlineToWobbleTwo;
@@ -75,7 +78,9 @@ public class WHSAuto extends OpMode {
     SwervePath wobbleOneToParkline;
     SwervePath wobbleTwoToParkline;
     SwervePath wobbleThreeToParkline;
+    */
 
+    /*
     // Initialize FollowerConstants
     FollowerConstants startToShotlineFollowerConstants = new FollowerConstants(AutoSwervePositions.startToShotlineLookaheadDist, false);
     FollowerConstants shotlineToWobbleOneFollowerConstants = new FollowerConstants(AutoSwervePositions.shotlineToWobble1LookaheadDist, false);
@@ -93,7 +98,7 @@ public class WHSAuto extends OpMode {
     SwervePathGenerationConstants wobbleOneToParkGenerationConstants = new SwervePathGenerationConstants(AutoSwervePositions.wobble1ToParkSpacing, AutoSwervePositions.wobble1ToParkWeightSmooth, AutoSwervePositions.wobble1ToParkTurnSpeed, AutoSwervePositions.wobble1ToParkMaxVelocity);
     SwervePathGenerationConstants wobbleTwoToParkGenerationConstants = new SwervePathGenerationConstants(AutoSwervePositions.wobble2ToParkSpacing, AutoSwervePositions.wobble2ToParkWeightSmooth, AutoSwervePositions.wobble2ToParkTurnSpeed, AutoSwervePositions.wobble2ToParkMaxVelocity);
     SwervePathGenerationConstants wobbleThreeToParkGenerationConstants = new SwervePathGenerationConstants(AutoSwervePositions.wobble3ToParkSpacing, AutoSwervePositions.wobble3ToParkWeightSmooth, AutoSwervePositions.wobble3ToParkTurnSpeed, AutoSwervePositions.wobble3ToParkMaxVelocity);
-
+    */
 
     private void instantiateSwerveToTargets() {
         Position[] driveToShotLineSwervePositions = {scanningDistanceArray[STARTING_ALLIANCE][STARTING_POSITION], shootingPositionArray[STARTING_ALLIANCE]};
@@ -199,6 +204,7 @@ public class WHSAuto extends OpMode {
         instantiateSwerveToTargets();
         robot.setInitialCoordinate(startingCoordinateArray[STARTING_ALLIANCE]);
 
+        /*
         // intit swerveToTargets
         startToShotline = PathGenerator.generateSwervePath(AutoSwervePositions.getPath(AutoSwervePositions.startToShotlinePath), startToShotlineFollowerConstants, startToShotlinePathGenConstants);
         shotLineToWobbleOne = PathGenerator.generateSwervePath(AutoSwervePositions.getPath(AutoSwervePositions.shotlineToWobble1Path), shotlineToWobbleOneFollowerConstants, shotlineToWobbleOneGenerationConstants);
@@ -207,6 +213,7 @@ public class WHSAuto extends OpMode {
         wobbleOneToParkline = PathGenerator.generateSwervePath(AutoSwervePositions.getPath(AutoSwervePositions.wobble1ToParkPath), wobbleOneToParkFollowerConstants, wobbleOneToParkGenerationConstants);
         wobbleTwoToParkline = PathGenerator.generateSwervePath(AutoSwervePositions.getPath(AutoSwervePositions.wobble2ToParkPath), wobbleTwoToParkFollowerConstants, wobbleTwoToParkGenerationConstants);
         wobbleThreeToParkline = PathGenerator.generateSwervePath(AutoSwervePositions.getPath(AutoSwervePositions.wobble3ToParkPath), wobbleThreeToParkFollowerConstants, wobbleThreeToParkGenerationConstants);
+        */
     }
 
     @Override
@@ -302,10 +309,7 @@ public class WHSAuto extends OpMode {
                         break;
                     case 1:
                         subStateDesc = "Rotating to Launch Heading";
-                        motorPowers = driveToShotLineSwerve.calculateMotorPowers(robot.getCoordinate(), robot.drivetrain.getWheelVelocities(), true);
-                        if (!driveToShotLineSwerve.inProgress()) {
-                            subState++;
-                        }
+                        subState++;
                         break;
                     default:
                         break;
@@ -314,7 +318,7 @@ public class WHSAuto extends OpMode {
                 break;
             case DRIVE_TO_LAUNCH_POINT:
                 stateDesc = "Driving to the Launch Point";
-                robot.updatePath(startToShotline);
+                robot.updatePath(AutoSwervePositions.generateAutoPaths(AutoSwervePositions.startToShotline));
                 robot.swerveToTarget();
                 if (!robot.swerveInProgress()) {
                     advanceState();
@@ -375,11 +379,11 @@ public class WHSAuto extends OpMode {
                     case 0:
                         subStateDesc = "Move to Wobble Box";
                         if (wobblePosition == 0) {
-                            robot.updatePath(shotLineToWobbleOne);
+                            robot.updatePath(AutoSwervePositions.generateAutoPaths(AutoSwervePositions.shotLineToWobbleOne));
                         } else if (wobblePosition == 1) {
-                            robot.updatePath(shotlineToWobbleTwo);
+                            robot.updatePath(AutoSwervePositions.generateAutoPaths(AutoSwervePositions.shotlineToWobbleTwo));
                         } else {
-                            robot.updatePath(shotlineToWobbleThree);
+                            robot.updatePath(AutoSwervePositions.generateAutoPaths(AutoSwervePositions.shotlineToWobbleThree));
                         }
                         robot.swerveToTarget();
                         if (!robot.swerveInProgress()) {
@@ -413,11 +417,11 @@ public class WHSAuto extends OpMode {
             case PARK_ON_STARTING_LINE:
                 stateDesc = "Park";
                 if (wobblePosition == 0) {
-                    robot.updatePath(wobbleOneToParkline);
+                    robot.updatePath(AutoSwervePositions.generateAutoPaths(AutoSwervePositions.wobbleOneToParkline));
                 } else if (wobblePosition == 1) {
-                    robot.updatePath(wobbleTwoToParkline);
+                    robot.updatePath(AutoSwervePositions.generateAutoPaths(AutoSwervePositions.wobbleTwoToParkline));
                 } else {
-                    robot.updatePath(wobbleThreeToParkline);
+                    robot.updatePath(AutoSwervePositions.generateAutoPaths(AutoSwervePositions.wobbleThreeToParkline));
                 }
                 robot.swerveToTarget();
                 // make swerve to target
