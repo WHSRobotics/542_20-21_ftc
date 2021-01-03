@@ -2,8 +2,6 @@ package org.whitneyrobotics.ftc.teamcode.tests;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.whitneyrobotics.ftc.teamcode.lib.util.Toggler;
 import org.whitneyrobotics.ftc.teamcode.subsys.Wobble;
@@ -12,28 +10,33 @@ import org.whitneyrobotics.ftc.teamcode.subsys.Wobble;
 public class WobbleTest extends OpMode {
 
 
-    public Toggler handTog;
-    public Toggler armTog;
-
+    public Toggler armRotatorTog;
+    public Toggler clawTog;
+    public Toggler linearSlideTog;
     public Wobble testWobble;
+
 
 
     @Override
     public void init() {
         testWobble = new Wobble(hardwareMap);
-        handTog = new Toggler(100);
-        armTog = new Toggler(100);
+        armRotatorTog = new Toggler(100);
+        clawTog = new Toggler(100);
+        linearSlideTog = new Toggler(100);
     }
 
     @Override
     public void loop() {
-        handTog.changeState(gamepad1.dpad_up, gamepad1.dpad_down);
-        armTog.changeState(gamepad1.dpad_right, gamepad1.dpad_left);
+        armRotatorTog.changeState(gamepad1.dpad_up, gamepad1.dpad_down);
+        clawTog.changeState(gamepad1.dpad_right, gamepad1.dpad_left);
+        linearSlideTog.changeState(gamepad1.right_bumper, gamepad1.left_bumper);
 
-        testWobble.setHandPosition(handTog.currentState()/100);
-        testWobble.setArmTarget(armTog.currentState()*5);
+        testWobble.armRotator.setPosition(armRotatorTog.currentState()/100);
+        testWobble.trapDoor.setPosition(clawTog.currentState()/100);
+        testWobble.linearSlide.setTargetPosition(linearSlideTog.currentState()*5);
 
-        telemetry.addData("Hand Pos: ", handTog.currentState()/100);
-        telemetry.addData("Arm Targ: ", armTog.currentState()*5);
+        telemetry.addData("Arm Rotator Pos: ", armRotatorTog.currentState()/100);
+        telemetry.addData("Claw Pos: ", clawTog.currentState()/100);
+        telemetry.addData("Linear Slide Targ: ", linearSlideTog.currentState()*5);
     }
 }

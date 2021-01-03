@@ -14,7 +14,7 @@ public class OldWobble {
 
     private Toggler armToggler = new Toggler(4);
 
-    public Wobble(HardwareMap wobbleMap) {
+    public OldWobble(HardwareMap wobbleMap) {
         hand = wobbleMap.servo.get("clawServo");
         arm = (DcMotor) wobbleMap.dcMotor.get("armMotor");
     }
