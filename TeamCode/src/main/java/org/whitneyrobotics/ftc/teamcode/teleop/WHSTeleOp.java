@@ -58,11 +58,9 @@ public class WHSTeleOp extends OpMode {
         //Canister
         if (gamepad2.x || gamepad2.y) {
             robot.canister.operateLoader(gamepad2.x);
-            robot.canister.operatePlatform(gamepad2.y);
         }
         else {
             robot.canister.operateLoader(false);
-            robot.canister.operatePlatform(false);
         }
         //Drivetrain
         robot.estimateHeading();
@@ -125,19 +123,14 @@ public class WHSTeleOp extends OpMode {
         }
 
         //Wobble - currently redoing wobble
-        if(gamepad1.dpad_up){
-            robot.wobble.operateArm(gamepad1.dpad_up);
-        }
-        if (gamepad1.dpad_down){
-            robot.wobble.operateClaw(gamepad1.dpad_down);
+        if(gamepad1.dpad_up||gamepad1.dpad_down){
+            robot.wobble.operateWobble(gamepad1.dpad_up, gamepad1.dpad_down);
         }
         telemetry.addData("Intake State: ", intakeStatus);
         telemetry.addData("Intake Position",robot.intake.dropdownStatus);
         telemetry.addData("Canister Loader State: ", robot.canister.canisterState);
-        telemetry.addData("Canister Platform Orientation: ", robot.canister.platformState);
         telemetry.addData("Robot Current Position: ", robot.drivetrain.getAllEncoderPositions());
         telemetry.addData("Current Target: ", currentTargetWord);
-        telemetry.addData("Wobble Arm State: ", robot.wobble.armStateDescription);
-        telemetry.addData("Wobble Claw State: ", robot.wobble.clawStateDescription);
+        telemetry.addData("Wobble State: ", robot.wobble.wobbleDesc);
     }
 }

@@ -5,11 +5,6 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.whitneyrobotics.ftc.teamcode.lib.geometry.Coordinate;
 import org.whitneyrobotics.ftc.teamcode.lib.geometry.Position;
-import org.whitneyrobotics.ftc.teamcode.lib.purepursuit.FollowerConstants;
-import org.whitneyrobotics.ftc.teamcode.lib.purepursuit.PathGenerator;
-import org.whitneyrobotics.ftc.teamcode.lib.purepursuit.swervetotarget.SwervePath;
-import org.whitneyrobotics.ftc.teamcode.lib.purepursuit.swervetotarget.SwervePathGenerationConstants;
-import org.whitneyrobotics.ftc.teamcode.lib.purepursuit.swervetotarget.SwerveToTarget;
 import org.whitneyrobotics.ftc.teamcode.lib.util.SimpleTimer;
 import org.whitneyrobotics.ftc.teamcode.subsys.Intake;
 import org.whitneyrobotics.ftc.teamcode.subsys.Outtake;
@@ -154,24 +149,25 @@ public class WHSAuto extends OpMode {
 
     //timers
     SimpleTimer scannerTimer = new SimpleTimer(); // implement in SCAN STACK code
+    SimpleTimer wobbleExtendTimer = new SimpleTimer();
     SimpleTimer wobblePickupArmDownTimer = new SimpleTimer();
     SimpleTimer wobblePickupClawCloseTimer = new SimpleTimer();
-    SimpleTimer wobbleArmRaiseTimer = new SimpleTimer();
     SimpleTimer dropDownTimer = new SimpleTimer();
     SimpleTimer leftPowershotAimTimer = new SimpleTimer();
     SimpleTimer centerPowershotAimTimer = new SimpleTimer();
     SimpleTimer rightPowershotAimTimer = new SimpleTimer();
     SimpleTimer putDownWobble = new SimpleTimer();
+    SimpleTimer wobbleFoldTimer = new SimpleTimer();
     SimpleTimer stopAutoOP = new SimpleTimer();
     SimpleTimer resetDropdownTimer = new SimpleTimer();
 
     //test all of these
-    private final double WOBBLE_PICKUP_ARM_DOWN_DELAY = 1000.0; // optimize in testing
+    private final double WOBBLE_EXTEND_DELAY = 1000.0 ;// optimize in testing
     private final double WOBBLE_PICKUP_CLAW_CLOSE_DELAY = 1000.0; // optimize in testing
-    private final double WOBBLE_ARM_RAISE_DELAY = 1000.0;
     private final double DROPDOWN_DELAY = 1000.0; //test
     private final double POWERSHOT_AIM_DELAY = 1000.0;
     private final double PUT_DOWN_WOBBLE_DELAY = 1000.0; // optimize in testing
+    private final double WOBBLE_FOLD_DELAY = 1000.0;
     private final double STOP_AUTOOP_DELAY = 1000.0;
     private final double RESET_DROPDOWN_DELAY = 1000.0;
 
@@ -263,37 +259,40 @@ public class WHSAuto extends OpMode {
                 stateDesc = "Starting auto";
                 switch (subState) {
                     case 0:
-                        subStateDesc = "Lower Arm";
-                        wobblePickupArmDownTimer.set(WOBBLE_PICKUP_ARM_DOWN_DELAY);
-                        while (!wobblePickupArmDownTimer.isExpired()) {
-                            robot.wobble.setArmPosition(Wobble.ArmPositions.DOWN);
-                        }
+                        subStateDesc = "Set Wobble Extending Timer";
+                        wobbleExtendTimer.set(WOBBLE_EXTEND_DELAY);
                         subState++;
                         break;
                     case 1:
-                        subStateDesc = "Clinch Wobble";
-                        wobblePickupClawCloseTimer.set(WOBBLE_PICKUP_CLAW_CLOSE_DELAY);
-                        while (!wobblePickupClawCloseTimer.isExpired()) {
-                            robot.wobble.setClawPosition(Wobble.ClawPositions.CLOSE);
+                        subStateDesc = "Extend Wobble";
+                        while (!wobblePickupArmDownTimer.isExpired()) {
+                            robot.wobble.setLinearSlidePosition(Wobble.LinearSlidePositions.DOWN);
+                            robot.wobble.setArmRotratorPositions(Wobble.ArmRotatorPositions.OUT);
+                            robot.wobble.setClawPosition(Wobble.ClawPositions.OPEN);
                         }
                         subState++;
                         break;
                     case 2:
-                        subStateDesc = "Raise Arm";
-                        wobbleArmRaiseTimer.set(WOBBLE_ARM_RAISE_DELAY);
-                        while (!wobbleArmRaiseTimer.isExpired()) {
-                            robot.wobble.setArmPosition(Wobble.ArmPositions.UP);
+                        subStateDesc = "Set Wobble Claw Close Timer";
+                        wobblePickupClawCloseTimer.set(WOBBLE_PICKUP_CLAW_CLOSE_DELAY);
+                        subState++;
+
+                    case 3:
+                        subStateDesc = "Clinch Wobble";
+                        while (!wobblePickupClawCloseTimer.isExpired()) {
+                            robot.wobble.setClawPosition(Wobble.ClawPositions.CLOSE);
+                            robot.wobble.setArmRotratorPositions(Wobble.ArmRotatorPositions.IN);
                         }
                         subState++;
                         break;
-                    case 3:
+                    case 4:
                         subStateDesc = "Dropping Intake";
                         dropDownTimer.set(DROPDOWN_DELAY);
                         while (!dropDownTimer.isExpired()) {
                             robot.intake.setDropdown(Intake.DropdownPositions.DOWN);
                         }
                         break;
-                    case 4:
+                    case 5:
                         subStateDesc = "Exit";
                         advanceState();
                     default:
@@ -391,19 +390,30 @@ public class WHSAuto extends OpMode {
                         }
                         break;
                     case 1:
-                        subStateDesc = "Lower Arm and Realease";
+                        subStateDesc = "Set Wobble Put Down Timer";
                         putDownWobble.set(PUT_DOWN_WOBBLE_DELAY);
+                    case 2:
+                        subStateDesc = "Lower Arm and Release";
                         if (!putDownWobble.isExpired()) {
-                            robot.wobble.setArmPosition(Wobble.ArmPositions.DOWN);
+                            robot.wobble.setArmRotratorPositions(Wobble.ArmRotatorPositions.OUT);
                             robot.wobble.setClawPosition(Wobble.ClawPositions.OPEN);
                         }
                         subState++;
                         break;
-                    case 2:
-                        subStateDesc = "Raise Arm";
-                        robot.wobble.setArmPosition(Wobble.ArmPositions.FOLDED);
+                    case 3:
+                        subStateDesc = "Set Wobble Fold Timer";
+                        wobbleFoldTimer.set(WOBBLE_FOLD_DELAY);
+                        subState++;
                         break;
-
+                    case 4:
+                        subStateDesc = "Fold Wobble";
+                        if (!wobbleFoldTimer.isExpired()){
+                            robot.wobble.setArmRotratorPositions(Wobble.ArmRotatorPositions.FOLDED);
+                            robot.wobble.setClawPosition(Wobble.ClawPositions.CLOSE);
+                            robot.wobble.setLinearSlidePosition(Wobble.LinearSlidePositions.DOWN);
+                        }
+                        subState++;
+                        break;
                     default:
                         break;
                         /*case "score":

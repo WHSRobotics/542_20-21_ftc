@@ -8,29 +8,21 @@ import org.whitneyrobotics.ftc.teamcode.lib.util.Toggler;
 
 public class Canister {
     private Servo loader;
-    private Servo platform;
     private Toggler loaderToggler = new Toggler(2);
-    public Toggler platformToggler = new Toggler(2);
 
-    public enum PlatformPositions {
-        FLYWHEEL, WOBBLE
-    }
 
     public enum LoaderPositions {
         REST, PUSH
     }
 
     public double[] LOADER_POSITIONS = {0, 0.90}; // rest, push
-    public double[] PLATFORM_POSITIONS = {0, 0.90}; // flywheel, wobble
 
     public SimpleTimer loadTimer = new SimpleTimer();
 
     public String canisterState;
-    public String platformState;
 
     public Canister(HardwareMap canisterMap) {
         loader = canisterMap.servo.get("loaderServo");
-        platform = canisterMap.servo.get("platform");
     }
 
     public void operateLoader(boolean gamepadInputLoader) {
@@ -45,17 +37,7 @@ public class Canister {
         }
     }
 
-    public void operatePlatform(boolean gamepadInputPlatform ){
-        platformToggler.changeState(gamepadInputPlatform);
-        if (platformToggler.currentState()==0){
-            platformState = "Flywheel";
-            platform.setPosition(PLATFORM_POSITIONS[PlatformPositions.FLYWHEEL.ordinal()]);
-        }
-        else {
-            platformState = "Wobble";
-            platform.setPosition(PLATFORM_POSITIONS[PlatformPositions.WOBBLE.ordinal()]);
-        }
-    }
+
 
     public void loadRing(){
         loadTimer.set(500);
@@ -67,5 +49,4 @@ public class Canister {
     }
 
     public void setLoaderPosition(double position){loader.setPosition(position);}
-    public void setPlatformPosition(double position){platform.setPosition(position);}
 }

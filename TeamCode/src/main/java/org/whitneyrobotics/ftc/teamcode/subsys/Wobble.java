@@ -14,7 +14,7 @@ public class Wobble {
     public Servo trapDoor;
     public DcMotor linearSlide;
 
-    public Toggler wobbleTog = new Toggler(5);
+    public Toggler wobbleTog = new Toggler(7);
 
     public SimpleTimer delayTimer = new SimpleTimer();
 
@@ -70,66 +70,36 @@ public class Wobble {
         wobbleTog.changeState(stateFwd, stateBkwd);
         switch (wobbleTog.currentState()){
             case 0:
-                wobbleDesc = "Folded";
+                wobbleDesc = "Folded/Take Intake Feed";
                 setArmRotratorPositions(ArmRotatorPositions.FOLDED);
                 setClawPosition(ClawPositions.CLOSE);
                 setLinearSlidePosition(LinearSlidePositions.DOWN);
 
             case 1:
-                wobbleDesc = "Open";
+                wobbleDesc = "Take Stuff";
                 setArmRotratorPositions(ArmRotatorPositions.OUT);
-                setLinearSlidePosition(LinearSlidePositions.MEDIUM);
                 setClawPosition(ClawPositions.OPEN);
+                setLinearSlidePosition(LinearSlidePositions.MEDIUM);
 
             case 2:
-                wobbleDesc = "Close";
+                wobbleDesc = "Carry Stuff";
                 setArmRotratorPositions(ArmRotatorPositions.IN);
                 setClawPosition(ClawPositions.CLOSE);
-                setLinearSlidePosition(LinearSlidePositions.DOWN);
+                setLinearSlidePosition(LinearSlidePositions.MEDIUM);
 
             case 3:
-                wobbleDesc = "Take Intake Feed";
-                setArmRotratorPositions(ArmRotatorPositions.FOLDED);
-                setClawPosition(ClawPositions.CLOSE);
-                setLinearSlidePosition(LinearSlidePositions.DOWN);
-
+                wobbleDesc = "Are you sure you want to lift over wall?";
             case 4:
-                wobbleDesc = "Lift Over Wall";
-                int liftState = 0;
-                switch (liftState) {
-                    case 0:
-                        delayTimer.set(1000);
-                        liftState++;
-                        break;
-                    case 1:
-                        if (!delayTimer.isExpired()) {
-                            setLinearSlidePosition(LinearSlidePositions.UP);
-                            liftState++;
-                        }
-                        break;
-                    case 2:
-                        delayTimer.set(750);
-                        liftState++;
-                        break;
-                    case 3:
-                        if (!delayTimer.isExpired()){
-                            setArmRotratorPositions(ArmRotatorPositions.OUT);
-                            liftState++;
-                        }
-                        break;
-                    case 4:
-                        delayTimer.set(500);
-                        liftState++;
-                        break;
-                    case 5:
-                        if (!delayTimer.isExpired()) {
-                            setClawPosition(ClawPositions.OPEN);
-                        }
-                        break;
-                    default:
-                        break;
-                }
+                wobbleDesc = "Raise to Wall Level";
+                setLinearSlidePosition(LinearSlidePositions.UP);
 
+            case 5:
+                wobbleDesc = "Extend Out Over Wall";
+                setArmRotratorPositions(ArmRotatorPositions.OUT);
+
+            case 6:
+                wobbleDesc = "Release";
+                setClawPosition(ClawPositions.OPEN);
             default:
                 break;
         }
