@@ -1,28 +1,32 @@
 package org.whitneyrobotics.ftc.teamcode.subsys;
 
-import android.widget.Switch;
-
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.whitneyrobotics.ftc.teamcode.lib.control.ControlConstants;
+import org.whitneyrobotics.ftc.teamcode.lib.control.PIDController;
+import org.whitneyrobotics.ftc.teamcode.lib.util.Functions;
 import org.whitneyrobotics.ftc.teamcode.lib.util.SimpleTimer;
 import org.whitneyrobotics.ftc.teamcode.lib.util.Toggler;
 
 public class Wobble {
+
+    ControlConstants linearSlideConstants = new ControlConstants(1, 2, 3); //test for these later
+    private PIDController linearSlideController = new PIDController(linearSlideConstants);
+
+    double minLinearSlidePower = 0.2; //test for this
+
+    public String wobbleDesc;
+
     public Servo armRotator;
     public Servo trapDoor;
     public DcMotor linearSlide;
 
     public Toggler wobbleTog = new Toggler(7);
+    public Toggler linearSlidePIDStateTog = new Toggler(2);
 
     public SimpleTimer delayTimer = new SimpleTimer();
-
-    public Wobble(HardwareMap wobbleMap) {
-        armRotator = wobbleMap.servo.get("clawServo");
-        trapDoor = wobbleMap.servo.get("trapDoorServo");
-        linearSlide = (DcMotor) wobbleMap.dcMotor.get("armMotor");
-    }
 
     public enum ArmRotatorPositions{
         FOLDED, IN, OUT
@@ -39,6 +43,12 @@ public class Wobble {
     public double[] CLAW_POSITIONS = {0, 0.75}; // open, close;test
     public int[] LINEAR_SLIDE_POSITIONS = {0, 1, 2}; //down, medium, up; test
 
+    public Wobble(HardwareMap wobbleMap) {
+        armRotator = wobbleMap.servo.get("clawServo");
+        trapDoor = wobbleMap.servo.get("trapDoorServo");
+        linearSlide = (DcMotor) wobbleMap.dcMotor.get("armMotor");
+    }
+
     /*public String clawStateDescription;
     public void operateClaw(boolean gamepadInput) {
         clawToggler.changeState(gamepadInput);
@@ -51,7 +61,6 @@ public class Wobble {
         }
     }*/
 
-
     public void setArmRotratorPositions(ArmRotatorPositions armRotatorPosition){
         armRotator.setPosition(ARM_ROTATOR_POSITIONS[armRotatorPosition.ordinal()]);
     }
@@ -61,10 +70,19 @@ public class Wobble {
     }
 
     public void setLinearSlidePosition(LinearSlidePositions linearSlidePosition){
-        linearSlide.setTargetPosition(LINEAR_SLIDE_POSITIONS[linearSlidePosition.ordinal()]);
-    }
+        double error = LINEAR_SLIDE_POSITIONS[linearSlidePosition.ordinal()] - linearSlide.getCurrentPosition();
+        if (linearSlidePIDStateTog.currentState() == 0){
+            linearSlideController.init(error);
+        }
 
-    public String wobbleDesc;
+        linearSlideController.setConstants(linearSlideConstants);
+        linearSlideController.calculate(error);
+
+        double linearSlidePower = Functions.map(linearSlideController.getOutput(),0, LINEAR_SLIDE_POSITIONS[linearSlidePosition.UP.ordinal()], minLinearSlidePower,1);
+
+        linearSlide.setTargetPosition(LINEAR_SLIDE_POSITIONS[linearSlidePosition.ordinal()]);
+        linearSlide.setPower(linearSlidePower);
+    }
 
     public void operateWobble(boolean stateFwd, boolean stateBkwd){
         wobbleTog.changeState(stateFwd, stateBkwd);
