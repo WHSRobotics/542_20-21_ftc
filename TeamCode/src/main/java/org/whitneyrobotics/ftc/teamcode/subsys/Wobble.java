@@ -73,6 +73,7 @@ public class Wobble {
         double error = LINEAR_SLIDE_POSITIONS[linearSlidePosition.ordinal()] - linearSlide.getCurrentPosition();
         if (linearSlidePIDStateTog.currentState() == 0){
             linearSlideController.init(error);
+            linearSlidePIDStateTog.changeState(true);
         }
 
         linearSlideController.setConstants(linearSlideConstants);
@@ -82,6 +83,10 @@ public class Wobble {
 
         linearSlide.setTargetPosition(LINEAR_SLIDE_POSITIONS[linearSlidePosition.ordinal()]);
         linearSlide.setPower(linearSlidePower);
+
+        if (linearSlide.getCurrentPosition() == LINEAR_SLIDE_POSITIONS[linearSlidePosition.ordinal()]){
+            linearSlidePIDStateTog.changeState(true);
+        }
     }
 
     public void operateWobble(boolean stateFwd, boolean stateBkwd){
