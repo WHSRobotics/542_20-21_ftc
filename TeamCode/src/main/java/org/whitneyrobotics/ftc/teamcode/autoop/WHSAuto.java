@@ -286,13 +286,16 @@ public class WHSAuto extends OpMode {
                         subState++;
                         break;
                     case 4:
-                        subStateDesc = "Dropping Intake";
+                        subStateDesc = "Set drop Intake Timer";
                         dropDownTimer.set(DROPDOWN_DELAY);
+
+                    case 5:
+                        subStateDesc = "Dropping Intake";
                         while (!dropDownTimer.isExpired()) {
                             robot.intake.setDropdown(Intake.DropdownPositions.DOWN);
                         }
                         break;
-                    case 5:
+                    case 6:
                         subStateDesc = "Exit";
                         advanceState();
                     default:

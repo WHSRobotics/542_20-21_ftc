@@ -23,10 +23,10 @@ public class Wobble {
     public Servo trapDoor;
     public DcMotor linearSlide;
 
-    public Toggler wobbleTog = new Toggler(7);
+    public Toggler wobbleTog = new Toggler(6);
     public Toggler linearSlidePIDStateTog = new Toggler(2);
 
-    public SimpleTimer delayTimer = new SimpleTimer();
+   // public SimpleTimer delayTimer = new SimpleTimer();
 
     public enum ArmRotatorPositions{
         FOLDED, IN, OUT
@@ -111,16 +111,14 @@ public class Wobble {
                 setLinearSlidePosition(LinearSlidePositions.MEDIUM);
 
             case 3:
-                wobbleDesc = "Are you sure you want to lift over wall?";
-            case 4:
                 wobbleDesc = "Raise to Wall Level";
                 setLinearSlidePosition(LinearSlidePositions.UP);
 
-            case 5:
+            case 4:
                 wobbleDesc = "Extend Out Over Wall";
                 setArmRotratorPositions(ArmRotatorPositions.OUT);
 
-            case 6:
+            case 5:
                 wobbleDesc = "Release";
                 setClawPosition(ClawPositions.OPEN);
             default:
