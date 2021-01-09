@@ -330,43 +330,67 @@ public class WHSAuto extends OpMode {
                 stateDesc = "Ready to Launch";
                 switch (subState) {
                     case 0:
-                        subStateDesc = "Load Ring and Aim Left Powershot";
+                        subStateDesc = "Load Ring Left";
                         robot.canister.loadRing();
+                        subState++;
+                        break;
+                    case 1:
+                        subStateDesc = "Set Left Aim Timer";
                         leftPowershotAimTimer.set(POWERSHOT_AIM_DELAY);
+                        subState++;
+                        break;
+                    case 2:
+                        subStateDesc = "Aim Left";
                         if (!leftPowershotAimTimer.isExpired()) {
                             robot.rotateToTarget(robot.outtake.calculateLaunchHeading(powershot1, robot.getCoordinate()), false);
                         }
                         subState++;
                         break;
-                    case 1:
+                    case 3:
                         subStateDesc = "Shoot Left Powershot";
                         robot.outtake.launchToTarget(Outtake.GoalPositions.LEFT_POWER_SHOT);
                         subState++;
                         break;
-                    case 2:
-                        subStateDesc = "Load Ring and Aim Center Powershot";
+                    case 4:
+                        subStateDesc = "Load Ring Center";
                         robot.canister.loadRing();
+                        subState++;
+                        break;
+                    case 5:
+                        subStateDesc = "Aim Center Timer Set";
                         centerPowershotAimTimer.set(POWERSHOT_AIM_DELAY);
+                        subState++;
+                        break;
+                    case 6:
+                        subStateDesc = "Aim Center";
                         if (!centerPowershotAimTimer.isExpired()) {
                             robot.rotateToTarget(robot.outtake.calculateLaunchHeading(powershot2, robot.getCoordinate()), false);
                         }
                         subState++;
                         break;
-                    case 3:
+                    case 7:
                         subStateDesc = "Shoot Center Powershot";
                         robot.outtake.launchToTarget(Outtake.GoalPositions.CENTER_POWER_SHOT);
                         subState++;
                         break;
-                    case 4:
-                        subStateDesc = "Load Ring and Aim Right Powershot";
+                    case 8:
+                        subStateDesc = "Load Ring Right Powershot";
                         robot.canister.loadRing();
+                        subState++;
+                        break;
+                    case 9:
+                        subStateDesc = "Set Aim Powershot Right Timer ";
                         rightPowershotAimTimer.set(POWERSHOT_AIM_DELAY);
+                        subState++;
+                        break;
+                    case 10:
+                        subStateDesc = "Aim Right Powershot";
                         if (!rightPowershotAimTimer.isExpired()) {
                             robot.rotateToTarget(robot.outtake.calculateLaunchHeading(powershot3, robot.getCoordinate()), false);
                         }
                         subState++;
                         break;
-                    case 5:
+                    case 11:
                         subStateDesc = "Shoot Right Powershot";
                         robot.outtake.launchToTarget(Outtake.GoalPositions.RIGHT_POWER_SHOT);
                         break;
@@ -509,19 +533,24 @@ public class WHSAuto extends OpMode {
                         break;
                 }*/
                 if (!robot.swerveInProgress()) {
-                    stopAutoOP.set(STOP_AUTOOP_DELAY);
-                    if (!stopAutoOP.isExpired()) {
-                        advanceState();
-                    }
+                    advanceState();
                 }
                 break;
             case END:
                 stateDesc = "Ending Auto";
-                resetDropdownTimer.set(RESET_DROPDOWN_DELAY);
-                while (!resetDropdownTimer.isExpired()) {
-                    robot.intake.setDropdown(Intake.DropdownPositions.UP);
+                switch (subState){
+                    case 0:
+                        subStateDesc = "Set Reset Dropdown Timer";
+                        resetDropdownTimer.set(RESET_DROPDOWN_DELAY);
+                    case 1:
+                        subStateDesc = "Reset Dropdown";
+                        while (!resetDropdownTimer.isExpired()) {
+                            robot.intake.setDropdown(Intake.DropdownPositions.UP);
+                        }
+                        break;
+                    default:
+                        break;
                 }
-                break;
             default:
                 break;
         }

@@ -90,11 +90,24 @@ public class Outtake {
     }*/
     public void launchToTarget(GoalPositions goal){
         // launch at goal
-        launchTimer.set(LAUNCH_TIME);
-        while (!launchTimer.isExpired()){
-            operate(goal);
+        int launchState = 0;
+        switch (launchState){
+            case 0:
+                launchTimer.set(LAUNCH_TIME);
+                launchState++;
+                break;
+            case 1:
+                if (!launchTimer.isExpired()){
+                    operate(goal);
+                }
+                else {
+                    setLauncherPower(0);
+                }
+                break;
+            default:
+                break;
         }
-        setLauncherPower(0);
+
     }
 
     public void setLauncherPower(double power){
