@@ -16,7 +16,7 @@ public class Intake {
 
     private Toggler dropdownToggler = new Toggler(2);
 
-    public  double INTAKE_POWER = 0.45; //change to final after testing
+    public double INTAKE_POWER = 0.45; //change to final after testing
 
     public String dropdownStatus;
     public String intakeStateDescription;
@@ -25,7 +25,7 @@ public class Intake {
         UP, DOWN
     }
 
-    public double[] dropdownPositions ={0, 0.5};//placeholders test pls
+    public double[] dropdownPositions = {0, 0.5};//placeholders test pls
 
     public Intake(HardwareMap intakeMap) {
         wheelIntake = intakeMap.get(DcMotorEx.class, "Wheel Intake");
@@ -44,12 +44,10 @@ public class Intake {
         if (gamepadInput2) {
             wheelIntake.setPower(-INTAKE_POWER);
             intakeStateDescription = "Reverse Intake";
-        }
-        else if (wheelToggler.currentState() == 1) {
+        } else if (wheelToggler.currentState() == 1) {
             wheelIntake.setPower(INTAKE_POWER);
             intakeStateDescription = "Forward Intake";
-        }
-        else {
+        } else {
             wheelIntake.setPower(0.0);
             intakeStateDescription = "Intake Off";
         }
@@ -61,25 +59,24 @@ public class Intake {
     }*/
 
     // For use in Auto
-    public void setDropdown (DropdownPositions dropdownPosition){
+    public void setDropdown(DropdownPositions dropdownPosition) {
         dropdown.setPosition(dropdownPositions[dropdownPosition.ordinal()]);
     }
+
     //TeleOp
-    public void manualDropdown(boolean dropdownInput){
+    public void manualDropdown(boolean dropdownInput) {
         dropdownToggler.changeState(dropdownInput);
-        if (dropdownToggler.currentState()==0){
+        if (dropdownToggler.currentState() == 0) {
             dropdown.setPosition(dropdownPositions[DropdownPositions.UP.ordinal()]);
             dropdownStatus = "Intake Up";
-        }
-        else {
+        } else {
             dropdown.setPosition(dropdownPositions[DropdownPositions.DOWN.ordinal()]);
             dropdownStatus = "Intake Down";
         }
     }
 
     //testing
-    public void setIntakePower (double power){
-        wheelIntake.setPower(power);
-    }
-    public void setDropdownPosition(double position){dropdown.setPosition(position);}
+    public void setIntakePower(double power) { wheelIntake.setPower(power); }
+
+    public void setDropdownPosition(double position) { dropdown.setPosition(position); }
 }

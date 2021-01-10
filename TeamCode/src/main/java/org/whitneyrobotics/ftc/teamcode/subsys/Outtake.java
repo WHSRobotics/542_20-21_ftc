@@ -25,12 +25,10 @@ public class Outtake {
     public final double HIGH_GOAL_HEIGHT = 901.7;*/
 
 
-
-
     public PIDFController outtakeController;
 
 
-    public enum GoalPositions{
+    public enum GoalPositions {
         LEFT_POWER_SHOT, CENTER_POWER_SHOT, RIGHT_POWER_SHOT, LOW_BIN, MEDIUM_BIN, HIGH_BIN
     }
     /*public enum LaunchAngles{
@@ -42,17 +40,16 @@ public class Outtake {
     public final Position Pow2 = Target_Positions[GoalPositions.POWER_SHOT_TARGET_TWO.ordinal()];
     public final Position Pow3 = Target_Positions[GoalPositions.POWER_SHOT_TARGET_THREE.ordinal()];
     public final Position Bin = Target_Positions[GoalPositions.BIN_GOALS.ordinal()];*/
-    public double calculateLaunchHeading(Position target, Coordinate robotPos){
+    public double calculateLaunchHeading(Position target, Coordinate robotPos) {
         // calculates heading to launch at target
         double headingToTarget;
         Position triangle = new Position(robotPos.getX(), target.getY());
-        double robotToTriangle = Math.abs(triangle.getY()- robotPos.getY());
-        double targetToTriangle = Math.abs(triangle.getX()- target.getX());
-        double targetAngle = Math.atan(targetToTriangle/robotToTriangle);
-        if (robotPos.getY()>target.getY()){
+        double robotToTriangle = Math.abs(triangle.getY() - robotPos.getY());
+        double targetToTriangle = Math.abs(triangle.getX() - target.getX());
+        double targetAngle = Math.atan(targetToTriangle / robotToTriangle);
+        if (robotPos.getY() > target.getY()) {
             headingToTarget = targetAngle - 90;
-        }
-        else{
+        } else {
             headingToTarget = 90 - targetAngle;
         }
         return headingToTarget;
@@ -62,45 +59,45 @@ public class Outtake {
     public double[] flapServoPositions = {0.0, 0.25, 0.45, 0.5, 0.65, 0.75}; //test
     public double[] targetMotorVelocities = {0.0, 0.33, 0.44, 0.66, 0.77, 1.0}; //test to get to 7.07 m/s
 
-    public Outtake(HardwareMap outtakeMap){
+    public Outtake(HardwareMap outtakeMap) {
         flywheel = outtakeMap.get(DcMotorEx.class, "flywheel");
         flap = outtakeMap.servo.get("flapServo");
         outtakeController = new PIDFController(RobotConstants.FLYWHEEL_CONSTANTS);
     }
 
-    public void operate(GoalPositions goalPosition){
+    public void operate(GoalPositions goalPosition) {
         operateFlywheel(goalPosition);
         setFlapServoPositions(goalPosition);
     }
 
-    public void setFlapServoPositions(GoalPositions goalPosition){
+    public void setFlapServoPositions(GoalPositions goalPosition) {
         flap.setPosition(flapServoPositions[goalPosition.ordinal()]);
-   }
+    }
 
-   public void operateFlywheel(GoalPositions goalPosition){
+    public void operateFlywheel(GoalPositions goalPosition) {
         double currentVelocity = flywheel.getVelocity();
         double targetVelocity = targetMotorVelocities[goalPosition.ordinal()];
         double error = targetVelocity - currentVelocity;
 
         outtakeController.calculate(error, 10, currentVelocity);
         flywheel.setPower(outtakeController.getOutput());
-   }
-   /* public void setLaunchAngle(OldOuttake.LaunchAngles launchAngle){
-        flap.setPosition(FLAP_POSITIONS[launchAngle.ordinal()]);
-    }*/
-    public void launchToTarget(GoalPositions goal){
+    }
+
+    /* public void setLaunchAngle(OldOuttake.LaunchAngles launchAngle){
+         flap.setPosition(FLAP_POSITIONS[launchAngle.ordinal()]);
+     }*/
+    public void launchToTarget(GoalPositions goal) {
         // launch at goal
         int launchState = 0;
-        switch (launchState){
+        switch (launchState) {
             case 0:
                 launchTimer.set(LAUNCH_TIME);
                 launchState++;
                 break;
             case 1:
-                if (!launchTimer.isExpired()){
+                if (!launchTimer.isExpired()) {
                     operate(goal);
-                }
-                else {
+                } else {
                     setLauncherPower(0);
                 }
                 break;
@@ -110,11 +107,8 @@ public class Outtake {
 
     }
 
-    public void setLauncherPower(double power){
-        flywheel.setPower(power);
-    }
-    public void setFlapPosition (double position){
-        flap.setPosition(position);
-    }
+    public void setLauncherPower(double power) { flywheel.setPower(power); }
+
+    public void setFlapPosition(double position) { flap.setPosition(position); }
 
 }
