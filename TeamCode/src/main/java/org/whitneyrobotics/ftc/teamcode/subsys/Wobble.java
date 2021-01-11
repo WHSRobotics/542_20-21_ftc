@@ -7,7 +7,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.whitneyrobotics.ftc.teamcode.lib.control.ControlConstants;
 import org.whitneyrobotics.ftc.teamcode.lib.control.PIDController;
 import org.whitneyrobotics.ftc.teamcode.lib.util.Functions;
-import org.whitneyrobotics.ftc.teamcode.lib.util.SimpleTimer;
 import org.whitneyrobotics.ftc.teamcode.lib.util.Toggler;
 
 public class Wobble {
@@ -15,27 +14,28 @@ public class Wobble {
     ControlConstants linearSlideConstants = new ControlConstants(1, 2, 3); //test for these later
     private PIDController linearSlideController = new PIDController(linearSlideConstants);
 
-    double minLinearSlidePower = 0.2; //test for this
+    private double minLinearSlidePower = 0.2; //test for this
 
     public String wobbleDesc;
 
-    public Servo armRotator;
-    public Servo trapDoor;
-    public DcMotor linearSlide;
+    private Servo armRotator;
+    private Servo trapDoor;
+    private DcMotor wobbleMotor;
 
-    public Toggler wobbleTog = new Toggler(6);
-    public Toggler linearSlidePIDStateTog = new Toggler(2);
+    private Toggler wobbleTog = new Toggler(6);
+    private Toggler linearSlidePIDStateTog = new Toggler(2);
 
-   // public SimpleTimer delayTimer = new SimpleTimer();
+    // public SimpleTimer delayTimer = new SimpleTimer();
 
-    public enum ArmRotatorPositions{
+    public enum ArmRotatorPositions {
         FOLDED, IN, OUT
     }
 
     public enum ClawPositions {
         OPEN, CLOSE
     }
-    public  enum LinearSlidePositions{
+
+    public enum LinearSlidePositions {
         DOWN, MEDIUM, UP
     }
 
@@ -46,7 +46,7 @@ public class Wobble {
     public Wobble(HardwareMap wobbleMap) {
         armRotator = wobbleMap.servo.get("clawServo");
         trapDoor = wobbleMap.servo.get("trapDoorServo");
-        linearSlide = (DcMotor) wobbleMap.dcMotor.get("armMotor");
+        wobbleMotor = wobbleMap.dcMotor.get("armMotor");
     }
 
     /*public String clawStateDescription;
@@ -61,65 +61,68 @@ public class Wobble {
         }
     }*/
 
-    public void setArmRotratorPositions(ArmRotatorPositions armRotatorPosition){
+    public void setArmRotratorPositions(ArmRotatorPositions armRotatorPosition) {
         armRotator.setPosition(ARM_ROTATOR_POSITIONS[armRotatorPosition.ordinal()]);
     }
 
-    public void setClawPosition(ClawPositions clawPosition){
+    public void setClawPosition(ClawPositions clawPosition) {
         trapDoor.setPosition(CLAW_POSITIONS[clawPosition.ordinal()]);
     }
 
-    public void setLinearSlidePosition(LinearSlidePositions linearSlidePosition){
-        double error = LINEAR_SLIDE_POSITIONS[linearSlidePosition.ordinal()] - linearSlide.getCurrentPosition();
-        if (linearSlidePIDStateTog.currentState() == 0){
-            linearSlideController.init(error);
-            linearSlidePIDStateTog.changeState(true);
-        }
+    public void setLinearSlidePosition(LinearSlidePositions linearSlidePosition) {
+        int linearSlideState = 0;
+        double error = LINEAR_SLIDE_POSITIONS[linearSlidePosition.ordinal()] - wobbleMotor.getCurrentPosition();
 
-        linearSlideController.setConstants(linearSlideConstants);
-        linearSlideController.calculate(error);
+        switch (linearSlideState){
+            case 0:
+                wobbleMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                linearSlideController.init(error);
+                linearSlideState++;
+                break;
+            case 1:
+                linearSlideController.setConstants(linearSlideConstants);
+                linearSlideController.calculate(error);
 
-        double linearSlidePower = Functions.map(linearSlideController.getOutput(),0, LINEAR_SLIDE_POSITIONS[linearSlidePosition.UP.ordinal()], minLinearSlidePower,1);
+                double linearSlidePower = Functions.map(linearSlideController.getOutput(), 0, LINEAR_SLIDE_POSITIONS[linearSlidePosition.UP.ordinal()], minLinearSlidePower, 1);
 
-        linearSlide.setTargetPosition(LINEAR_SLIDE_POSITIONS[linearSlidePosition.ordinal()]);
-        linearSlide.setPower(linearSlidePower);
-
-        if (linearSlide.getCurrentPosition() == LINEAR_SLIDE_POSITIONS[linearSlidePosition.ordinal()]){
-            linearSlidePIDStateTog.changeState(true);
+                wobbleMotor.setPower(linearSlidePower);
+                break;
+            default:
+                break;
         }
     }
 
-    public void operateWobble(boolean stateFwd, boolean stateBkwd){
+    public void operateWobble(boolean stateFwd, boolean stateBkwd) {
         wobbleTog.changeState(stateFwd, stateBkwd);
-        switch (wobbleTog.currentState()){
+        switch (wobbleTog.currentState()) {
             case 0:
-                wobbleDesc = "Folded/Take Intake Feed";
+                wobbleDesc = "Folded/Take Intake Feed"; // picking up rings
                 setArmRotratorPositions(ArmRotatorPositions.FOLDED);
                 setClawPosition(ClawPositions.CLOSE);
                 setLinearSlidePosition(LinearSlidePositions.DOWN);
 
             case 1:
-                wobbleDesc = "Take Stuff";
+                wobbleDesc = "Take Stuff"; // dropping rings on Wobble Goal
                 setArmRotratorPositions(ArmRotatorPositions.OUT);
                 setClawPosition(ClawPositions.OPEN);
                 setLinearSlidePosition(LinearSlidePositions.MEDIUM);
 
             case 2:
-                wobbleDesc = "Carry Stuff";
+                wobbleDesc = "Carry Stuff"; // grasp Wobble Goal, holding claw near robot while moving
                 setArmRotratorPositions(ArmRotatorPositions.IN);
                 setClawPosition(ClawPositions.CLOSE);
                 setLinearSlidePosition(LinearSlidePositions.MEDIUM);
 
             case 3:
-                wobbleDesc = "Raise to Wall Level";
+                wobbleDesc = "Raise to Wall Level"; // raise up to wall height
                 setLinearSlidePosition(LinearSlidePositions.UP);
 
             case 4:
-                wobbleDesc = "Extend Out Over Wall";
+                wobbleDesc = "Extend Out Over Wall"; // extend arm to outside wall
                 setArmRotratorPositions(ArmRotatorPositions.OUT);
 
             case 5:
-                wobbleDesc = "Release";
+                wobbleDesc = "Release"; // release Wobble Goal outside wall
                 setClawPosition(ClawPositions.OPEN);
             default:
                 break;

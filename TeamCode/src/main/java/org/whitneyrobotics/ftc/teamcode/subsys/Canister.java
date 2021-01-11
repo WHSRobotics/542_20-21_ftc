@@ -38,16 +38,15 @@ public class Canister {
     }
 
 
-
-    public void loadRing(){
+    public void loadRing() {
         int loadState = 0;
-        switch (loadState){
+        switch (loadState) {
             case 0:
                 loadTimer.set(500);
                 loadState++;
                 break;
             case 1:
-                if (!loadTimer.isExpired()){
+                if (!loadTimer.isExpired()) {
                     loader.setPosition(LOADER_POSITIONS[LoaderPositions.PUSH.ordinal()]);
                 } else {
                     loader.setPosition(LOADER_POSITIONS[LoaderPositions.REST.ordinal()]);
@@ -58,5 +57,5 @@ public class Canister {
         }
     }
 
-    public void setLoaderPosition(double position){loader.setPosition(position);}
+    public void setLoaderPosition(double position) { loader.setPosition(position); }
 }
