@@ -12,7 +12,7 @@ public class WobbleTest extends OpMode {
 
     public Toggler armRotatorTog;
     public Toggler clawTog;
-    public Toggler linearSlideTog;
+    public Toggler wobbleMotorTog;
     public Wobble testWobble;
 
 
@@ -22,21 +22,21 @@ public class WobbleTest extends OpMode {
         testWobble = new Wobble(hardwareMap);
         armRotatorTog = new Toggler(100);
         clawTog = new Toggler(100);
-        linearSlideTog = new Toggler(100);
+        wobbleMotorTog = new Toggler(100);
     }
 
     @Override
     public void loop() {
         armRotatorTog.changeState(gamepad1.dpad_up, gamepad1.dpad_down);
         clawTog.changeState(gamepad1.dpad_right, gamepad1.dpad_left);
-        linearSlideTog.changeState(gamepad1.right_bumper, gamepad1.left_bumper);
+        wobbleMotorTog.changeState(gamepad1.right_bumper, gamepad1.left_bumper);
 
         testWobble.armRotator.setPosition(armRotatorTog.currentState()/100);
         testWobble.trapDoor.setPosition(clawTog.currentState()/100);
-        testWobble.linearSlide.setTargetPosition(linearSlideTog.currentState()*5);
+        testWobble.wobbleMotor.setTargetPosition(wobbleMotorTog.currentState()*5);
 
         telemetry.addData("Arm Rotator Pos: ", armRotatorTog.currentState()/100);
         telemetry.addData("Claw Pos: ", clawTog.currentState()/100);
-        telemetry.addData("Linear Slide Targ: ", linearSlideTog.currentState()*5);
+        telemetry.addData("Linear Slide Targ: ", wobbleMotorTog.currentState()*5);
     }
 }

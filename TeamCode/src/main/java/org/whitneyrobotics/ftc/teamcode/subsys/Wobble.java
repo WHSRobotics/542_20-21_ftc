@@ -1,26 +1,28 @@
 package org.whitneyrobotics.ftc.teamcode.subsys;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.whitneyrobotics.ftc.teamcode.lib.control.ControlConstants;
 import org.whitneyrobotics.ftc.teamcode.lib.control.PIDController;
+import org.whitneyrobotics.ftc.teamcode.lib.control.PIDFController;
 import org.whitneyrobotics.ftc.teamcode.lib.util.Functions;
 import org.whitneyrobotics.ftc.teamcode.lib.util.Toggler;
 
 public class Wobble {
 
     ControlConstants linearSlideConstants = new ControlConstants(1, 2, 3); //test for these later
-    private PIDController linearSlideController = new PIDController(linearSlideConstants);
+    private PIDFController linearSlideController = new PIDFController(linearSlideConstants);
 
     private double minLinearSlidePower = 0.2; //test for this
 
     public String wobbleDesc;
 
-    private Servo armRotator;
-    private Servo trapDoor;
-    private DcMotor wobbleMotor;
+    public Servo armRotator;
+    public Servo trapDoor;
+    public DcMotorEx wobbleMotor;
 
     private Toggler wobbleTog = new Toggler(6);
     private Toggler linearSlidePIDStateTog = new Toggler(2);
@@ -46,7 +48,7 @@ public class Wobble {
     public Wobble(HardwareMap wobbleMap) {
         armRotator = wobbleMap.servo.get("clawServo");
         trapDoor = wobbleMap.servo.get("trapDoorServo");
-        wobbleMotor = wobbleMap.dcMotor.get("armMotor");
+        wobbleMotor = wobbleMap.get(DcMotorEx.class, "wobbleMotor");
     }
 
     /*public String clawStateDescription;
@@ -81,7 +83,7 @@ public class Wobble {
                 break;
             case 1:
                 linearSlideController.setConstants(linearSlideConstants);
-                linearSlideController.calculate(error);
+                linearSlideController.calculate(error, linearSlidePosition.ordinal(), wobbleMotor.getVelocity());
 
                 double linearSlidePower = Functions.map(linearSlideController.getOutput(), 0, LINEAR_SLIDE_POSITIONS[linearSlidePosition.UP.ordinal()], minLinearSlidePower, 1);
 
