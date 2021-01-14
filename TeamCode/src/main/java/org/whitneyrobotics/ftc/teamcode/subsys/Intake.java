@@ -1,5 +1,6 @@
 package org.whitneyrobotics.ftc.teamcode.subsys;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -8,7 +9,7 @@ import org.whitneyrobotics.ftc.teamcode.lib.util.Toggler;
 
 public class Intake {
 
-    private DcMotorEx wheelIntake;
+    private DcMotor wheelIntake;
 
     private Servo dropdown;
 
@@ -28,7 +29,7 @@ public class Intake {
     public double[] dropdownPositions = {0, 0.5};//placeholders test pls
 
     public Intake(HardwareMap intakeMap) {
-        wheelIntake = intakeMap.get(DcMotorEx.class, "Wheel Intake");
+        wheelIntake = intakeMap.dcMotor.get("Wheel Intake");
         dropdown = intakeMap.servo.get("Intake Dropdown");
     }
 

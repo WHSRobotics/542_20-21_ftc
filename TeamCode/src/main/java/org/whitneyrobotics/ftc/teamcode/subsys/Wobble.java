@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.whitneyrobotics.ftc.teamcode.lib.control.ControlConstants;
-import org.whitneyrobotics.ftc.teamcode.lib.control.PIDController;
 import org.whitneyrobotics.ftc.teamcode.lib.control.PIDFController;
 import org.whitneyrobotics.ftc.teamcode.lib.util.Functions;
 import org.whitneyrobotics.ftc.teamcode.lib.util.Toggler;
@@ -16,7 +15,8 @@ public class Wobble {
     ControlConstants linearSlideConstants = new ControlConstants(1, 2, 3); //test for these later
     private PIDFController linearSlideController = new PIDFController(linearSlideConstants);
 
-    private double minLinearSlidePower = 0.2; //test for this
+    private final double MINIMUM_LINEAR_SLIDE_POWER = 0.2; //test for this
+    private final int DEADBAND_LINEAR_SLIDE_MOTION = 100; //test for this
 
     public String wobbleDesc;
 
@@ -25,7 +25,7 @@ public class Wobble {
     public DcMotorEx wobbleMotor;
 
     private Toggler wobbleTog = new Toggler(6);
-    private Toggler linearSlidePIDStateTog = new Toggler(2);
+    //private Toggler linearSlidePIDStateTog = new Toggler(2);
 
     // public SimpleTimer delayTimer = new SimpleTimer();
 
@@ -75,7 +75,7 @@ public class Wobble {
         int linearSlideState = 0;
         double error = LINEAR_SLIDE_POSITIONS[linearSlidePosition.ordinal()] - wobbleMotor.getCurrentPosition();
 
-        switch (linearSlideState){
+        switch (linearSlideState) {
             case 0:
                 wobbleMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 linearSlideController.init(error);
@@ -83,11 +83,16 @@ public class Wobble {
                 break;
             case 1:
                 linearSlideController.setConstants(linearSlideConstants);
-                linearSlideController.calculate(error, linearSlidePosition.ordinal(), wobbleMotor.getVelocity());
+                linearSlideController.calculate(error, wobbleMotor.getCurrentPosition(), wobbleMotor.getVelocity());
 
-                double linearSlidePower = Functions.map(linearSlideController.getOutput(), 0, LINEAR_SLIDE_POSITIONS[linearSlidePosition.UP.ordinal()], minLinearSlidePower, 1);
+                double linearSlidePower = Functions.map(linearSlideController.getOutput(), DEADBAND_LINEAR_SLIDE_MOTION, LINEAR_SLIDE_POSITIONS[linearSlidePosition.UP.ordinal()] - LINEAR_SLIDE_POSITIONS[linearSlidePosition.DOWN.ordinal()], MINIMUM_LINEAR_SLIDE_POWER, 1);
 
-                wobbleMotor.setPower(linearSlidePower);
+                if (wobbleMotor.getCurrentPosition() > LINEAR_SLIDE_POSITIONS[linearSlidePosition.ordinal()]) {
+                    wobbleMotor.setPower(-linearSlidePower); // linear slide down
+                } else {
+                    wobbleMotor.setPower(linearSlidePower); // linear slide up
+                }
+
                 break;
             default:
                 break;

@@ -26,10 +26,9 @@ public class CanisterTest extends OpMode {
         loaderTestTog.changeState(gamepad1.dpad_up, gamepad1.dpad_down);
 
 
+        testCanister.setLoaderPosition(loaderTestTog.currentState() / 100);
 
-        testCanister.setLoaderPosition(loaderTestTog.currentState()/100);
 
-
-        telemetry.addData("Loader Setting:" , loaderTestTog.currentState()/100);
+        telemetry.addData("Loader Setting:", loaderTestTog.currentState() / 100);
     }
 }
