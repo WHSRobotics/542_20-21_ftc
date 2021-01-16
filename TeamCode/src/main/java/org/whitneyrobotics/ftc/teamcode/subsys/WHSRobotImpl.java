@@ -21,7 +21,7 @@ public class WHSRobotImpl{
     public IMU imu;
     public Canister canister;
     public Intake intake;
-    public OldOuttake oldOuttake;
+    //public OldOuttake oldOuttake;
     public Wobble wobble;
     public Outtake outtake;
 
