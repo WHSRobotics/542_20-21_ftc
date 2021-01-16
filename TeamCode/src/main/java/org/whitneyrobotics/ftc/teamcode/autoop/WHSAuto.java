@@ -158,7 +158,6 @@ public class WHSAuto extends OpMode {
     SimpleTimer rightPowershotAimTimer = new SimpleTimer();
     SimpleTimer putDownWobble = new SimpleTimer();
     SimpleTimer wobbleFoldTimer = new SimpleTimer();
-    SimpleTimer stopAutoOP = new SimpleTimer();
     SimpleTimer resetDropdownTimer = new SimpleTimer();
 
     //test all of these
@@ -168,7 +167,6 @@ public class WHSAuto extends OpMode {
     private final double POWERSHOT_AIM_DELAY = 1000.0;
     private final double PUT_DOWN_WOBBLE_DELAY = 1000.0; // optimize in testing
     private final double WOBBLE_FOLD_DELAY = 1000.0;
-    private final double STOP_AUTOOP_DELAY = 1000.0;
     private final double RESET_DROPDOWN_DELAY = 1000.0;
 
 
