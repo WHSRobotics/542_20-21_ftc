@@ -40,9 +40,9 @@ public class Intake {
     /*public double dropdownUp = dropdownPositions[DropdownPositions.UP.ordinal()];
     public  double dropdownDown = dropdownPositions[DropdownPositions.DOWN.ordinal()];*/
 
-    public void operate(boolean gamepadInput1, boolean gamepadInput2) {
-        wheelToggler.changeState(gamepadInput1);
-        if (gamepadInput2) {
+    public void operate(boolean intakeWheelOnOffInput, boolean intakeWheelDirectionInput) {
+        wheelToggler.changeState(intakeWheelOnOffInput);
+        if (intakeWheelDirectionInput) {
             wheelIntake.setPower(-INTAKE_POWER);
             intakeStateDescription = "Reverse Intake";
         } else if (wheelToggler.currentState() == 1) {

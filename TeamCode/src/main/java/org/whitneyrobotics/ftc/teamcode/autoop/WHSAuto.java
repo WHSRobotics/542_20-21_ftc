@@ -267,7 +267,7 @@ public class WHSAuto extends OpMode {
                         subStateDesc = "Extend Wobble";
                         while (!wobblePickupArmDownTimer.isExpired()) {
                             robot.wobble.setLinearSlidePosition(Wobble.LinearSlidePositions.DOWN);
-                            robot.wobble.setArmRotratorPositions(Wobble.ArmRotatorPositions.OUT);
+                            robot.wobble.setArmRotatorPositions(Wobble.ArmRotatorPositions.OUT);
                             robot.wobble.setClawPosition(Wobble.ClawPositions.OPEN);
                         }
                         subState++;
@@ -281,7 +281,7 @@ public class WHSAuto extends OpMode {
                         subStateDesc = "Clinch Wobble";
                         while (!wobblePickupClawCloseTimer.isExpired()) {
                             robot.wobble.setClawPosition(Wobble.ClawPositions.CLOSE);
-                            robot.wobble.setArmRotratorPositions(Wobble.ArmRotatorPositions.IN);
+                            robot.wobble.setArmRotatorPositions(Wobble.ArmRotatorPositions.IN);
                         }
                         subState++;
                         break;
@@ -422,7 +422,7 @@ public class WHSAuto extends OpMode {
                     case 2:
                         subStateDesc = "Lower Arm and Release";
                         if (!putDownWobble.isExpired()) {
-                            robot.wobble.setArmRotratorPositions(Wobble.ArmRotatorPositions.OUT);
+                            robot.wobble.setArmRotatorPositions(Wobble.ArmRotatorPositions.OUT);
                             robot.wobble.setClawPosition(Wobble.ClawPositions.OPEN);
                         }
                         subState++;
@@ -435,7 +435,7 @@ public class WHSAuto extends OpMode {
                     case 4:
                         subStateDesc = "Fold Wobble";
                         if (!wobbleFoldTimer.isExpired()){
-                            robot.wobble.setArmRotratorPositions(Wobble.ArmRotatorPositions.FOLDED);
+                            robot.wobble.setArmRotatorPositions(Wobble.ArmRotatorPositions.FOLDED);
                             robot.wobble.setClawPosition(Wobble.ClawPositions.CLOSE);
                             robot.wobble.setLinearSlidePosition(Wobble.LinearSlidePositions.DOWN);
                         }

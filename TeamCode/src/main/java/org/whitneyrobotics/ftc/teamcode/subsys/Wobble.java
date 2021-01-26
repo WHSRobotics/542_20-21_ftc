@@ -63,7 +63,7 @@ public class Wobble {
         }
     }*/
 
-    public void setArmRotratorPositions(ArmRotatorPositions armRotatorPosition) {
+    public void setArmRotatorPositions(ArmRotatorPositions armRotatorPosition) {
         armRotator.setPosition(ARM_ROTATOR_POSITIONS[armRotatorPosition.ordinal()]);
     }
 
@@ -104,19 +104,19 @@ public class Wobble {
         switch (wobbleTog.currentState()) {
             case 0:
                 wobbleDesc = "Folded/Take Intake Feed"; // picking up rings
-                setArmRotratorPositions(ArmRotatorPositions.FOLDED);
+                setArmRotatorPositions(ArmRotatorPositions.FOLDED);
                 setClawPosition(ClawPositions.CLOSE);
                 setLinearSlidePosition(LinearSlidePositions.DOWN);
 
             case 1:
                 wobbleDesc = "Take Stuff"; // dropping rings on Wobble Goal
-                setArmRotratorPositions(ArmRotatorPositions.OUT);
+                setArmRotatorPositions(ArmRotatorPositions.OUT);
                 setClawPosition(ClawPositions.OPEN);
                 setLinearSlidePosition(LinearSlidePositions.MEDIUM);
 
             case 2:
                 wobbleDesc = "Carry Stuff"; // grasp Wobble Goal, holding claw near robot while moving
-                setArmRotratorPositions(ArmRotatorPositions.IN);
+                setArmRotatorPositions(ArmRotatorPositions.IN);
                 setClawPosition(ClawPositions.CLOSE);
                 setLinearSlidePosition(LinearSlidePositions.MEDIUM);
 
@@ -126,7 +126,7 @@ public class Wobble {
 
             case 4:
                 wobbleDesc = "Extend Out Over Wall"; // extend arm to outside wall
-                setArmRotratorPositions(ArmRotatorPositions.OUT);
+                setArmRotatorPositions(ArmRotatorPositions.OUT);
 
             case 5:
                 wobbleDesc = "Release"; // release Wobble Goal outside wall

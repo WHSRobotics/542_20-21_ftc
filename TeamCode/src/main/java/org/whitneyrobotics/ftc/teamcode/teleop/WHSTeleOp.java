@@ -14,7 +14,6 @@ public class WHSTeleOp extends OpMode {
     WHSRobotImpl robot;
 
     public Toggler binToggler = new Toggler(3);
-    public Toggler shootingTimerTog = new Toggler(3);// begin on switchcase
 
     public Outtake.GoalPositions currentTarget;
     public Position currentTargetPos;
@@ -22,6 +21,7 @@ public class WHSTeleOp extends OpMode {
     public SimpleTimer rotateTimer = new SimpleTimer();
 
     public final int ROTATE_TIME = 500;
+    public int shootingCase;
 
     public String currentTargetWord;
     public String intakeStatus;
@@ -30,6 +30,8 @@ public class WHSTeleOp extends OpMode {
     public final Position powershot2 = new Position(1800, -285.75);
     public final Position powershot3 = new Position(1800, -476.25);
     public final Position binsMidpoint = new Position(1800, -890.5875);
+
+    //public Toggler shootingTimerTog = new Toggler(3);// begin on switchcase
 
 
     @Override
@@ -54,7 +56,7 @@ public class WHSTeleOp extends OpMode {
             robot.intake.manualDropdown(gamepad1.a);
         }
         //Canister
-        if (gamepad2.x || gamepad2.y) {
+        if (gamepad2.x) {
             robot.canister.operateLoader(gamepad2.x);
         } else {
             robot.canister.operateLoader(false);
@@ -98,23 +100,26 @@ public class WHSTeleOp extends OpMode {
         }
 
         if (gamepad2.a) {
-            if (shootingTimerTog.currentState() == 0) {
-                rotateTimer.set(ROTATE_TIME);
-                shootingTimerTog.changeState(true);
-            } else if (shootingTimerTog.currentState() == 1) {
-                robot.rotateToTarget(robot.outtake.calculateLaunchHeading(currentTargetPos, robot.getCoordinate()), false);
-                if (rotateTimer.isExpired()) {
-                    shootingTimerTog.changeState(true);
-                }
-            } else {
-                robot.outtake.launchToTarget(currentTarget);
-                if (robot.outtake.launchTimer.isExpired()) {
-                    shootingTimerTog.changeState(true);
-                }
+            switch (shootingCase){
+                case 0:
+                    rotateTimer.set(ROTATE_TIME);
+                    shootingCase++;
+                    break;
+                case 1:
+                    robot.rotateToTarget(robot.outtake.calculateLaunchHeading(currentTargetPos, robot.getCoordinate()), false);
+                    if (rotateTimer.isExpired()){
+                        shootingCase++;
+                    }
+                    break;
+                case 2:
+                    robot.outtake.launchToTarget(currentTarget);
+                    break;
+                default:
+                    break;
             }
         }
 
-        //Wobble - currently redoing wobble
+        //Wobble
         if (gamepad1.dpad_up || gamepad1.dpad_down) {
             robot.wobble.operateWobble(gamepad1.dpad_up, gamepad1.dpad_down);
         }

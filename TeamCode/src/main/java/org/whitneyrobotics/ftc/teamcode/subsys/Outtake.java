@@ -15,9 +15,10 @@ public class Outtake {
 
     public DcMotorEx flywheel;
     public Servo flap;
-    public final static double FLYWHEEL_POWER = 0.5;
     public SimpleTimer launchTimer = new SimpleTimer();
     public final double LAUNCH_TIME = 500; //millisecs
+
+    //public final static double FLYWHEEL_POWER = 0.5;
     //public int[] FLAP_POSITIONS = {25,50,75,100};
 
     /*public final double POWER_SHOT_TARGET_HEIGHT = 784.225;
