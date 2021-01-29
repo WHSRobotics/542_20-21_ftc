@@ -1,5 +1,6 @@
 package org.whitneyrobotics.ftc.teamcode.lib.purepursuit.strafetotarget;
 
+import org.whitneyrobotics.ftc.teamcode.lib.control.ControlConstants;
 import org.whitneyrobotics.ftc.teamcode.lib.control.PIDController;
 import org.whitneyrobotics.ftc.teamcode.lib.geometry.Coordinate;
 import org.whitneyrobotics.ftc.teamcode.lib.geometry.Position;
@@ -31,10 +32,13 @@ public class StrafeFollower {
 
     private double kP = PurePursuitRobotConstants.STRAFE_KP;
     private double kV = PurePursuitRobotConstants.STRAFE_KV;
-    private double kA = PurePursuitRobotConstants.STRAFE_KV;
+    private double kA = PurePursuitRobotConstants.STRAFE_KA;
 
-        private double trackWidth = Drivetrain.getTrackWidth();
+    private double trackWidth = Drivetrain.getTrackWidth();
     private double wheelBase = Drivetrain.getWheelBase();
+
+    PIDController headingController = new PIDController(PurePursuitRobotConstants.STRAFE_HEADING_CONSTANTS);
+
 
     private boolean inProgress;
 
@@ -44,12 +48,12 @@ public class StrafeFollower {
         lastTime = System.nanoTime()/1E9;
     }
 
-    public double[] calculateMotorPowers(Coordinate currentCoord, double[] currentBackVelocities, double frontRightVelocity) {
+    public double[] calculateMotorPowers(Coordinate currentCoord, double[] currentBackVelocities, double frontRightVelocity, double currentAngularVelocity) {
         double[] currentWheelVelocities = {currentBackVelocities[1] - (frontRightVelocity - currentBackVelocities[0]), frontRightVelocity, currentBackVelocities[0], currentBackVelocities[1]};
 
         boolean tFound = false;
         for (int i = lastIndex; i < path.size() - 1; i++) {
-            Double nextTValue = calculateT(path.getCoordinateAtIndex(i), path.getCoordinateAtIndex(i + 1), path.followerConstants.getLookaheadDistance());
+            Double nextTValue = calculateT(path.getCoordinateAtIndex(i), path.getCoordinateAtIndex(i + 1), path.followerConstants.getLookaheadDistance(), currentCoord);
 
             if (!tFound && !nextTValue.isNaN() && (nextTValue + i) > (currentTValue + lastIndex)) {
                 tFound = true;
@@ -69,7 +73,7 @@ public class StrafeFollower {
         vectorToLookaheadPoint = Functions.field2body(vectorToLookaheadPoint, currentCoord);
         double angleToLookaheadPoint = Math.toDegrees(Math.atan2(vectorToLookaheadPoint.getY(), vectorToLookaheadPoint.getX()));
 
-        headingController.calculate(targetAngularVelocities[indexOfClosestHeading] - angularVelocity);
+        headingController.calculate(path.getAngularVelocityAtIndex(indexOfClosestHeading)- currentAngularVelocity);
         double headingFeedback = headingController.getOutput();
 
         currentTargetWheelVelocities = calculateTargetWheelVelocities(path.getTangentialVelocityAtIndex(indexOfClosestPoint), angleToLookaheadPoint, path.getAngularVelocityAtIndex(indexOfClosestHeading));
@@ -79,7 +83,7 @@ public class StrafeFollower {
         for (int i = 0; i < targetWheelAccelerations.length; i++) {
             targetWheelAccelerations[i] = (currentTargetWheelVelocities[i] - lastTargetWheelVelocities[i]) / deltaTime;
         }
-        if (indexOfClosestPoint != smoothedPath.length - 1) {
+        if (indexOfClosestPoint != path.size() - 1) {
             double[] feedBack = {currentTargetWheelVelocities[0] - currentWheelVelocities[0], currentTargetWheelVelocities[1] - currentWheelVelocities[1], currentTargetWheelVelocities[2] - currentWheelVelocities[2], currentTargetWheelVelocities[3] - currentWheelVelocities[3]};
             for (int i = 0; i < feedBack.length; i++) {
                 feedBack[i] *= kP;
@@ -100,7 +104,7 @@ public class StrafeFollower {
     }
 
 
-    private double calculateT(Position lineStart, Position lineEnd, double lookaheadDistance) {
+    private double calculateT(Position lineStart, Position lineEnd, double lookaheadDistance, Coordinate currentCoord) {
         // constants used throughout the method
         Position d = Functions.Positions.subtract(lineEnd, lineStart);
         Position f = Functions.Positions.subtract(lineStart, currentCoord);

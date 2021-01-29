@@ -22,11 +22,11 @@ public class StrafeToTarget {
     public int lastClosestHeadingIndex = 0;
     private int lastIndex = 0;
     private double currentTValue = 0;
-    private static final double hKI = SwervePathGenerationConstants.hKI;
+/*    private static final double hKI = SwervePathGenerationConstants.hKI;
     private static final double hKP = SwervePathGenerationConstants.hKP;
     private static final double hKD = SwervePathGenerationConstants.hKD;
 
-    PIDController headingController = new PIDController(hKP, hKI, hKD);
+    PIDController headingController = new PIDController(hKP, hKI, hKD);*/
 
     public Coordinate[] smoothedPath;
     private double[] targetCurvatures;

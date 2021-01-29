@@ -1,4 +1,7 @@
 package org.whitneyrobotics.ftc.teamcode.lib.purepursuit;
+
+import org.whitneyrobotics.ftc.teamcode.lib.control.ControlConstants;
+
 //import com.acmerobotics.dashboard.config.Config;
 //@Config
 public class PurePursuitRobotConstants {
@@ -9,7 +12,9 @@ public class PurePursuitRobotConstants {
     public final static double SWERVE_KV = 0;
     public final static double SWERVE_KA = 0;
 
-    public final static double STRAFE_KP = 0;
-    public final static double STRAFE_KV = 0;
-    public final static double STRAFE_KA = 0;
+    public final static double STRAFE_KP = 0, STRAFE_KV = 0, STRAFE_KA = 0;
+
+    public final static double hKP = 0, hKI = 0, hKD = 0;
+    public final static ControlConstants STRAFE_HEADING_CONSTANTS = new ControlConstants(hKP, hKI, hKD);
+
 }
