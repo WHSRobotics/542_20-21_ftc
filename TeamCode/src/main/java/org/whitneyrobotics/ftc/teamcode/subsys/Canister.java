@@ -3,33 +3,59 @@ package org.whitneyrobotics.ftc.teamcode.subsys;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.whitneyrobotics.ftc.teamcode.lib.util.SimpleTimer;
 import org.whitneyrobotics.ftc.teamcode.lib.util.Toggler;
 
 public class Canister {
     private Servo loader;
-    private Toggler canisterToggler = new Toggler(2);
-    public Canister(HardwareMap canisterMap) {
-        loader = canisterMap.servo.get("canisterServo");
-    }
+    private Toggler loaderToggler = new Toggler(2);
 
-    public enum Loader_Positions {
+
+    public enum LoaderPositions {
         REST, PUSH
     }
 
-    public double[] LOADER_POSITIONS = {0, 90}; // rest, push
-    public final double LOADER_REST = LOADER_POSITIONS[Loader_Positions.REST.ordinal()];
-    public final double LOADER_PUSH = LOADER_POSITIONS[Loader_Positions.PUSH.ordinal()];
+    public double[] LOADER_POSITIONS = {0, 0.90}; // rest, push
+
+    public SimpleTimer loadTimer = new SimpleTimer();
 
     public String canisterState;
-    public void operateCanister(boolean gamepadInput) {
-        canisterToggler.changeState(gamepadInput);
-        if (canisterToggler.currentState() == 0) {
-            loader.setPosition(LOADER_REST);
-            canisterState = "Canister Off";
+
+    public Canister(HardwareMap canisterMap) {
+        loader = canisterMap.servo.get("loaderServo");
+    }
+
+    public void operateLoader(boolean gamepadInputLoader) {
+        loaderToggler.changeState(gamepadInputLoader);
+        if (loaderToggler.currentState() == 0) {
+            canisterState = "Loader Off";
+            loader.setPosition(LOADER_POSITIONS[LoaderPositions.REST.ordinal()]);
         } else {
-            loader.setPosition(LOADER_PUSH);
-            canisterState = "Canister On";
+            canisterState = "Loader On";
+            loader.setPosition(LOADER_POSITIONS[LoaderPositions.PUSH.ordinal()]);
+
         }
     }
 
+
+    public void loadRing() {
+        int loadState = 0;
+        switch (loadState) {
+            case 0:
+                loadTimer.set(500);
+                loadState++;
+                break;
+            case 1:
+                if (!loadTimer.isExpired()) {
+                    loader.setPosition(LOADER_POSITIONS[LoaderPositions.PUSH.ordinal()]);
+                } else {
+                    loader.setPosition(LOADER_POSITIONS[LoaderPositions.REST.ordinal()]);
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void setLoaderPosition(double position) { loader.setPosition(position); }
 }

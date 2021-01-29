@@ -1,50 +1,61 @@
 package org.whitneyrobotics.ftc.teamcode.autoop;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.whitneyrobotics.ftc.teamcode.lib.geometry.Coordinate;
 import org.whitneyrobotics.ftc.teamcode.lib.geometry.Position;
-import org.whitneyrobotics.ftc.teamcode.lib.purepursuit.swervetotarget.SwervePath;
-import org.whitneyrobotics.ftc.teamcode.lib.purepursuit.swervetotarget.SwerveToTarget;
 import org.whitneyrobotics.ftc.teamcode.lib.util.SimpleTimer;
-import org.whitneyrobotics.ftc.teamcode.subsys.WHSRobotImpl;
+import org.whitneyrobotics.ftc.teamcode.subsys.Intake;
 import org.whitneyrobotics.ftc.teamcode.subsys.Outtake;
+import org.whitneyrobotics.ftc.teamcode.subsys.WHSRobotImpl;
 import org.whitneyrobotics.ftc.teamcode.subsys.Wobble;
 
 //import static org.whitneyrobotics.ftc.teamcode.subsys.Outtake.Off;
 
+@Autonomous(name = "WHS Auto", group = "Auto")
 public class WHSAuto extends OpMode {
     WHSRobotImpl robot;
 
+    // Starting color and inside/outside array values
     static final int RED = 0;
     static final int BLUE = 1;
     static final int INSIDE = 0;
     static final int OUTSIDE = 1;
 
-    static final int STARTING_POSITION = 0;
+    // Starting information
+    static final int STARTING_POSITION = INSIDE;
     public static final int STARTING_ALLIANCE = RED;
-    static final double STARTING_COORDINATE_X = 1200;
-    static final double STARTING_COORDINATE_Y = -1800;
+    static final double STARTING_COORDINATE_X = -1500;
+    static final double STARTING_COORDINATE_Y = -600;
     static final boolean PARTNER_MOVED_WOBBLE = false;
 
+    // ?? Anyone who knows... comment this?
     static final double LEFT_MAX = 80;
     static final double CENTER_MAX = 165;
 
-    static final int LEFT = 0;
+    /*static final int LEFT = 0;
     static final int CENTER = 1;
-    static final int RIGHT = 2;
+    static final int RIGHT = 2;*/
 
-    int powerShotPosition = CENTER;
+    public int wobblePosition = 0; //placeholder
 
-    Coordinate[] startingOpCoordinateArray = new Coordinate [1];
-    Position[][] autoOpScanningDistanceArray = new Position[1200][-1800];
-    Position[][] autoOpPowerShotLineArray = new Position[-100][-200];
-    Position[][] autoOpWobblePositionOne = new Position[300][-1500];
-    Position[][] autoOpWobblePositionTwo = new Position[900][-900];
-    Position[][] autoOpWobblePositionThree = new Position[1500][-1500];
-    Position[][] autoOpLaunchLine = new Position[-100][-200];
-    Position[][] autoOpRingPosition = new Position[-600][-900];
+    //public Position launchPoint = new Position(300, -285.75);// optimize during testing
+    public final Position powershot1 = new Position(1800, -95.25); // from right to left fix later
+    public final Position powershot2 = new Position(1800, -285.75);
+    public final Position powershot3 = new Position(1800, -476.25);
+    public final Position binsMidpoint = new Position(1800, -890.5875);
 
+    Coordinate[] startingCoordinateArray = new Coordinate[2];//starting coordinate
+
+    Position[] shootingPositionArray = new Position[2];// points whrere robot sits to shoot powershots
+    Position[] ringPosition = new Position[2];//ring stack postions
+
+    Position[][] scanningDistanceArray = new Position[2][2];//scanning diatances
+    Position[][] wobblePositionArray = new Position[2][3];// wobble boxes
+    Position[][] parkingPositionArray = new Position[2][2];//parking spots
+
+    /*
     SwerveToTarget driveToShotLineSwerve;
     SwerveToTarget driveToWobblePositionOneSwerve;
     SwerveToTarget driveToWobblePositionTwoSwerve;
@@ -52,19 +63,50 @@ public class WHSAuto extends OpMode {
     SwerveToTarget driveToLaunchLineFromWobbleOneSwerve;
     SwerveToTarget driveToLaunchLineFromWobbleTwoSwerve;
     SwerveToTarget driveToLaunchLineFromWobbleThreeSwerve;
+     */
+
+    /*
+    SwervePath startToShotline;
+    SwervePath shotLineToWobbleOne;
+    SwervePath shotlineToWobbleTwo;
+    SwervePath shotlineToWobbleThree;
+    SwervePath wobbleOneToParkline;
+    SwervePath wobbleTwoToParkline;
+    SwervePath wobbleThreeToParkline;
+    */
+
+    /*
+    // Initialize FollowerConstants
+    FollowerConstants startToShotlineFollowerConstants = new FollowerConstants(AutoSwervePositions.startToShotlineLookaheadDist, false);
+    FollowerConstants shotlineToWobbleOneFollowerConstants = new FollowerConstants(AutoSwervePositions.shotlineToWobble1LookaheadDist, false);
+    FollowerConstants shotlineToWobbleTwoFollowerConstants = new FollowerConstants(AutoSwervePositions.shotlineToWobble2LookahadDist, false);
+    FollowerConstants shotlineToWobbleThreeFollowerConstants = new FollowerConstants(AutoSwervePositions.shotlineToWobble3LookaheadDist, false);
+    FollowerConstants wobbleOneToParkFollowerConstants = new FollowerConstants(AutoSwervePositions.wobble1ToParkLookaheadDist, true);
+    FollowerConstants wobbleTwoToParkFollowerConstants = new FollowerConstants(AutoSwervePositions.wobble2ToParkLookaheadDist, true);
+    FollowerConstants wobbleThreeToParkFollowerConstants = new FollowerConstants(AutoSwervePositions.wobble3ToParkLookaheadDist, true);
+
+    // Initialize SwervePathGenerationConstants
+    SwervePathGenerationConstants startToShotlinePathGenConstants = new SwervePathGenerationConstants(AutoSwervePositions.startToShotlineWaypointSpacing, AutoSwervePositions.startToShotlineWeightSmooth, AutoSwervePositions.startToShotlineTurnSpeed, AutoSwervePositions.startToShotlineMaxVelocity);
+    SwervePathGenerationConstants shotlineToWobbleOneGenerationConstants = new SwervePathGenerationConstants(AutoSwervePositions.shotlineToWobble1Spacing, AutoSwervePositions.shotlineToWobble1WeightSmooth, AutoSwervePositions.shotlineToWobble1TurnSpeed, AutoSwervePositions.shotlineToWobble1MaxVelocity);
+    SwervePathGenerationConstants shotlineToWobbleTwoGenerationConstants = new SwervePathGenerationConstants(AutoSwervePositions.shotlineToWobble2Spacing, AutoSwervePositions.shotlineToWobble2WeightSmooth, AutoSwervePositions.shotlineToWobble2TurnSpeed, AutoSwervePositions.shotlineToWobble2MaxVelocity);
+    SwervePathGenerationConstants shotlineToWobbleThreeGenerationConstants = new SwervePathGenerationConstants(AutoSwervePositions.shotlineToWobble3Spacing, AutoSwervePositions.shotlineToWobble3WeightSmooth, AutoSwervePositions.shotlineToWobble3TurnSpeed, AutoSwervePositions.shotlineToWobble3MaxVelocity);
+    SwervePathGenerationConstants wobbleOneToParkGenerationConstants = new SwervePathGenerationConstants(AutoSwervePositions.wobble1ToParkSpacing, AutoSwervePositions.wobble1ToParkWeightSmooth, AutoSwervePositions.wobble1ToParkTurnSpeed, AutoSwervePositions.wobble1ToParkMaxVelocity);
+    SwervePathGenerationConstants wobbleTwoToParkGenerationConstants = new SwervePathGenerationConstants(AutoSwervePositions.wobble2ToParkSpacing, AutoSwervePositions.wobble2ToParkWeightSmooth, AutoSwervePositions.wobble2ToParkTurnSpeed, AutoSwervePositions.wobble2ToParkMaxVelocity);
+    SwervePathGenerationConstants wobbleThreeToParkGenerationConstants = new SwervePathGenerationConstants(AutoSwervePositions.wobble3ToParkSpacing, AutoSwervePositions.wobble3ToParkWeightSmooth, AutoSwervePositions.wobble3ToParkTurnSpeed, AutoSwervePositions.wobble3ToParkMaxVelocity);
+    */
 
     private void instantiateSwerveToTargets() {
-        Position [][] driveToShotLineSwervePositions = {autoOpScanningDistanceArray[STARTING_ALLIANCE], autoOpPowerShotLineArray[STARTING_ALLIANCE]};
-        Position [][] driveToWobblePositionOneSwervePositions = {autoOpPowerShotLineArray[STARTING_ALLIANCE], autoOpWobblePositionOne[STARTING_ALLIANCE]};
-        Position [][] driveToWobblePositionTwoSwervePositions = {autoOpPowerShotLineArray[STARTING_ALLIANCE], autoOpWobblePositionTwo[STARTING_ALLIANCE]};
-        Position [][] driveToWobblePositionThreeSwervePositions = {autoOpPowerShotLineArray[STARTING_ALLIANCE], autoOpWobblePositionThree[STARTING_ALLIANCE]};
-        Position [][] driveToLaunchLineFromWobbleOneSwervePositions = {autoOpWobblePositionOne[STARTING_ALLIANCE], autoOpLaunchLine[STARTING_ALLIANCE]};
-        Position [][] driveToLaunchLineFromWobbleTwoSwervePositions = {autoOpWobblePositionTwo[STARTING_ALLIANCE], autoOpLaunchLine[STARTING_ALLIANCE]};
-        Position [][] driveToLaunchLineFromWobbleThreeSwervePositions = {autoOpWobblePositionThree[STARTING_ALLIANCE], autoOpLaunchLine[STARTING_ALLIANCE]};
+        Position[] driveToShotLineSwervePositions = {scanningDistanceArray[STARTING_ALLIANCE][STARTING_POSITION], shootingPositionArray[STARTING_ALLIANCE]};
+        Position[] driveToWobblePositionOneSwervePositions = {shootingPositionArray[STARTING_ALLIANCE], wobblePositionArray[STARTING_ALLIANCE][0]};
+        Position[] driveToWobblePositionTwoSwervePositions = {shootingPositionArray[STARTING_ALLIANCE], wobblePositionArray[STARTING_ALLIANCE][1]};
+        Position[] driveToWobblePositionThreeSwervePositions = {shootingPositionArray[STARTING_ALLIANCE], wobblePositionArray[STARTING_ALLIANCE][2]};
+        Position[] driveToLaunchLineFromWobbleOneSwervePositions = {wobblePositionArray[STARTING_ALLIANCE][0], parkingPositionArray[STARTING_ALLIANCE][wobblePosition]};
+        Position[] driveToLaunchLineFromWobbleTwoSwervePositions = {wobblePositionArray[STARTING_ALLIANCE][1], parkingPositionArray[STARTING_ALLIANCE][wobblePosition]};
+        Position[] driveToLaunchLineFromWobbleThreeSwervePositions = {wobblePositionArray[STARTING_ALLIANCE][2], parkingPositionArray[STARTING_ALLIANCE][wobblePosition]};
     }
 
-  //insert Swerve to Target Here
-  final double STRAFE_TO_RING_LAUNCH_POWER = 0.7542;
+    //insert Swerve to Target Here
+    final double STRAFE_TO_RING_LAUNCH_POWER = 0.7542;
 
     //State definitions
     static final int INIT = 0;
@@ -72,7 +114,7 @@ public class WHSAuto extends OpMode {
     static final int DRIVE_TO_LAUNCH_POINT = 2;
     static final int LAUNCH_PARTICLES = 3;
     static final int DROP_OFF_WOBBLE_GOAL = 4;
-    static final int PARK_ON_LAUNCH_LINE = 5;
+    static final int PARK_ON_STARTING_LINE = 5;
     static final int END = 6;
 
     static final int NUMBER_OF_STATES = 7;
@@ -81,8 +123,10 @@ public class WHSAuto extends OpMode {
 
     int state = INIT;
     int subState = 0;
-    int wobblePickupState = 0;
-    String outtakeState = "hover";
+
+    /*int wobblePickupState = 0;
+    String outtakeState = "hover";*/
+
     public void advanceState() {
         if (stateEnabled[(state + 1)]) {
             state++;
@@ -93,72 +137,77 @@ public class WHSAuto extends OpMode {
         }
     }
 
-        public void defineStateEnabledStatus() {
-            stateEnabled[INIT] = true;
-            stateEnabled[SCAN_STACK] = true;
-            stateEnabled[DRIVE_TO_LAUNCH_POINT] = true;
-            stateEnabled[LAUNCH_PARTICLES] = true;
-            stateEnabled[DROP_OFF_WOBBLE_GOAL] = true;
-            stateEnabled[PARK_ON_LAUNCH_LINE] = true;
-            stateEnabled[END] = true;
-        }
+    public void defineStateEnabledStatus() {
+        stateEnabled[INIT] = true;
+        stateEnabled[SCAN_STACK] = true;
+        stateEnabled[DRIVE_TO_LAUNCH_POINT] = true;
+        stateEnabled[LAUNCH_PARTICLES] = true;
+        stateEnabled[DROP_OFF_WOBBLE_GOAL] = true;
+        stateEnabled[PARK_ON_STARTING_LINE] = true;
+        stateEnabled[END] = true;
+    }
 
-        //timers
+    //timers
+    SimpleTimer scannerTimer = new SimpleTimer(); // implement in SCAN STACK code
+    SimpleTimer wobbleExtendTimer = new SimpleTimer();
+    SimpleTimer wobblePickupArmDownTimer = new SimpleTimer();
+    SimpleTimer wobblePickupClawCloseTimer = new SimpleTimer();
+    SimpleTimer dropDownTimer = new SimpleTimer();
+    SimpleTimer leftPowershotAimTimer = new SimpleTimer();
+    SimpleTimer centerPowershotAimTimer = new SimpleTimer();
+    SimpleTimer rightPowershotAimTimer = new SimpleTimer();
+    SimpleTimer putDownWobble = new SimpleTimer();
+    SimpleTimer wobbleFoldTimer = new SimpleTimer();
+    SimpleTimer resetDropdownTimer = new SimpleTimer();
 
-        SimpleTimer scannerTimer = new SimpleTimer();
-        SimpleTimer driveToLaunchTimer = new SimpleTimer();
-        SimpleTimer launchTimer1 = new SimpleTimer();
-        SimpleTimer launchTimer2 = new SimpleTimer();
-        SimpleTimer launchTimer3 = new SimpleTimer();
-        SimpleTimer powershot1Timer = new SimpleTimer();
-        SimpleTimer powershot2Timer = new SimpleTimer();
-        SimpleTimer powershot3Timer = new SimpleTimer();
-        SimpleTimer driveToWobbleOneTimer = new SimpleTimer();
-        SimpleTimer driveToWobbleTwoTimer = new SimpleTimer();
-        SimpleTimer driveToWobbleThreeTimer = new SimpleTimer();
-        SimpleTimer putDownWobble = new SimpleTimer();
-        SimpleTimer driveToLaunchLineFromWobbleOne = new SimpleTimer();
-        SimpleTimer driveToLaunchLineFromWobbleTwo = new SimpleTimer();
-        SimpleTimer driveToLaunchLineFromWobbleThree = new SimpleTimer();
-        SimpleTimer stopAutoOP = new SimpleTimer();
+    //test all of these
+    private final double WOBBLE_EXTEND_DELAY = 1000.0 ;// optimize in testing
+    private final double WOBBLE_PICKUP_CLAW_CLOSE_DELAY = 1000.0; // optimize in testing
+    private final double DROPDOWN_DELAY = 1000.0; //test
+    private final double POWERSHOT_AIM_DELAY = 1000.0;
+    private final double PUT_DOWN_WOBBLE_DELAY = 1000.0; // optimize in testing
+    private final double WOBBLE_FOLD_DELAY = 1000.0;
+    private final double RESET_DROPDOWN_DELAY = 1000.0;
 
-    private final double DRIVE_TO_LAUNCH = 1.0;
-    private final double LAUNCH_DELAY = 1.0;
-    private final double DRIVE_TO_WOBBLE_ONE_DELAY = 1.0;
-    private final double DRIVE_TO_WOBBLE_TWO_DELAY = 1.0;
-    private final double DRIVE_TO_WOBBLE_THREE_DELAY = 1.0;
-    private final double PUT_DOWN_WOBBLE = 1.5;
-    private final double DRIVE_TO_LAUNCH_FROM_WOBBLE_ONE_DELAY = 1.0;
-    private final double DRIVE_TO_LAUNCH_FROM_WOBBLE_TWO_DELAY = 1.0;
-    private final double DRIVE_TO_LAUNCH_FROM_THREE_ONE_DELAY = 1.0;
-    private final double STOP_AT_LAUNCH_DELAY = 0.75;
+
+    //private final double SECONDS_TO_MILLISECONDS = 1000.0;
 
     double[] motorPowers = {0.0, 0.0};
 
 
-
     @Override
     public void init() {
-            robot = new WHSRobotImpl(hardwareMap);
-            robot.drivetrain.resetEncoders();
-            defineStateEnabledStatus();
+        robot = new WHSRobotImpl(hardwareMap);
+        robot.drivetrain.resetEncoders();
+        defineStateEnabledStatus();
 
-        startingOpCoordinateArray[RED] = new Coordinate(STARTING_COORDINATE_X, -1571, 90);
+        startingCoordinateArray[RED] = new Coordinate(STARTING_COORDINATE_X, -1571, 90);
 
         //all coordinates here are placeholders, change later
-        autoOpScanningDistanceArray[RED][0] = new Position(1, -2);
-        autoOpPowerShotLineArray[RED][0] =new Position(3, -4);
-        autoOpWobblePositionOne[RED][0] = new Position(5,-6);
-        autoOpWobblePositionTwo[RED][0] = new Position(7,-8);
-        autoOpWobblePositionThree[RED][0] = new Position(9, -10);
-        autoOpLaunchLine[RED][0] = new Position(11,-12);
-        autoOpRingPosition[RED][0] = new Position(13, -14);
-
-        
+        scanningDistanceArray[RED][INSIDE] = new Position(1, -2);
+        shootingPositionArray[RED] = new Position(3, -4);
+        wobblePositionArray[STARTING_ALLIANCE][0] = new Position(5, -6);
+        wobblePositionArray[STARTING_ALLIANCE][1] = new Position(7, -8);
+        wobblePositionArray[STARTING_ALLIANCE][2] = new Position(9, -10);
+        parkingPositionArray[RED][wobblePosition] = new Position(11, -12);
+        ringPosition[RED] = new Position(13, -14);
+        startingCoordinateArray[INSIDE] = new Coordinate(-1800, -600, 0);
+        startingCoordinateArray[OUTSIDE] = new Coordinate(-1800, -900, 0);
 
 
         instantiateSwerveToTargets();
-        robot.setInitialCoordinate(startingOpCoordinateArray[STARTING_ALLIANCE]);
+        robot.setInitialCoordinate(startingCoordinateArray[STARTING_ALLIANCE]);
+
+        /*
+        // intit swerveToTargets
+        startToShotline = PathGenerator.generateSwervePath(AutoSwervePositions.getPath(AutoSwervePositions.startToShotlinePath), startToShotlineFollowerConstants, startToShotlinePathGenConstants);
+        shotLineToWobbleOne = PathGenerator.generateSwervePath(AutoSwervePositions.getPath(AutoSwervePositions.shotlineToWobble1Path), shotlineToWobbleOneFollowerConstants, shotlineToWobbleOneGenerationConstants);
+        shotlineToWobbleTwo = PathGenerator.generateSwervePath(AutoSwervePositions.getPath(AutoSwervePositions.shotlineToWobble2Path), shotlineToWobbleTwoFollowerConstants, shotlineToWobbleTwoGenerationConstants);
+        shotlineToWobbleThree = PathGenerator.generateSwervePath(AutoSwervePositions.getPath(AutoSwervePositions.shotlineToWobble3Path), shotlineToWobbleThreeFollowerConstants, shotlineToWobbleThreeGenerationConstants);
+        wobbleOneToParkline = PathGenerator.generateSwervePath(AutoSwervePositions.getPath(AutoSwervePositions.wobble1ToParkPath), wobbleOneToParkFollowerConstants, wobbleOneToParkGenerationConstants);
+        wobbleTwoToParkline = PathGenerator.generateSwervePath(AutoSwervePositions.getPath(AutoSwervePositions.wobble2ToParkPath), wobbleTwoToParkFollowerConstants, wobbleTwoToParkGenerationConstants);
+        wobbleThreeToParkline = PathGenerator.generateSwervePath(AutoSwervePositions.getPath(AutoSwervePositions.wobble3ToParkPath), wobbleThreeToParkFollowerConstants, wobbleThreeToParkGenerationConstants);
+        */
     }
 
     @Override
@@ -172,7 +221,7 @@ public class WHSAuto extends OpMode {
             autoOpRingPosition = 0;
         }*/
     }
-    public String newOuttakeState = "hover";
+
     public String stateDesc = "";
     public String subStateDesc = "";
 
@@ -206,134 +255,211 @@ public class WHSAuto extends OpMode {
         switch (state) {
             case INIT:
                 stateDesc = "Starting auto";
-                switch(wobblePickupState){
+                switch (subState) {
                     case 0:
-                        robot.wobble.setArmPosition(Wobble.ArmPositions.DOWN);
-                        wobblePickupState++;
+                        subStateDesc = "Set Wobble Extending Timer";
+                        wobbleExtendTimer.set(WOBBLE_EXTEND_DELAY);
+                        subState++;
                         break;
                     case 1:
-                        robot.wobble.setClawPosition(Wobble.ClawPositions.CLOSE);
-                        wobblePickupState++;
+                        subStateDesc = "Extend Wobble";
+                        while (!wobblePickupArmDownTimer.isExpired()) {
+                            robot.wobble.setLinearSlidePosition(Wobble.LinearSlidePositions.DOWN);
+                            robot.wobble.setArmRotatorPositions(Wobble.ArmRotatorPositions.OUT);
+                            robot.wobble.setClawPosition(Wobble.ClawPositions.OPEN);
+                        }
+                        subState++;
                         break;
                     case 2:
-                        robot.wobble.setArmPosition(Wobble.ArmPositions.UP);
-                        wobblePickupState++;
+                        subStateDesc = "Set Wobble Claw Close Timer";
+                        wobblePickupClawCloseTimer.set(WOBBLE_PICKUP_CLAW_CLOSE_DELAY);
+                        subState++;
+
+                    case 3:
+                        subStateDesc = "Clinch Wobble";
+                        while (!wobblePickupClawCloseTimer.isExpired()) {
+                            robot.wobble.setClawPosition(Wobble.ClawPositions.CLOSE);
+                            robot.wobble.setArmRotatorPositions(Wobble.ArmRotatorPositions.IN);
+                        }
+                        subState++;
+                        break;
+                    case 4:
+                        subStateDesc = "Set drop Intake Timer";
+                        dropDownTimer.set(DROPDOWN_DELAY);
+
+                    case 5:
+                        subStateDesc = "Dropping Intake";
+                        while (!dropDownTimer.isExpired()) {
+                            robot.intake.setDropdown(Intake.DropdownPositions.DOWN);
+                        }
+                        break;
+                    case 6:
+                        subStateDesc = "Exit";
+                        advanceState();
+                    default:
+                        break;
+                }
+                break;
+            case SCAN_STACK:
+                stateDesc = "Scan Stack";
+                switch (subState) {
+                    case 0:
+                        subStateDesc = "Scan Stack";
+                        subState++;
+                        break;
+                    case 1:
+                        subStateDesc = "Rotating to Launch Heading";
+                        subState++;
+                        break;
+                    default:
                         break;
                 }
                 advanceState();
                 break;
-            case SCAN_STACK:
-                stateDesc = "Scan Stack";
-                advanceState();;
-                break;
             case DRIVE_TO_LAUNCH_POINT:
                 stateDesc = "Driving to the Launch Point";
-                switch (subState) {
-                    case 0:
-                        subStateDesc = "Departure";
-                        subState++;
-                        break;
-                    case 1:
-                        subStateDesc = "Entry and Aiming";
-                        motorPowers = driveToShotLineSwerve.calculateMotorPowers(robot.getCoordinate(), robot.drivetrain.getWheelVelocities(), true);
-                        if (!driveToShotLineSwerve.inProgress()) {
-                            subState++;
-                        }
-                        break;
+                robot.updatePath(AutoSwervePositions.generateAutoPaths(AutoSwervePositions.startToShotline));
+                robot.swerveToTarget();
+                if (!robot.swerveInProgress()) {
+                    advanceState();
                 }
                 break;
             case LAUNCH_PARTICLES:
                 stateDesc = "Ready to Launch";
                 switch (subState) {
                     case 0:
-                        robot.outtake.flap.setPosition(robot.outtake.calculateLaunchSetting(robot.outtake.calculateDistanceToTarget(robot.outtake.powershot1, robot.getCoordinate()), robot.outtake.POWER_SHOT_TARGET_HEIGHT ));
-                        robot.rotateToTarget(robot.outtake.calculateLaunchHeading(robot.outtake.powershot1, robot.getCoordinate()), false);
-                        launchTimer1.set(500);
-                        while (!launchTimer1.isExpired()) {
-                        robot.outtake.setLauncherPower(robot.outtake.FLYWHEEL_POWER);
-                        }
-                        robot.outtake.setLauncherPower(0);
-                        robot.outtake.flap.setPosition(robot.outtake.calculateLaunchSetting(robot.outtake.calculateDistanceToTarget(robot.outtake.powershot2, robot.getCoordinate()), robot.outtake.POWER_SHOT_TARGET_HEIGHT ));
-                        robot.rotateToTarget(robot.outtake.calculateLaunchHeading(robot.outtake.powershot2, robot.getCoordinate()), false);
-                        launchTimer2.set(500);
-                        while (!launchTimer2.isExpired()) {
-                            robot.outtake.setLauncherPower(robot.outtake.FLYWHEEL_POWER);
-                        }
-                        robot.outtake.setLauncherPower(0);
-                        robot.outtake.flap.setPosition(robot.outtake.calculateLaunchSetting(robot.outtake.calculateDistanceToTarget(robot.outtake.powershot3, robot.getCoordinate()), robot.outtake.POWER_SHOT_TARGET_HEIGHT ));
-                        robot.rotateToTarget(robot.outtake.calculateLaunchHeading(robot.outtake.powershot3, robot.getCoordinate()), false);
-                        launchTimer3.set(500);
-                        while (!launchTimer3.isExpired()) {
-                            robot.outtake.setLauncherPower(robot.outtake.FLYWHEEL_POWER);
-                        }
-                        robot.outtake.setLauncherPower(0);
+                        subStateDesc = "Load Ring Left";
+                        robot.canister.loadRing();
                         subState++;
                         break;
                     case 1:
-                        subStateDesc = "Rotate to Target 1";
-                        robot.rotateToTarget(robot.outtake.calculateLaunchHeading(robot.outtake.powershot1, robot.getCoordinate()), false);
+                        subStateDesc = "Set Left Aim Timer";
+                        leftPowershotAimTimer.set(POWERSHOT_AIM_DELAY);
                         subState++;
+                        break;
                     case 2:
-                        subStateDesc = "Launch to Target 1";
-                        powershot1Timer.set(1000);
-                        while (!powershot1Timer.isExpired()) {
-                            robot.outtake.setLauncherPower(robot.outtake.FLYWHEEL_POWER);
+                        subStateDesc = "Aim Left";
+                        if (!leftPowershotAimTimer.isExpired()) {
+                            robot.rotateToTarget(robot.outtake.calculateLaunchHeading(powershot1, robot.getCoordinate()), false);
                         }
-                        robot.outtake.setLauncherPower(0);
                         subState++;
+                        break;
                     case 3:
-                        subStateDesc = "Rotate to Target 2";
-                        robot.rotateToTarget(robot.outtake.calculateLaunchHeading(robot.outtake.powershot2, robot.getCoordinate()), false);
+                        subStateDesc = "Shoot Left Powershot";
+                        robot.outtake.launchToTarget(Outtake.GoalPositions.LEFT_POWER_SHOT);
                         subState++;
+                        break;
                     case 4:
-                        subStateDesc = "Launch to Target 2";
-                        powershot2Timer.set(1000);
-                        while (!powershot2Timer.isExpired()) {
-                            robot.outtake.setLauncherPower(robot.outtake.FLYWHEEL_POWER);
-                        }
-                        robot.outtake.setLauncherPower(0);
+                        subStateDesc = "Load Ring Center";
+                        robot.canister.loadRing();
                         subState++;
+                        break;
                     case 5:
-                        subStateDesc = "Rotate to Target 3";
-                        robot.rotateToTarget(robot.outtake.calculateLaunchHeading(robot.outtake.powershot3, robot.getCoordinate()), false);
+                        subStateDesc = "Aim Center Timer Set";
+                        centerPowershotAimTimer.set(POWERSHOT_AIM_DELAY);
                         subState++;
+                        break;
                     case 6:
-                        subStateDesc = "Launch to Target 3";
-                        powershot3Timer.set(1000);
-                        while (!powershot3Timer.isExpired()) {
-                            robot.outtake.setLauncherPower(robot.outtake.FLYWHEEL_POWER);
+                        subStateDesc = "Aim Center";
+                        if (!centerPowershotAimTimer.isExpired()) {
+                            robot.rotateToTarget(robot.outtake.calculateLaunchHeading(powershot2, robot.getCoordinate()), false);
                         }
-                        robot.outtake.setLauncherPower(0);
                         subState++;
                         break;
-                }
-            case DROP_OFF_WOBBLE_GOAL:
-                subStateDesc = "scoring wobble goal";
-                switch (outtakeState) {
-                    case "hover":
-                        robot.wobble.setArmPosition(Wobble.ArmPositions.DOWN);
-                        robot.wobble.setClawPosition(Wobble.ClawPositions.OPEN);
+                    case 7:
+                        subStateDesc = "Shoot Center Powershot";
+                        robot.outtake.launchToTarget(Outtake.GoalPositions.CENTER_POWER_SHOT);
+                        subState++;
                         break;
-                    case "grab":
-                        robot.wobble.setArmPosition(Wobble.ArmPositions.OVER);
-                        robot.wobble.setClawPosition(Wobble.ClawPositions.CLOSE);
+                    case 8:
+                        subStateDesc = "Load Ring Right Powershot";
+                        robot.canister.loadRing();
+                        subState++;
                         break;
-                    case "lift":
-                        robot.wobble.setArmPosition(Wobble.ArmPositions.UP);
-                        robot.wobble.setClawPosition(Wobble.ClawPositions.CLOSE);
+                    case 9:
+                        subStateDesc = "Set Aim Powershot Right Timer ";
+                        rightPowershotAimTimer.set(POWERSHOT_AIM_DELAY);
+                        subState++;
                         break;
-                    case "score":
-                        robot.wobble.setArmPosition(Wobble.ArmPositions.OVER);
-                        robot.wobble.setClawPosition(Wobble.ClawPositions.OPEN);
+                    case 10:
+                        subStateDesc = "Aim Right Powershot";
+                        if (!rightPowershotAimTimer.isExpired()) {
+                            robot.rotateToTarget(robot.outtake.calculateLaunchHeading(powershot3, robot.getCoordinate()), false);
+                        }
+                        subState++;
+                        break;
+                    case 11:
+                        subStateDesc = "Shoot Right Powershot";
+                        robot.outtake.launchToTarget(Outtake.GoalPositions.RIGHT_POWER_SHOT);
                         break;
                     default:
                         break;
                 }
+                advanceState();
+                break;
+            case DROP_OFF_WOBBLE_GOAL:
+                stateDesc = "Scoring wobble goal";
+                switch (subState) {
+                    case 0:
+                        subStateDesc = "Move to Wobble Box";
+                        if (wobblePosition == 0) {
+                            robot.updatePath(AutoSwervePositions.generateAutoPaths(AutoSwervePositions.shotLineToWobbleOne));
+                        } else if (wobblePosition == 1) {
+                            robot.updatePath(AutoSwervePositions.generateAutoPaths(AutoSwervePositions.shotlineToWobbleTwo));
+                        } else {
+                            robot.updatePath(AutoSwervePositions.generateAutoPaths(AutoSwervePositions.shotlineToWobbleThree));
+                        }
+                        robot.swerveToTarget();
+                        if (!robot.swerveInProgress()) {
+                            subState++;
+                        }
+                        break;
+                    case 1:
+                        subStateDesc = "Set Wobble Put Down Timer";
+                        putDownWobble.set(PUT_DOWN_WOBBLE_DELAY);
+                    case 2:
+                        subStateDesc = "Lower Arm and Release";
+                        if (!putDownWobble.isExpired()) {
+                            robot.wobble.setArmRotatorPositions(Wobble.ArmRotatorPositions.OUT);
+                            robot.wobble.setClawPosition(Wobble.ClawPositions.OPEN);
+                        }
+                        subState++;
+                        break;
+                    case 3:
+                        subStateDesc = "Set Wobble Fold Timer";
+                        wobbleFoldTimer.set(WOBBLE_FOLD_DELAY);
+                        subState++;
+                        break;
+                    case 4:
+                        subStateDesc = "Fold Wobble";
+                        if (!wobbleFoldTimer.isExpired()){
+                            robot.wobble.setArmRotatorPositions(Wobble.ArmRotatorPositions.FOLDED);
+                            robot.wobble.setClawPosition(Wobble.ClawPositions.CLOSE);
+                            robot.wobble.setLinearSlidePosition(Wobble.LinearSlidePositions.DOWN);
+                        }
+                        subState++;
+                        break;
+                    default:
+                        break;
+                        /*case "score":
+                        robot.wobble.setArmPosition(Wobble.ArmPositions.OVER);
+                        robot.wobble.setClawPosition(Wobble.ClawPositions.OPEN);
+                        break;*/
+                }
+                advanceState();
                 break;
 
-            case PARK_ON_LAUNCH_LINE:
-                Position parkingSpot = new Position( 300 ,robot.getCoordinate().getY());
-                robot.driveToTarget(parkingSpot, false);
+            case PARK_ON_STARTING_LINE:
+                stateDesc = "Park";
+                if (wobblePosition == 0) {
+                    robot.updatePath(AutoSwervePositions.generateAutoPaths(AutoSwervePositions.wobbleOneToParkline));
+                } else if (wobblePosition == 1) {
+                    robot.updatePath(AutoSwervePositions.generateAutoPaths(AutoSwervePositions.wobbleTwoToParkline));
+                } else {
+                    robot.updatePath(AutoSwervePositions.generateAutoPaths(AutoSwervePositions.wobbleThreeToParkline));
+                }
+                robot.swerveToTarget();
+                // make swerve to target
                /* stateDesc = "Driving to foundation";
                 switch (subState) {
                     case 0:
@@ -403,8 +529,28 @@ public class WHSAuto extends OpMode {
                         subStateDesc = "Exit";
                         advanceState();
                         break;
+                }*/
+                if (!robot.swerveInProgress()) {
+                    advanceState();
                 }
-                break;*/
+                break;
+            case END:
+                stateDesc = "Ending Auto";
+                switch (subState){
+                    case 0:
+                        subStateDesc = "Set Reset Dropdown Timer";
+                        resetDropdownTimer.set(RESET_DROPDOWN_DELAY);
+                    case 1:
+                        subStateDesc = "Reset Dropdown";
+                        while (!resetDropdownTimer.isExpired()) {
+                            robot.intake.setDropdown(Intake.DropdownPositions.UP);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            default:
+                break;
         }
         telemetry.addData("State: ", stateDesc);
         telemetry.addData("Substate: ", subStateDesc);
