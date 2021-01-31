@@ -9,7 +9,7 @@ public class RobotConstants {
     public static double DEADBAND_DRIVE_TO_TARGET = 24.5;
     public static double DEADBAND_ROTATE_TO_TARGET = 1.0;
     public static double drive_min = .2;//.1245;
-    public static double drive_max = 1.0;//.6;
+    public static double drive_max = 0.4;//.6;
     public static double rotate_min = 0.2;
     public static double rotate_max = 1.0;
 

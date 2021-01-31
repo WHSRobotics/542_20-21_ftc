@@ -1,12 +1,13 @@
 package org.whitneyrobotics.ftc.teamcode.autoop;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.whitneyrobotics.ftc.teamcode.lib.geometry.Coordinate;
 import org.whitneyrobotics.ftc.teamcode.lib.geometry.Position;
 import org.whitneyrobotics.ftc.teamcode.subsys.WHSRobotImpl;
 import org.whitneyrobotics.ftc.teamcode.subsys.WHSRobotJank;
-
+@Autonomous(name="Jank Auto")
 public class WHSJankAuto extends OpMode {
     WHSRobotJank robot;
 
@@ -21,12 +22,15 @@ public class WHSJankAuto extends OpMode {
 
     @Override
     public void init() {
-        startingCoordinate = new Coordinate(STARTING_COORDINATE_X,-1500, 0);
-        parkingPosition = new Position(STARTING_COORDINATE_X,0);
+        robot = new WHSRobotJank(hardwareMap);
+        startingCoordinate = new Coordinate(STARTING_COORDINATE_X,-1500, 90);
+        parkingPosition = new Position(STARTING_COORDINATE_X,100);
     }
 
     @Override
     public void loop() {
+        robot.estimatePosition();
+        robot.estimateHeading();
         switch(state){
             case 0:
                 stateDesc = "Init";
@@ -42,7 +46,7 @@ public class WHSJankAuto extends OpMode {
                 break;
             case 2:
                 stateDesc = "Rotating To Drop Wobble";
-                robot.rotateToTarget(45,false);
+                robot.rotateToTarget(-45 ,false);
                 if(!robot.rotateToTargetInProgress()){
                     state++;
                 }
@@ -53,11 +57,19 @@ public class WHSJankAuto extends OpMode {
                 if(robot.wobble.wobbleReleased()){
                     state++;
                 }
+                break;
             case 4:
                 stateDesc = "End";
                 break;
             default:
                 break;  
         }
+        telemetry.addData("State: ", stateDesc);
+        telemetry.addData("IMU", robot.imu.getHeading());
+        //telemetry.addData("Stone Sensed?", robot.intake.stoneSensed());
+        telemetry.addData("X", robot.getCoordinate().getX());
+        telemetry.addData("Y", robot.getCoordinate().getY());
+        telemetry.addData("Heading", robot.getCoordinate().getHeading());
+        telemetry.addData("Wobble", robot.wobble.wobbleReleased());
     }
 }
