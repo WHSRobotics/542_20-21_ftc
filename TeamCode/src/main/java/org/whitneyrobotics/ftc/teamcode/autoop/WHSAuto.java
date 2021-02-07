@@ -279,7 +279,7 @@ public class WHSAuto extends OpMode {
                         subStateDesc = "Clinch Wobble";
                         while (!wobblePickupClawCloseTimer.isExpired()) {
                             robot.wobble.setClawPosition(Wobble.ClawPositions.CLOSE);
-                            robot.wobble.setArmRotatorPositions(Wobble.ArmRotatorPositions.IN);
+                            robot.wobble.setArmRotatorPositions(Wobble.ArmRotatorPositions.HALF);
                         }
                         subState++;
                         break;
@@ -433,7 +433,7 @@ public class WHSAuto extends OpMode {
                     case 4:
                         subStateDesc = "Fold Wobble";
                         if (!wobbleFoldTimer.isExpired()){
-                            robot.wobble.setArmRotatorPositions(Wobble.ArmRotatorPositions.FOLDED);
+                            robot.wobble.setArmRotatorPositions(Wobble.ArmRotatorPositions.IN);
                             robot.wobble.setClawPosition(Wobble.ClawPositions.CLOSE);
                             robot.wobble.setLinearSlidePosition(Wobble.LinearSlidePositions.DOWN);
                         }

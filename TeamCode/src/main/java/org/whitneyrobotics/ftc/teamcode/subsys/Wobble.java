@@ -30,7 +30,7 @@ public class Wobble {
     // public SimpleTimer delayTimer = new SimpleTimer();
 
     public enum ArmRotatorPositions {
-        FOLDED, IN, OUT
+        IN, HALF, OUT
     }
 
     public enum ClawPositions {
@@ -104,7 +104,7 @@ public class Wobble {
         switch (wobbleTog.currentState()) {
             case 0:
                 wobbleDesc = "Folded/Take Intake Feed"; // picking up rings
-                setArmRotatorPositions(ArmRotatorPositions.FOLDED);
+                setArmRotatorPositions(ArmRotatorPositions.IN);
                 setClawPosition(ClawPositions.CLOSE);
                 setLinearSlidePosition(LinearSlidePositions.DOWN);
 
@@ -116,7 +116,7 @@ public class Wobble {
 
             case 2:
                 wobbleDesc = "Carry Stuff"; // grasp Wobble Goal, holding claw near robot while moving
-                setArmRotatorPositions(ArmRotatorPositions.IN);
+                setArmRotatorPositions(ArmRotatorPositions.HALF);
                 setClawPosition(ClawPositions.CLOSE);
                 setLinearSlidePosition(LinearSlidePositions.MEDIUM);
 
