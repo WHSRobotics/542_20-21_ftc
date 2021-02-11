@@ -44,7 +44,6 @@ public class WHSAuto extends OpMode {
     public final Position powershot1 = new Position(1800, -95.25); // from right to left fix later
     public final Position powershot2 = new Position(1800, -285.75);
     public final Position powershot3 = new Position(1800, -476.25);
-    public final Position binsMidpoint = new Position(1800, -890.5875);
 
     Coordinate[] startingCoordinateArray = new Coordinate[2];//starting coordinate
 
