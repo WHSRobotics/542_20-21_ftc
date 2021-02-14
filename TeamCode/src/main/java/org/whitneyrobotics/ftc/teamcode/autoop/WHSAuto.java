@@ -19,20 +19,22 @@ public class WHSAuto extends OpMode {
 
     // Starting color and inside/outside array values
     static final int RED = 0;
-    static final int BLUE = 1;
+    //static final int BLUE = 1;
     static final int INSIDE = 0;
     static final int OUTSIDE = 1;
 
     // Starting information
-    static final int STARTING_POSITION = INSIDE;
+    //static final int STARTING_POSITION = INSIDE;
     public static final int STARTING_ALLIANCE = RED;
     static final double STARTING_COORDINATE_X = -1500;
-    static final double STARTING_COORDINATE_Y = -600;
-    static final boolean PARTNER_MOVED_WOBBLE = false;
+    static final double STARTING_COORDINATE_Y = -1571; // may or may not be -600
+    //static final boolean PARTNER_MOVED_WOBBLE = false;
 
-    // ?? Anyone who knows... comment this?
+    // ?? Anyone who knows... uncomment this?
+    /*
     static final double LEFT_MAX = 80;
     static final double CENTER_MAX = 165;
+     */
 
     /*static final int LEFT = 0;
     static final int CENTER = 1;
@@ -94,7 +96,7 @@ public class WHSAuto extends OpMode {
     SwervePathGenerationConstants wobbleThreeToParkGenerationConstants = new SwervePathGenerationConstants(AutoSwervePositions.wobble3ToParkSpacing, AutoSwervePositions.wobble3ToParkWeightSmooth, AutoSwervePositions.wobble3ToParkTurnSpeed, AutoSwervePositions.wobble3ToParkMaxVelocity);
     */
 
-    private void instantiateSwerveToTargets() {
+   /* private void instantiateSwerveToTargets() {
         Position[] driveToShotLineSwervePositions = {scanningDistanceArray[STARTING_ALLIANCE][STARTING_POSITION], shootingPositionArray[STARTING_ALLIANCE]};
         Position[] driveToWobblePositionOneSwervePositions = {shootingPositionArray[STARTING_ALLIANCE], wobblePositionArray[STARTING_ALLIANCE][0]};
         Position[] driveToWobblePositionTwoSwervePositions = {shootingPositionArray[STARTING_ALLIANCE], wobblePositionArray[STARTING_ALLIANCE][1]};
@@ -102,10 +104,10 @@ public class WHSAuto extends OpMode {
         Position[] driveToLaunchLineFromWobbleOneSwervePositions = {wobblePositionArray[STARTING_ALLIANCE][0], parkingPositionArray[STARTING_ALLIANCE][wobblePosition]};
         Position[] driveToLaunchLineFromWobbleTwoSwervePositions = {wobblePositionArray[STARTING_ALLIANCE][1], parkingPositionArray[STARTING_ALLIANCE][wobblePosition]};
         Position[] driveToLaunchLineFromWobbleThreeSwervePositions = {wobblePositionArray[STARTING_ALLIANCE][2], parkingPositionArray[STARTING_ALLIANCE][wobblePosition]};
-    }
+    }*/
 
     //insert Swerve to Target Here
-    final double STRAFE_TO_RING_LAUNCH_POWER = 0.7542;
+    //final double STRAFE_TO_RING_LAUNCH_POWER = 0.7542;
 
     //State definitions
     static final int INIT = 0;
@@ -147,7 +149,7 @@ public class WHSAuto extends OpMode {
     }
 
     //timers
-    SimpleTimer scannerTimer = new SimpleTimer(); // implement in SCAN STACK code
+    //SimpleTimer scannerTimer = new SimpleTimer(); // implement in SCAN STACK code uncomment when needed
     SimpleTimer wobbleExtendTimer = new SimpleTimer();
     SimpleTimer wobblePickupArmDownTimer = new SimpleTimer();
     SimpleTimer wobblePickupClawCloseTimer = new SimpleTimer();
@@ -169,9 +171,8 @@ public class WHSAuto extends OpMode {
     private final double RESET_DROPDOWN_DELAY = 1000.0;
 
 
-    //private final double SECONDS_TO_MILLISECONDS = 1000.0;
 
-    double[] motorPowers = {0.0, 0.0};
+    //double[] motorPowers = {0.0, 0.0};
 
 
     @Override
@@ -180,7 +181,7 @@ public class WHSAuto extends OpMode {
         robot.drivetrain.resetEncoders();
         defineStateEnabledStatus();
 
-        startingCoordinateArray[RED] = new Coordinate(STARTING_COORDINATE_X, -1571, 90);
+        startingCoordinateArray[RED] = new Coordinate(STARTING_COORDINATE_X, -STARTING_COORDINATE_Y, 90);
 
         //all coordinates here are placeholders, change later
         scanningDistanceArray[RED][INSIDE] = new Position(1, -2);
@@ -194,7 +195,7 @@ public class WHSAuto extends OpMode {
         startingCoordinateArray[OUTSIDE] = new Coordinate(-1800, -900, 0);
 
 
-        instantiateSwerveToTargets();
+        //instantiateSwerveToTargets();
         robot.setInitialCoordinate(startingCoordinateArray[STARTING_ALLIANCE]);
 
         /*
