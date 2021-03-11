@@ -2,6 +2,7 @@ package org.whitneyrobotics.ftc.teamcode.autoop;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.whitneyrobotics.ftc.teamcode.lib.geometry.Coordinate;
 import org.whitneyrobotics.ftc.teamcode.lib.geometry.Position;
@@ -10,6 +11,14 @@ import org.whitneyrobotics.ftc.teamcode.subsys.Intake;
 import org.whitneyrobotics.ftc.teamcode.subsys.Outtake;
 import org.whitneyrobotics.ftc.teamcode.subsys.WHSRobotImpl;
 import org.whitneyrobotics.ftc.teamcode.subsys.Wobble;
+
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+
+import java.util.List;
 
 //import static org.whitneyrobotics.ftc.teamcode.subsys.Outtake.Off;
 
@@ -170,7 +179,37 @@ public class WHSAuto extends OpMode {
     private final double WOBBLE_FOLD_DELAY = 1000.0;
     private final double RESET_DROPDOWN_DELAY = 1000.0;
 
+    //camera objects, assets, init methods
+    private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
+    private static final String LABEL_FIRST_ELEMENT = "Quad";
+    private static final String LABEL_SECOND_ELEMENT = "Single";
 
+    private static final String VUFORIA_KEY =
+            "AWYX8QX/////AAABmQ8w8KJJuEsNlO9fxNmHDg1BoH/L5lzniFIDqLd+XlCF9gXWlYeddle27IIm9DH8mtLY2CLX9LW3uAzD8IH5Stmf+NoLjfm+m4jnj7KmR+v+xGuUEgP3Aj8sez5uhtsKarKiv94URMVnf39sjHW3xhiUBI30M762Ee6bEy69ZHQSOHLNxMwm9lnETo0O13vhmtZvI44HtEjIvXbW71p/+jdZw/33i6q//G4O3h5Ej+MQ3UCgUe9ERfh9L/v/lgLmekgYdFNaUZi8C1z+O4Jb/8MbHmpJ4Hu9XtA8pI2MLZMRNgOrnFwgXTukIhyHhJ2/2wVi6gwfyxzkJMU27jyGY/gLX9NtjwqhL4NaMWG6t/6m";
+
+    public String stackLabel;
+
+    private VuforiaLocalizer vuforia;
+
+    private TFObjectDetector tfod;
+
+    private void initVuforia() {
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+
+        parameters.vuforiaLicenseKey = VUFORIA_KEY;
+        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
+
+        vuforia = ClassFactory.getInstance().createVuforia(parameters);
+    }
+
+    private void initTfod() {
+        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
+                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
+        tfodParameters.minResultConfidence = 0.8f;
+        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
+        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
+    }
 
     //double[] motorPowers = {0.0, 0.0};
 
@@ -208,6 +247,15 @@ public class WHSAuto extends OpMode {
         wobbleTwoToParkline = PathGenerator.generateSwervePath(AutoSwervePositions.getPath(AutoSwervePositions.wobble2ToParkPath), wobbleTwoToParkFollowerConstants, wobbleTwoToParkGenerationConstants);
         wobbleThreeToParkline = PathGenerator.generateSwervePath(AutoSwervePositions.getPath(AutoSwervePositions.wobble3ToParkPath), wobbleThreeToParkFollowerConstants, wobbleThreeToParkGenerationConstants);
         */
+
+        initVuforia();
+        initTfod();
+
+        if (tfod != null) {
+            tfod.activate();
+
+            tfod.setZoom(4.0, 16.0 / 9.0);
+        }
     }
 
     @Override
@@ -305,6 +353,22 @@ public class WHSAuto extends OpMode {
                 switch (subState) {
                     case 0:
                         subStateDesc = "Scan Stack";
+                        if (tfod != null) {
+                            List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+                            if (updatedRecognitions != null) {
+                                /*telemetry.addData("# Object Detected", updatedRecognitions.size());
+                                int i = 0;*/
+                                for (Recognition recognition : updatedRecognitions) {
+                                    /*telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
+                                    telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
+                                            recognition.getLeft(), recognition.getTop());
+                                    telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
+                                            recognition.getRight(), recognition.getBottom());
+                                    telemetry.update();*/
+                                    stackLabel = recognition.getLabel();
+                                }
+                            }
+                        }
                         subState++;
                         break;
                     case 1:
@@ -400,11 +464,12 @@ public class WHSAuto extends OpMode {
             case DROP_OFF_WOBBLE_GOAL:
                 stateDesc = "Scoring wobble goal";
                 switch (subState) {
-                    case 0:
+                    case 0: // Check to make sure ring amount and swerve paths match
                         subStateDesc = "Move to Wobble Box";
-                        if (wobblePosition == 0) {
+                        tfod.getRecognitions();
+                        if (stackLabel == "Quad") {
                             robot.updatePath(AutoSwervePositions.generateAutoPaths(AutoSwervePositions.shotLineToWobbleOne));
-                        } else if (wobblePosition == 1) {
+                        } else if (stackLabel == "Single") {
                             robot.updatePath(AutoSwervePositions.generateAutoPaths(AutoSwervePositions.shotlineToWobbleTwo));
                         } else {
                             robot.updatePath(AutoSwervePositions.generateAutoPaths(AutoSwervePositions.shotlineToWobbleThree));
@@ -545,6 +610,10 @@ public class WHSAuto extends OpMode {
                         while (!resetDropdownTimer.isExpired()) {
                             robot.intake.setDropdown(Intake.DropdownPositions.UP);
                         }
+                        break;
+                    case 2:
+                        subStateDesc = "Shutting Down TensorFlowObjectDetection";
+                        tfod.shutdown();
                         break;
                     default:
                         break;
