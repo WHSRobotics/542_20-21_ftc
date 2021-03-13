@@ -2,7 +2,6 @@ package org.whitneyrobotics.ftc.teamcode.autoop;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.whitneyrobotics.ftc.teamcode.lib.geometry.Coordinate;
 import org.whitneyrobotics.ftc.teamcode.lib.geometry.Position;
@@ -212,7 +211,6 @@ public class WHSAuto extends OpMode {
     }
 
     //double[] motorPowers = {0.0, 0.0};
-
 
     @Override
     public void init() {
