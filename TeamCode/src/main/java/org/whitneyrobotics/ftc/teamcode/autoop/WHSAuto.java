@@ -466,11 +466,11 @@ public class WHSAuto extends OpMode {
                         subStateDesc = "Move to Wobble Box";
                         tfod.getRecognitions();
                         if (stackLabel == "Quad") {
-                            robot.updatePath(AutoSwervePositions.generateAutoPaths(AutoSwervePositions.shotLineToWobbleOne));
+                            robot.updatePath(AutoSwervePositions.generateAutoPaths(AutoSwervePositions.shotlineToWobbleThree));
                         } else if (stackLabel == "Single") {
                             robot.updatePath(AutoSwervePositions.generateAutoPaths(AutoSwervePositions.shotlineToWobbleTwo));
                         } else {
-                            robot.updatePath(AutoSwervePositions.generateAutoPaths(AutoSwervePositions.shotlineToWobbleThree));
+                            robot.updatePath(AutoSwervePositions.generateAutoPaths(AutoSwervePositions.shotLineToWobbleOne));
                         }
                         robot.swerveToTarget();
                         if (!robot.swerveInProgress()) {
