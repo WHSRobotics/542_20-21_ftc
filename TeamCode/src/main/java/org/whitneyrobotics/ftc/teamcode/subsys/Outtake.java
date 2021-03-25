@@ -1,6 +1,7 @@
 package org.whitneyrobotics.ftc.teamcode.subsys;
 
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -14,9 +15,13 @@ import org.whitneyrobotics.ftc.teamcode.lib.util.SimpleTimer;
 public class Outtake {
 
     public DcMotorEx flywheel;
-    public Servo flap;
+    //public Servo flap;
     public SimpleTimer launchTimer = new SimpleTimer();
     public final double LAUNCH_TIME = 500; //millisecs
+
+    public double errorDebug;
+    public double targetVelocityDebug;
+    public double currentVelocityDebug;
 
     //public final static double FLYWHEEL_POWER = 0.5;
     //public int[] FLAP_POSITIONS = {25,50,75,100};
@@ -56,32 +61,36 @@ public class Outtake {
         return headingToTarget;
     }
 
-    //Bins, P1, P2, P3
+    //LEFT, CENTER, RIGHT, LOW, MEDIUM, HIGH
     public double[] flapServoPositions = {0.0, 0.25, 0.45, 0.5, 0.65, 0.75}; //test
-    public double[] targetMotorVelocities = {0.0, 0.33, 0.44, 0.66, 0.77, 1.0}; //test to get to 7.07 m/s
+    public double[] targetMotorVelocities = {1630, 1620, 1620, 0.66, 0.77, 1795}; //test to get to 7.07 m/s
 
     public Outtake(HardwareMap outtakeMap) {
-        flywheel = outtakeMap.get(DcMotorEx.class, "flywheel");
-        flap = outtakeMap.servo.get("flapServo");
+        flywheel = outtakeMap.get(DcMotorEx.class, "outtakeMotor");
+       // flap = outtakeMap.servo.get("flapServo");
         outtakeController = new PIDFController(RobotConstants.FLYWHEEL_CONSTANTS);
     }
 
     public void operate(GoalPositions goalPosition) {
         operateFlywheel(goalPosition);
-        setFlapServoPositions(goalPosition);
+        //setFlapServoPositions(goalPosition);
     }
 
-    public void setFlapServoPositions(GoalPositions goalPosition) {
+    /*public void setFlapServoPositions(GoalPositions goalPosition) {
         flap.setPosition(flapServoPositions[goalPosition.ordinal()]);
-    }
+    }*/
 
     public void operateFlywheel(GoalPositions goalPosition) {
-        double currentVelocity = flywheel.getVelocity();
+        double currentVelocity = -flywheel.getVelocity();
+        currentVelocityDebug = currentVelocity;
         double targetVelocity = targetMotorVelocities[goalPosition.ordinal()];
+        targetVelocityDebug = targetVelocity;
         double error = targetVelocity - currentVelocity;
-
+        errorDebug = error;
         outtakeController.calculate(error, 10, currentVelocity);
-        flywheel.setPower(outtakeController.getOutput());
+        double power = Functions.map(outtakeController.getOutput(), 0, RobotConstants.OUTTAKE_MAX_VELOCITY, 0.15, 1.0);
+        power = Functions.constrain(power, 0, 0.82);
+        flywheel.setPower(power);
     }
 
     /* public void setLaunchAngle(OldOuttake.LaunchAngles launchAngle){
@@ -110,6 +119,6 @@ public class Outtake {
 
     public void setLauncherPower(double power) { flywheel.setPower(power); }
 
-    public void setFlapPosition(double position) { flap.setPosition(position); }
+    //public void setFlapPosition(double position) { flap.setPosition(position); }
 
 }

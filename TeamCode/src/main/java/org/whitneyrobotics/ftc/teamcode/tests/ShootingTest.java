@@ -30,6 +30,8 @@ public class ShootingTest extends OpMode {
 
     private TFObjectDetector tfod;
 
+    private boolean recognition;
+
     private void initVuforia() {
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
@@ -56,7 +58,7 @@ public class ShootingTest extends OpMode {
         if (tfod != null) {
             tfod.activate();
 
-            tfod.setZoom(4.0, 16.0 / 9.0);
+            tfod.setZoom(2.0, 16.0 / 9.0);
         }
 
     }
@@ -65,7 +67,9 @@ public class ShootingTest extends OpMode {
     public void loop() {
         if (tfod != null) {
             List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+            recognition = updatedRecognitions != null;
             if (updatedRecognitions != null) {
+                stackLabel = "Zero";
                                 /*telemetry.addData("# Object Detected", updatedRecognitions.size());
                                 int i = 0;*/
                 for (Recognition recognition : updatedRecognitions) {
@@ -78,14 +82,17 @@ public class ShootingTest extends OpMode {
                     stackLabel = recognition.getLabel();
                 }
             }
-        }
-        if (stackLabel == "Four") {
-            stackSize = stackLabel;
-        } else if (stackLabel == "One") {
-            stackSize = stackLabel;
-        } else {
-            stackSize = "Zero";
+
+            if (stackLabel == "Four") {
+                stackSize = stackLabel;
+            } else if (stackLabel == "One") {
+                stackSize = stackLabel;
+            }else {
+                stackSize = "Zero";
+            }
         }
         telemetry.addData("Stack Size: ", stackSize);
+        telemetry.addData("Stack Label", stackLabel);
+        telemetry.addData("Updated Recognitions", recognition );
     }
 }

@@ -13,24 +13,39 @@ public class IntakeTest extends OpMode {
     public Intake testIntake;
     public Toggler powerTog;
     public Toggler dropdownTog;
+    int i;
+    double power = 0;
+    double position =0;
 
     @Override
     public void init() {
         testIntake = new Intake(hardwareMap);
-        powerTog = new Toggler(100);
-        dropdownTog = new Toggler(100);
+        i = 0;
 
     }
 
     @Override
     public void loop() {
-        powerTog.changeState(gamepad1.right_trigger > 0.01, gamepad1.left_trigger > 0.01);
-        dropdownTog.changeState(gamepad1.b, gamepad1.a);
-        testIntake.setIntakePower(powerTog.currentState()/100);
-        testIntake.setDropdownPosition(dropdownTog.currentState()/100);
+        i++;
+        if(i%10 == 0){
+            if(gamepad1.a && power < 1){
+                power += 0.01;
+            }else if(gamepad1.b && power > -1)
+            {
+                power -= 0.01;
+            }
 
-        telemetry.addData("Wheel Power: ", powerTog.currentState()/100);
-        telemetry.addData("Dropdown Position", dropdownTog.currentState()/100);
+            if(gamepad1.x && position < 1){
+                position += 0.01;
+            }else if(gamepad1.y && position > 0)
+            {
+                position -= 0.01;
+            }
+        }
+        //testIntake.setIntakePower(power);
+        testIntake.autoDropIntake();
+        telemetry.addData("Wheel Power: ", power);
+        telemetry.addData("Dropdown Position", position);
 
     }
 }

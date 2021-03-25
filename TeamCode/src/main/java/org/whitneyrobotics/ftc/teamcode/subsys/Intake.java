@@ -5,11 +5,13 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.whitneyrobotics.ftc.teamcode.lib.util.SimpleTimer;
 import org.whitneyrobotics.ftc.teamcode.lib.util.Toggler;
 
 public class Intake {
 
     private DcMotor wheelIntake;
+    private DcMotor wheelIntake2;
 
     private Servo dropdown;
 
@@ -17,20 +19,25 @@ public class Intake {
 
     private Toggler dropdownToggler = new Toggler(2);
 
-    public double INTAKE_POWER = 0.45; //change to final after testing
+    public double INTAKE_POWER = 1.0; //change to final after testing
 
     public String dropdownStatus;
     public String intakeStateDescription;
+
+    public SimpleTimer dropdownTimer = new SimpleTimer();
+    public double dropdownDelay = 1.0;
+    int state = 0;
 
     public enum DropdownPositions {
         UP, DOWN
     }
 
-    public double[] dropdownPositions = {0, 0.5};//placeholders test pls
+    public double[] dropdownPositions = {0.53, 0.16};//placeholders test pls
 
     public Intake(HardwareMap intakeMap) {
-        wheelIntake = intakeMap.dcMotor.get("Wheel Intake");
-        dropdown = intakeMap.servo.get("Intake Dropdown");
+        wheelIntake = intakeMap.dcMotor.get("intakeMotor");
+        wheelIntake2 = intakeMap.dcMotor.get("intakeMotor2");
+        dropdown = intakeMap.servo.get("intakePusher");
     }
 
 
@@ -44,9 +51,11 @@ public class Intake {
         wheelToggler.changeState(intakeWheelOnOffInput);
         if (intakeWheelDirectionInput) {
             wheelIntake.setPower(-INTAKE_POWER);
+            wheelIntake2.setPower(-INTAKE_POWER);
             intakeStateDescription = "Reverse Intake";
         } else if (wheelToggler.currentState() == 1) {
             wheelIntake.setPower(INTAKE_POWER);
+            wheelIntake2.setPower(INTAKE_POWER);
             intakeStateDescription = "Forward Intake";
         } else {
             wheelIntake.setPower(0.0);
@@ -77,7 +86,25 @@ public class Intake {
     }
 
     //testing
-    public void setIntakePower(double power) { wheelIntake.setPower(power); }
+    public void setIntakePower(double power) { wheelIntake.setPower(power); wheelIntake2.setPower(power);}
 
     public void setDropdownPosition(double position) { dropdown.setPosition(position); }
+
+    public void autoDropIntake(){
+        switch(state){
+            case 0:
+                dropdownTimer.set(dropdownDelay);
+                state++;
+                break;
+            case 1:
+
+                if(dropdownTimer.isExpired()){
+                    setDropdown(DropdownPositions.UP);
+                }else{
+                    setDropdown(DropdownPositions.DOWN);
+                }
+                break;
+        }
+
+    }
 }

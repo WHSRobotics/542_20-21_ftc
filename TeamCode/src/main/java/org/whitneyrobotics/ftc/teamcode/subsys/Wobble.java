@@ -6,16 +6,17 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.whitneyrobotics.ftc.teamcode.lib.control.ControlConstants;
+import org.whitneyrobotics.ftc.teamcode.lib.control.PIDController;
 import org.whitneyrobotics.ftc.teamcode.lib.control.PIDFController;
 import org.whitneyrobotics.ftc.teamcode.lib.util.Functions;
 import org.whitneyrobotics.ftc.teamcode.lib.util.Toggler;
 
 public class Wobble {
 
-    ControlConstants linearSlideConstants = new ControlConstants(1, 2, 3); //test for these later
-    private PIDFController linearSlideController = new PIDFController(linearSlideConstants);
+    ControlConstants linearSlideConstants = new ControlConstants(16.9, 1.0, 6.5); //test for these later
+    private PIDController linearSlideController = new PIDController(linearSlideConstants);
 
-    private final double MINIMUM_LINEAR_SLIDE_POWER = 0.2; //test for this
+    private final double MINIMUM_LINEAR_SLIDE_POWER = 0.1; //test for this
     private final int DEADBAND_LINEAR_SLIDE_MOTION = 100; //test for this
 
     public String wobbleDesc;
@@ -24,8 +25,13 @@ public class Wobble {
     public Servo trapDoor;
     public DcMotorEx wobbleMotor;
 
+    public double errorDebug;
+    public double powerDebug;
+
     private Toggler wobbleTog = new Toggler(6);
+    public  int linearSlideState;
     //private Toggler linearSlidePIDStateTog = new Toggler(2);
+    private Toggler teleToggler = new Toggler(5);
 
     // public SimpleTimer delayTimer = new SimpleTimer();
 
@@ -38,17 +44,19 @@ public class Wobble {
     }
 
     public enum LinearSlidePositions {
-        DOWN, MEDIUM, UP
+        DOWN, GRABBING, MOVING, UP
     }
 
-    public double[] ARM_ROTATOR_POSITIONS = {0, 1, 2}; //folded, in , out; test
-    public double[] CLAW_POSITIONS = {0, 0.75}; // open, close;test
-    public int[] LINEAR_SLIDE_POSITIONS = {0, 1, 2}; //down, medium, up; test
+    public double[] ARM_ROTATOR_POSITIONS = {0.21, 0.564, 0.925}; //folded, in , out; test
+    public double[] CLAW_POSITIONS = {0.67, 0.92}; // open, close;test
+    public int[] LINEAR_SLIDE_POSITIONS = {0, -1790, -500,  -3800}; //down, medium, up; test
 
     public Wobble(HardwareMap wobbleMap) {
-        armRotator = wobbleMap.servo.get("clawServo");
-        trapDoor = wobbleMap.servo.get("trapDoorServo");
+        trapDoor = wobbleMap.servo.get("clawServo");
+        armRotator = wobbleMap.servo.get("trapDoorServo");
         wobbleMotor = wobbleMap.get(DcMotorEx.class, "wobbleMotor");
+        wobbleMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        wobbleMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     /*public String clawStateDescription;
@@ -72,22 +80,25 @@ public class Wobble {
     }
 
     public void setLinearSlidePosition(LinearSlidePositions linearSlidePosition) {
-        int linearSlideState = 0;
-        double error = LINEAR_SLIDE_POSITIONS[linearSlidePosition.ordinal()] - wobbleMotor.getCurrentPosition();
-
+        double currentPosition = wobbleMotor.getCurrentPosition();
+        double targetPosition = LINEAR_SLIDE_POSITIONS[linearSlidePosition.ordinal()];
+        double error = Math.abs(currentPosition - targetPosition);
+        errorDebug = error;
         switch (linearSlideState) {
             case 0:
-                wobbleMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                wobbleMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 linearSlideController.init(error);
                 linearSlideState++;
                 break;
             case 1:
-                linearSlideController.setConstants(linearSlideConstants);
-                linearSlideController.calculate(error, wobbleMotor.getCurrentPosition(), wobbleMotor.getVelocity());
+                linearSlideController.calculate(error);
 
-                double linearSlidePower = Functions.map(linearSlideController.getOutput(), DEADBAND_LINEAR_SLIDE_MOTION, LINEAR_SLIDE_POSITIONS[linearSlidePosition.UP.ordinal()] - LINEAR_SLIDE_POSITIONS[linearSlidePosition.DOWN.ordinal()], MINIMUM_LINEAR_SLIDE_POWER, 1);
-
-                if (wobbleMotor.getCurrentPosition() > LINEAR_SLIDE_POSITIONS[linearSlidePosition.ordinal()]) {
+                double linearSlidePower = Functions.map(linearSlideController.getOutput(), DEADBAND_LINEAR_SLIDE_MOTION, -LINEAR_SLIDE_POSITIONS[LinearSlidePositions.UP.ordinal()], 0.2/**/, 1.0);
+                powerDebug = linearSlidePower;
+                if(Math.abs(error) <  DEADBAND_LINEAR_SLIDE_MOTION){
+                    wobbleMotor.setPower(0);
+                }
+                else if (wobbleMotor.getCurrentPosition() < LINEAR_SLIDE_POSITIONS[linearSlidePosition.ordinal()]) {
                     wobbleMotor.setPower(-linearSlidePower); // linear slide down
                 } else {
                     wobbleMotor.setPower(linearSlidePower); // linear slide up
@@ -98,7 +109,31 @@ public class Wobble {
                 break;
         }
     }
-
+    public void operate(boolean gamepadInput){
+        teleToggler.changeState(gamepadInput);
+        switch (teleToggler.currentState()){
+            case 0:
+                setLinearSlidePosition(LinearSlidePositions.GRABBING);
+                setClawPosition(ClawPositions.OPEN);
+                break;
+            case 1:
+                setClawPosition(ClawPositions.OPEN);
+                setLinearSlidePosition(LinearSlidePositions.DOWN);
+                break;
+            case 2:
+                setClawPosition(ClawPositions.CLOSE);
+                setLinearSlidePosition(LinearSlidePositions.DOWN);
+                break;
+            case 3:
+                setLinearSlidePosition(LinearSlidePositions.UP);
+                setClawPosition(ClawPositions.CLOSE);
+                break;
+            case 4:
+                setLinearSlidePosition(LinearSlidePositions.UP);
+                setClawPosition(ClawPositions.OPEN);
+                break;
+        }
+    }
     public void operateWobble(boolean stateFwd, boolean stateBkwd) {
         wobbleTog.changeState(stateFwd, stateBkwd);
         switch (wobbleTog.currentState()) {
@@ -112,13 +147,13 @@ public class Wobble {
                 wobbleDesc = "Take Stuff"; // dropping rings on Wobble Goal
                 setArmRotatorPositions(ArmRotatorPositions.OUT);
                 setClawPosition(ClawPositions.OPEN);
-                setLinearSlidePosition(LinearSlidePositions.MEDIUM);
+                setLinearSlidePosition(LinearSlidePositions.GRABBING);
 
             case 2:
                 wobbleDesc = "Carry Stuff"; // grasp Wobble Goal, holding claw near robot while moving
                 setArmRotatorPositions(ArmRotatorPositions.HALF);
                 setClawPosition(ClawPositions.CLOSE);
-                setLinearSlidePosition(LinearSlidePositions.MEDIUM);
+                setLinearSlidePosition(LinearSlidePositions.GRABBING);
 
             case 3:
                 wobbleDesc = "Raise to Wall Level"; // raise up to wall height

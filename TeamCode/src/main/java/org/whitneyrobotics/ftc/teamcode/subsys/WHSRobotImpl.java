@@ -10,6 +10,7 @@ import org.whitneyrobotics.ftc.teamcode.lib.purepursuit.swervetotarget.SwerveFol
 import org.whitneyrobotics.ftc.teamcode.lib.purepursuit.swervetotarget.SwervePath;
 import org.whitneyrobotics.ftc.teamcode.lib.util.Functions;
 import org.whitneyrobotics.ftc.teamcode.lib.util.RobotConstants;
+import org.whitneyrobotics.ftc.teamcode.lib.util.SimpleTimer;
 
 /**
  * Created by Jason on 10/20/2017.
@@ -61,9 +62,21 @@ public class WHSRobotImpl{
     private double robotY;
     private double distance;
 
+    private int powershotSwitch = 0;
+    SimpleTimer loadRingTimer = new SimpleTimer();
+    SimpleTimer canisterResetTimer = new SimpleTimer();
+    SimpleTimer shootingTimer = new SimpleTimer();
+    int ringsShot = 0;
+    int aimCase = 0;
+
     public WHSRobotImpl(HardwareMap hardwareMap) {
         DEADBAND_DRIVE_TO_TARGET = RobotConstants.DEADBAND_DRIVE_TO_TARGET; //in mm
         DEADBAND_ROTATE_TO_TARGET = RobotConstants.DEADBAND_ROTATE_TO_TARGET; //in degrees
+
+        intake = new Intake(hardwareMap);
+        outtake = new Outtake(hardwareMap);
+        canister = new Canister(hardwareMap);
+        wobble = new Wobble(hardwareMap);
 
         DRIVE_MIN = RobotConstants.drive_min;
         DRIVE_MAX = RobotConstants.drive_max;
@@ -193,28 +206,30 @@ public class WHSRobotImpl{
     }
 
     public void deadWheelEstimateCoordinate() {
-        estimateHeading();
-        encoderDeltas = drivetrain.getAllEncoderDelta();
-        //currentCoord.setHeading(/*Functions.normalizeAngle(Math.toDegrees(drivetrain.lrWheelConverter.encToMM(drivetrain.getAllEncoderPositions()[1]-drivetrain.getAllEncoderPositions()[0])/(Drivetrain.getTrackWidth())))*/ imu.getHeading());
 
-        double deltaXWheels = (drivetrain.lWheelConverter.encToMM(encoderDeltas[0]) + drivetrain.rWheelConverter.encToMM(encoderDeltas[1]))/2;
-        double deltaYWheel = drivetrain.backWheelConverter.encToMM(encoderDeltas[2]);
-        double deltaTheta = (drivetrain.rWheelConverter.encToMM(encoderDeltas[1]) - drivetrain.lWheelConverter.encToMM(encoderDeltas[0]))/(Drivetrain.getTrackWidth());
-        /*double deltaXWheels = drivetrain.lrWheelConverter.encToMM((encoderDeltas[0] + encoderDeltas[1])/2);
-        double deltaYWheel = drivetrain.backWheelConverter.encToMM(encoderDeltas[2]);
-        double deltaTheta = drivetrain.lrWheelConverter.encToMM(encoderDeltas[1] - encoderDeltas[0])/(Drivetrain.getTrackWidth());
-*/
-        double movementRadius = deltaXWheels / (deltaTheta + .0001);
-        double strafeRadius = deltaYWheel / (deltaTheta + .0001);
+        double deltaXRobot, deltaYRobot;
 
-        double deltaXRobot = movementRadius * Math.sin(deltaTheta) + strafeRadius * (1 - Math.cos(deltaTheta));
-        double deltaYRobot = strafeRadius * Math.sin(deltaTheta) - movementRadius * (1 - Math.cos(deltaTheta));
+        encoderDeltas = drivetrain.getMMDeadwheelEncoderDeltas();
 
+        double deltaXWheels = (encoderDeltas[0] - encoderDeltas[2])/2;
+        double deltaYWheel = encoderDeltas[1];
+        double deltaTheta = (-encoderDeltas[2] - encoderDeltas[0])/(Drivetrain.getTrackWidth());
+
+        if(deltaTheta == 0){
+            deltaXRobot = deltaXWheels;
+            deltaYRobot = deltaYWheel;
+        }else {
+            double movementRadius = deltaXWheels / (deltaTheta);
+            double strafeRadius = deltaYWheel / (deltaTheta);
+
+            deltaXRobot = movementRadius * Math.sin(deltaTheta) + strafeRadius * (1 - Math.cos(deltaTheta));
+            deltaYRobot = strafeRadius * Math.sin(deltaTheta) - movementRadius * (1 - Math.cos(deltaTheta));
+        }
         Position bodyVector = new Position(deltaXRobot, deltaYRobot);
         Position fieldVector = Functions.body2field(bodyVector, currentCoord);
         currentCoord.addX(fieldVector.getX());
         currentCoord.addY(fieldVector.getY());
-        //currentCoord.setPos(Functions.Positions.add(fieldVector, currentCoord));
+        currentCoord.setHeading(Functions.normalizeAngle(currentCoord.getHeading() + Math.toDegrees(deltaTheta)));
     }
 
     /*public void deadWheelEstimateCoordinate() {
@@ -318,5 +333,89 @@ public class WHSRobotImpl{
 
     public boolean swerveInProgress(){
         return swerveFollower.inProgress();
+    }
+
+    public void shootPowerShots(boolean gamepadInput){
+        double[] POWERSHOT_ANGLE_ARRAY = {14.0, 18.9, 22.0};
+        Outtake.GoalPositions[] GOAL_POSITION = new Outtake.GoalPositions[]{Outtake.GoalPositions.RIGHT_POWER_SHOT, Outtake.GoalPositions.CENTER_POWER_SHOT, Outtake.GoalPositions.LEFT_POWER_SHOT};
+        double loadRingDelay = 0.5;
+        double canisterResetDelay = 1.0;
+        switch (powershotSwitch) {
+            case 0:
+
+                if(gamepadInput){
+                    outtake.operateFlywheel(GOAL_POSITION[ringsShot]);
+                    powershotSwitch++;
+                }
+                break;
+            case 1:
+                rotateToTarget(POWERSHOT_ANGLE_ARRAY[ringsShot], false);
+                outtake.operateFlywheel(Outtake.GoalPositions.LEFT_POWER_SHOT);
+                if(!rotateToTargetInProgress){
+                    powershotSwitch++;
+                }
+                break;
+            case 2:
+                loadRingTimer.set(loadRingDelay);
+                outtake.operateFlywheel(GOAL_POSITION[ringsShot]);
+                powershotSwitch++;
+                break;
+            case 3:
+                outtake.operateFlywheel(GOAL_POSITION[ringsShot]);
+                canister.setLoaderPosition(Canister.LoaderPositions.PUSH);
+                if (loadRingTimer.isExpired()) {
+                    canister.setLoaderPosition(Canister.LoaderPositions.REST);
+                    canisterResetTimer.set(canisterResetDelay);
+                    powershotSwitch++;
+                }
+                break;
+            case 4:
+                outtake.operateFlywheel(GOAL_POSITION[ringsShot]);
+                if(canisterResetTimer.isExpired()) {
+                    ringsShot++;
+                    if (ringsShot >= 3) {
+                        outtake.setLauncherPower(0);
+                        powershotSwitch = 0;
+                        ringsShot = 0;
+                    } else {
+                        powershotSwitch = 1;
+                    }
+                }
+                break;
+        }
+    }
+    public void aimAtGoal (boolean gamepadInput){
+        double initialShotDelay = 1.2;
+        double shootingDelay = 0.7;
+        switch (aimCase){
+            case 0:
+                if(gamepadInput){
+                    if(ringsShot == 0)
+                        shootingTimer.set(initialShotDelay);
+                    else
+                        shootingTimer.set(shootingDelay);
+                    aimCase++;
+                }
+                break;
+            case 1:
+                rotateToTarget(0, false);
+                outtake.operateFlywheel(Outtake.GoalPositions.HIGH_BIN);
+                if(!rotateToTargetInProgress){
+                    aimCase++;
+                }
+                break;
+            case 2:
+                outtake.operateFlywheel(Outtake.GoalPositions.HIGH_BIN);
+                if(shootingTimer.isExpired()) {
+                    canister.shootRing();
+                    if (!canister.shootingInProgress()) {
+                        aimCase++;
+                    }
+                }
+                break;
+            case 3:
+                aimCase = 0;
+                outtake.setLauncherPower(0.0);
+        }
     }
 }

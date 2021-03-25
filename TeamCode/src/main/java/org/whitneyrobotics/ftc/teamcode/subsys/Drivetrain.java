@@ -17,11 +17,12 @@ public class Drivetrain {
     public DcMotorEx frontRight;
     public DcMotorEx backLeft;
     public DcMotorEx backRight;
+    //public DcMotor leftOdometry;
 
     private Toggler orientationSwitch = new Toggler(2);
     private Toggler fieldCentricSwitch = new Toggler(2);
 
-    private static final double TRACK_WIDTH = 359;
+    private static final double TRACK_WIDTH = 356;
 
     //TODO: measure actual wheel base
     private static final double WHEEL_BASE = 450;
@@ -29,7 +30,7 @@ public class Drivetrain {
     public static final double B_DEAD_WHEEL_TO_ROBOT_CENTER = 103.0;
     private static final double RADIUS_OF_WHEEL = 50;               //in mm
     private static final double CIRC_OF_WHEEL = RADIUS_OF_WHEEL * 2 * Math.PI;
-    private static final double ENCODER_TICKS_PER_REV = 1440; // <-- omnis  (537.6;      //Orbital 20))
+    private static final double ENCODER_TICKS_PER_REV = 537.6; // <-- omnis  (537.6;      //Orbital 20))
     private static final double GEAR_RATIO = 1.0;
     private static final double ENCODER_TICKS_PER_MM = ENCODER_TICKS_PER_REV / (CIRC_OF_WHEEL * GEAR_RATIO);
 
@@ -62,7 +63,7 @@ public class Drivetrain {
     public static final double Y_WHEEL_TO_ROBOT_CENTER = 100.0;
 
     private double[] encoderValues = {0.0, 0.0};
-    private double[] deadWheelEncoderValues = {0.0, 0.0, 0.0};
+    private int[] deadWheelEncoderValues = {0,0,0};
     private double[] allEncoderValues = {0.0, 0.0, 0.0, 0.0};
 
     private double vFL;
@@ -81,6 +82,7 @@ public class Drivetrain {
         frontRight = driveMap.get(DcMotorEx.class, "driveFR");
         backLeft = driveMap.get(DcMotorEx.class, "driveBL");
         backRight = driveMap.get(DcMotorEx.class, "driveBR");
+        //leftOdometry = driveMap.dcMotor.get("leftOdometry");
 
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -88,12 +90,14 @@ public class Drivetrain {
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         //For 40s. TODO: Change this when we get more 20s.
-
         frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
         backRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
+
         setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //leftOdometry.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        //leftOdometry.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         orientationSwitch.setState(1);
     }
@@ -177,15 +181,15 @@ public class Drivetrain {
     }
 
     public double getLAvgEncoderPosition() {
-        double leftTotal = backLeft.getCurrentPosition() + frontLeft.getCurrentPosition();
-        return leftTotal * 0.5;
-        //return frontLeft.getCurrentPosition();
+        //double leftTotal = backLeft.getCurrentPosition() + frontLeft.getCurrentPosition();
+        //return leftTotal * 0.5;
+        return backLeft.getCurrentPosition();
     }
 
     public double getRAvgEncoderPosition() {
-        double rightTotal = backRight.getCurrentPosition() + frontRight.getCurrentPosition();
-        return rightTotal * 0.5;
-        //return backRight.getCurrentPosition();
+        //double rightTotal = backRight.getCurrentPosition();/* + frontRight.getCurrentPosition();*/
+        //return rightTotal * 0.5;
+        return backRight.getCurrentPosition();
     }
 
     public double[] getLRAvgEncoderPosition() {
@@ -331,5 +335,21 @@ public class Drivetrain {
         backLeft.setPower(power);
         backRight.setPower(power);
 
+    }
+
+    public double[] getMMDeadwheelEncoderDeltas(){
+        EncoderConverter deadwheelConverter = new EncoderConverter(25.4, 8192/4 , 1);
+
+        int leftDelta = 0;
+        int middleDelta = frontRight.getCurrentPosition() - deadWheelEncoderValues[1];
+        int rightDelta = frontLeft.getCurrentPosition() - deadWheelEncoderValues[2];
+
+        deadWheelEncoderValues = new int[]{0, frontRight.getCurrentPosition(), frontLeft.getCurrentPosition()};
+
+        double leftMM = deadwheelConverter.encToMM(leftDelta);
+        double middleMM = deadwheelConverter.encToMM(middleDelta);
+        double rightMM = deadwheelConverter.encToMM(rightDelta);
+
+        return new double[] {leftMM, middleMM, rightMM};
     }
 }

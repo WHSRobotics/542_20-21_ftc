@@ -149,10 +149,10 @@ public class WHSAuto extends OpMode {
     public void defineStateEnabledStatus() {
         stateEnabled[INIT] = true;
         stateEnabled[SCAN_STACK] = true;
-        stateEnabled[DRIVE_TO_LAUNCH_POINT] = true;
-        stateEnabled[LAUNCH_PARTICLES] = true;
-        stateEnabled[DROP_OFF_WOBBLE_GOAL] = true;
-        stateEnabled[PARK_ON_STARTING_LINE] = true;
+        stateEnabled[DRIVE_TO_LAUNCH_POINT] = false;
+        stateEnabled[LAUNCH_PARTICLES] = false;
+        stateEnabled[DROP_OFF_WOBBLE_GOAL] = false;
+        stateEnabled[PARK_ON_STARTING_LINE] = false;
         stateEnabled[END] = true;
     }
 
@@ -252,13 +252,28 @@ public class WHSAuto extends OpMode {
         if (tfod != null) {
             tfod.activate();
 
-            tfod.setZoom(4.0, 16.0 / 9.0);
+            tfod.setZoom(2.0, 16.0 / 9.0);
         }
     }
 
     @Override
     public void init_loop() {
-
+        List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+        if (updatedRecognitions != null) {
+            stackLabel = "Zero";
+                                /*telemetry.addData("# Object Detected", updatedRecognitions.size());
+                                int i = 0;*/
+            for (Recognition recognition : updatedRecognitions) {
+                                    /*telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
+                                    telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
+                                            recognition.getLeft(), recognition.getTop());
+                                    telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
+                                            recognition.getRight(), recognition.getBottom());
+                                    telemetry.update();*/
+                stackLabel = recognition.getLabel();
+            }
+        }
+        telemetry.addData("Height", stackLabel);
       /*  if (robot.wobbleHeightDetector.getScreenPosition().x < LEFT_MAX) {
             autoOpRingPosition = 2;
         } else if (robot.wobbleHeightDetector.getScreenPosition().x < CENTER_MAX) {
@@ -301,59 +316,17 @@ public class WHSAuto extends OpMode {
         switch (state) {
             case INIT:
                 stateDesc = "Starting auto";
-                switch (subState) {
-                    case 0:
-                        subStateDesc = "Set Wobble Extending Timer";
-                        wobbleExtendTimer.set(WOBBLE_EXTEND_DELAY);
-                        subState++;
-                        break;
-                    case 1:
-                        subStateDesc = "Extend Wobble";
-                        while (!wobblePickupArmDownTimer.isExpired()) {
-                            robot.wobble.setLinearSlidePosition(Wobble.LinearSlidePositions.DOWN);
-                            robot.wobble.setArmRotatorPositions(Wobble.ArmRotatorPositions.OUT);
-                            robot.wobble.setClawPosition(Wobble.ClawPositions.OPEN);
-                        }
-                        subState++;
-                        break;
-                    case 2:
-                        subStateDesc = "Set Wobble Claw Close Timer";
-                        wobblePickupClawCloseTimer.set(WOBBLE_PICKUP_CLAW_CLOSE_DELAY);
-                        subState++;
-
-                    case 3:
-                        subStateDesc = "Clinch Wobble";
-                        while (!wobblePickupClawCloseTimer.isExpired()) {
-                            robot.wobble.setClawPosition(Wobble.ClawPositions.CLOSE);
-                            robot.wobble.setArmRotatorPositions(Wobble.ArmRotatorPositions.HALF);
-                        }
-                        subState++;
-                        break;
-                    case 4:
-                        subStateDesc = "Set drop Intake Timer";
-                        dropDownTimer.set(DROPDOWN_DELAY);
-
-                    case 5:
-                        subStateDesc = "Dropping Intake";
-                        while (!dropDownTimer.isExpired()) {
-                            robot.intake.setDropdown(Intake.DropdownPositions.DOWN);
-                        }
-                        break;
-                    case 6:
-                        subStateDesc = "Exit";
-                        advanceState();
-                    default:
-                        break;
-                }
+                advanceState();
                 break;
             case SCAN_STACK:
-                stateDesc = "Scan Stack";
+                stateDesc = "Scan Stack + Drop Intake";
                 switch (subState) {
                     case 0:
                         subStateDesc = "Scan Stack";
                         if (tfod != null) {
                             List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
                             if (updatedRecognitions != null) {
+                                stackLabel = "Zero";
                                 /*telemetry.addData("# Object Detected", updatedRecognitions.size());
                                 int i = 0;*/
                                 for (Recognition recognition : updatedRecognitions) {
