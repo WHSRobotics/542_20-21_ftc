@@ -2,6 +2,7 @@ package org.whitneyrobotics.ftc.teamcode.lib.purepursuit.swervetotarget;
 
 import org.whitneyrobotics.ftc.teamcode.lib.geometry.Coordinate;
 import org.whitneyrobotics.ftc.teamcode.lib.geometry.Position;
+import org.whitneyrobotics.ftc.teamcode.lib.geometry.SwerveWaypoint;
 import org.whitneyrobotics.ftc.teamcode.lib.motion.RateLimiter;
 import org.whitneyrobotics.ftc.teamcode.lib.purepursuit.PurePursuitRobotConstants;
 import org.whitneyrobotics.ftc.teamcode.lib.util.Functions;
@@ -10,6 +11,7 @@ import org.whitneyrobotics.ftc.teamcode.subsys.Drivetrain;
 public class SwerveFollower {
 
     SwervePath path;
+    SwerveWaypoint firstPoint;
 
     public int lastClosestPointIndex = 0;
     private int lastIndex = 0;
@@ -28,15 +30,22 @@ public class SwerveFollower {
     private double trackWidth = Drivetrain.getTrackWidth();
 
     private boolean inProgress = false;
+    public double indexOfClosest = 0;
     public SwerveFollower(SwervePath path) {
         this.path = path;
+        Position pos = new Position(path.getPositionAtIndex(0).getX(), path.getPositionAtIndex(0).getY());
+        double vel = path.getTargetVelocityAtIndex(0);
+        firstPoint = new SwerveWaypoint(pos, vel);
         targetVelocityRateLimiter = new RateLimiter(PurePursuitRobotConstants.MAX_ACCELERATION, 0);
         lastTime = System.nanoTime() / 1E9;
     }
 
-    public double[] calculateMotorPowers(Coordinate currentCoord, double[] currentWheelVelocities) {
+    public double[] calculateMotorPowers(Coordinate currentCoordinate, double[] currentWheelVelocities) {
+        path.getWaypoints().remove(0);
+        path.getWaypoints().add(0, firstPoint);
         Position lookaheadPoint;
-        if (path.backwards()) currentCoord.setHeading(Functions.normalizeAngle(currentCoord.getHeading() + 180));
+        Coordinate currentCoord = currentCoordinate;
+        if (path.backwards()) currentCoord = new Coordinate(currentCoordinate.getPos(), Functions.normalizeAngle(currentCoordinate.getHeading() + 180));
 
         boolean tFound = false;
         for (int i = lastIndex; i < path.size() - 1; i++) {
@@ -52,8 +61,8 @@ public class SwerveFollower {
         Position calculatedTStartPoint = path.getPositionAtIndex(lastIndex);
         Position calculatedTEndPoint = path.getPositionAtIndex(lastIndex + 1);
         lookaheadPoint = Functions.Positions.add(calculatedTStartPoint, Functions.Positions.scale(currentTValue, Functions.Positions.subtract(calculatedTEndPoint, calculatedTStartPoint)));
-
         int indexOfClosestPoint = calculateIndexOfClosestPoint(path,currentCoord);
+        indexOfClosest = indexOfClosestPoint;
         double curvature = calculateCurvature(path.getFollowerConstants(), lookaheadPoint, currentCoord);
         currentTargetWheelVelocities = calculateTargetWheelVelocities(path.getTargetVelocityAtIndex(indexOfClosestPoint), curvature);
         if (path.backwards()) {
@@ -168,9 +177,11 @@ public class SwerveFollower {
 
     private int calculateIndexOfClosestPoint(SwervePath path, Coordinate currentCoord) {
         // creates array in which we store the current distance to each point in our path
+
         double[] distances = new double[path.size()];
         for (int i = 0/*lastClosestPointIndex*/; i < distances.length; i++) {
-            distances[i] = Functions.Positions.subtract(path.getPositionAtIndex(i), currentCoord).getMagnitude();
+            Position pos = new Position(path.getPositionAtIndex(i).getX(), path.getPositionAtIndex(i).getY());
+            distances[i] = Functions.Positions.subtract(pos, currentCoord).getMagnitude();
         }
 
         // calculates the index of value in the array with the smallest value and returns that index
@@ -204,7 +215,7 @@ public class SwerveFollower {
 
     private double[] calculateTargetWheelVelocities(double targetVelocity, double curvature) {
         // calculates the wheel velocity at which the wheels should be
-        double rateLimitedTargetVelocity = targetVelocityRateLimiter.calculateOutput(targetVelocity);
+        double rateLimitedTargetVelocity = targetVelocity;//targetVelocityRateLimiter.calculateOutput(targetVelocity);
         double leftVelocity = rateLimitedTargetVelocity * (2 + curvature * trackWidth) / 2;
         double rightVelocity = rateLimitedTargetVelocity * (2 - curvature * trackWidth) / 2;
 
@@ -218,5 +229,7 @@ public class SwerveFollower {
     public double[] getCurrentTargetWheelVelocities() {
         return currentTargetWheelVelocities;
     }
-
+    public int getIndexOfClosestPoint(){
+        return lastClosestPointIndex;
+    }
 }

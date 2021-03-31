@@ -1,43 +1,43 @@
 package org.whitneyrobotics.ftc.teamcode.tests;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.Servo;
 
-import org.whitneyrobotics.ftc.teamcode.lib.util.Toggler;
-import org.whitneyrobotics.ftc.teamcode.subsys.Outtake;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.whitneyrobotics.ftc.teamcode.lib.geometry.Coordinate;
+import org.whitneyrobotics.ftc.teamcode.subsys.WHSRobotImpl;
 
 @TeleOp(name = "Outtake Test", group = "Tests")
 public class OuttakeTest extends OpMode {
 
-    public Outtake testOuttake;
+    public WHSRobotImpl robot;
 
     double power;
 
     int i = 0;
-
+    FtcDashboard dashboard ;
+    Telemetry dashboardTelemetry;
+    TelemetryPacket packet = new TelemetryPacket();
     @Override
     public void init() {
-        testOuttake = new Outtake(hardwareMap);
+        dashboard = FtcDashboard.getInstance();
+        dashboardTelemetry = dashboard.getTelemetry();;
+        dashboardTelemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        power = 0;
+        dashboard.sendTelemetryPacket(packet);
+
+        robot = new WHSRobotImpl(hardwareMap);
+        dashboardTelemetry.setMsTransmissionInterval(10);
     }
 
     @Override
     public void loop() {
-        i++;
-
-        if(i%10 == 0){
-            if(gamepad1.a) {
-                power += 0.01;
-            }else if (gamepad1.b){
-                power -= 0.01;
-            }
-        }
-
-        testOuttake.setLauncherPower(power);
-
-        telemetry.addData("Flywheel Power: ", power);
+        robot.shootHighGoal(gamepad1.x);
+        packet.put("Target Velocity", robot.outtake.targetVelocityDebug);
+        packet.put("Current Velocity", robot.outtake.currentVelocityDebug);
+        dashboard.sendTelemetryPacket(packet);
     }
 }

@@ -16,7 +16,7 @@ import org.whitneyrobotics.ftc.teamcode.lib.util.SimpleTimer;
  * Created by Jason on 10/20/2017.
  */
 
-public class WHSRobotImpl{
+public class WHSRobotImpl {
 
     public Drivetrain drivetrain;
     public IMU imu;
@@ -26,8 +26,8 @@ public class WHSRobotImpl{
     public Wobble wobble;
     public Outtake outtake;
 
-    SwervePath  currentSwervePath;
-    SwerveFollower swerveFollower;
+    SwervePath currentSwervePath;
+    public SwerveFollower swerveFollower;
 
     Coordinate currentCoord;
     private double targetHeading; //field frame
@@ -39,7 +39,7 @@ public class WHSRobotImpl{
     private static double DEADBAND_DRIVE_TO_TARGET = RobotConstants.DEADBAND_DRIVE_TO_TARGET; //in mm
     private static double DEADBAND_ROTATE_TO_TARGET = RobotConstants.DEADBAND_ROTATE_TO_TARGET; //in degrees
 
-   public static double DRIVE_MIN = RobotConstants.drive_min;
+    public static double DRIVE_MIN = RobotConstants.drive_min;
     public static double DRIVE_MAX = RobotConstants.drive_max;
     public static double ROTATE_MIN = RobotConstants.rotate_min;
     public static double ROTATE_MAX = RobotConstants.rotate_max;
@@ -68,6 +68,7 @@ public class WHSRobotImpl{
     SimpleTimer shootingTimer = new SimpleTimer();
     int ringsShot = 0;
     int aimCase = 0;
+    boolean shootingInProgress = false;
 
     public WHSRobotImpl(HardwareMap hardwareMap) {
         DEADBAND_DRIVE_TO_TARGET = RobotConstants.DEADBAND_DRIVE_TO_TARGET; //in mm
@@ -177,8 +178,8 @@ public class WHSRobotImpl{
         double power = (rotateController.getOutput() >= 0 ? 1 : -1) * (Functions.map(Math.abs(rotateController.getOutput()), 0, 180, ROTATE_MIN, ROTATE_MAX));
 
         if (Math.abs(angleToTarget) > DEADBAND_ROTATE_TO_TARGET/* && rotateController.getDerivative() < 40*/) {
-            drivetrain.operateLeft(-power);
-            drivetrain.operateRight(power);
+            drivetrain.operateLeft(power);
+            drivetrain.operateRight(-power);
             rotateToTargetInProgress = true;
         } else {
             drivetrain.operateLeft(0.0);
@@ -211,14 +212,14 @@ public class WHSRobotImpl{
 
         encoderDeltas = drivetrain.getMMDeadwheelEncoderDeltas();
 
-        double deltaXWheels = (encoderDeltas[0] - encoderDeltas[2])/2;
+        double deltaXWheels = (encoderDeltas[0] - encoderDeltas[2]) / 2;
         double deltaYWheel = encoderDeltas[1];
-        double deltaTheta = (-encoderDeltas[2] - encoderDeltas[0])/(Drivetrain.getTrackWidth());
+        double deltaTheta = (-encoderDeltas[2] - encoderDeltas[0]) / (Drivetrain.getTrackWidth());
 
-        if(deltaTheta == 0){
+        if (deltaTheta == 0) {
             deltaXRobot = deltaXWheels;
             deltaYRobot = deltaYWheel;
-        }else {
+        } else {
             double movementRadius = deltaXWheels / (deltaTheta);
             double strafeRadius = deltaYWheel / (deltaTheta);
 
@@ -275,7 +276,7 @@ public class WHSRobotImpl{
 
     public void mecanumEstimatePosition() {
         encoderDeltas = drivetrain.getMecanumEncoderDelta();
-        double theta = Math.atan(encoderDeltas[1]/encoderDeltas[0]);
+        double theta = Math.atan(encoderDeltas[1] / encoderDeltas[0]);
 
     }
 
@@ -302,17 +303,17 @@ public class WHSRobotImpl{
         return currentCoord;
     }
 
-    public void estimateCoordinate(){
+    public void estimateCoordinate() {
         double[] currentEncoderValues = drivetrain.getLRAvgEncoderPosition();
         encoderDeltas[0] = currentEncoderValues[0] - encoderValues[0];
         encoderDeltas[1] = currentEncoderValues[1] - encoderValues[1];
-        double currentHeading = Functions.normalizeAngle(Math.toDegrees(drivetrain.encToMM((currentEncoderValues[1] - currentEncoderValues[0])/2/Drivetrain.getTrackWidth())) + imu.getImuBias()); //-180 to 180 deg
+        double currentHeading = Functions.normalizeAngle(Math.toDegrees(drivetrain.encToMM((currentEncoderValues[1] - currentEncoderValues[0]) / 2 / Drivetrain.getTrackWidth())) + imu.getImuBias()); //-180 to 180 deg
         currentCoord.setHeading(currentHeading); //updates global variable
 
-        double deltaS = drivetrain.encToMM((encoderDeltas[0] + encoderDeltas[1])/2);
-        double deltaHeading = Math.toDegrees(drivetrain.encToMM((encoderDeltas[1] - encoderDeltas[0])/Drivetrain.getTrackWidth()));
-        robotX += deltaS * Functions.cosd(lastKnownHeading + deltaHeading/2);
-        robotY += deltaS * Functions.sind(lastKnownHeading + deltaHeading/2);
+        double deltaS = drivetrain.encToMM((encoderDeltas[0] + encoderDeltas[1]) / 2);
+        double deltaHeading = Math.toDegrees(drivetrain.encToMM((encoderDeltas[1] - encoderDeltas[0]) / Drivetrain.getTrackWidth()));
+        robotX += deltaS * Functions.cosd(lastKnownHeading + deltaHeading / 2);
+        robotY += deltaS * Functions.sind(lastKnownHeading + deltaHeading / 2);
 
         currentCoord.setX(robotX);
         currentCoord.setY(robotY);
@@ -320,30 +321,32 @@ public class WHSRobotImpl{
         encoderValues[1] = currentEncoderValues[1];
         lastKnownHeading = currentCoord.getHeading();
     }
-    public void updatePath (SwervePath path){
+
+    public void updatePath(SwervePath path) {
         swerveFollower = new SwerveFollower(path);
     }
 
-    public void updatePath (StrafePath path){
+    public void updatePath(StrafePath path) {
 
     }
-    public void swerveToTarget(){
-        drivetrain.operate(swerveFollower.calculateMotorPowers(getCoordinate(),drivetrain.getWheelVelocities()));
+
+    public void swerveToTarget() {
+        drivetrain.operate(swerveFollower.calculateMotorPowers(getCoordinate(), drivetrain.getWheelVelocities()));
     }
 
-    public boolean swerveInProgress(){
+    public boolean swerveInProgress() {
         return swerveFollower.inProgress();
     }
 
-    public void shootPowerShots(boolean gamepadInput){
-        double[] POWERSHOT_ANGLE_ARRAY = {14.0, 18.9, 22.0};
+    public void shootPowerShots(boolean gamepadInput) {
+        double[] POWERSHOT_ANGLE_ARRAY = {12.0, 16.9, 21.0};
         Outtake.GoalPositions[] GOAL_POSITION = new Outtake.GoalPositions[]{Outtake.GoalPositions.RIGHT_POWER_SHOT, Outtake.GoalPositions.CENTER_POWER_SHOT, Outtake.GoalPositions.LEFT_POWER_SHOT};
         double loadRingDelay = 0.5;
         double canisterResetDelay = 1.0;
         switch (powershotSwitch) {
             case 0:
 
-                if(gamepadInput){
+                if (gamepadInput) {
                     outtake.operateFlywheel(GOAL_POSITION[ringsShot]);
                     powershotSwitch++;
                 }
@@ -351,7 +354,7 @@ public class WHSRobotImpl{
             case 1:
                 rotateToTarget(POWERSHOT_ANGLE_ARRAY[ringsShot], false);
                 outtake.operateFlywheel(Outtake.GoalPositions.LEFT_POWER_SHOT);
-                if(!rotateToTargetInProgress){
+                if (!rotateToTargetInProgress) {
                     powershotSwitch++;
                 }
                 break;
@@ -371,7 +374,7 @@ public class WHSRobotImpl{
                 break;
             case 4:
                 outtake.operateFlywheel(GOAL_POSITION[ringsShot]);
-                if(canisterResetTimer.isExpired()) {
+                if (canisterResetTimer.isExpired()) {
                     ringsShot++;
                     if (ringsShot >= 3) {
                         outtake.setLauncherPower(0);
@@ -384,13 +387,14 @@ public class WHSRobotImpl{
                 break;
         }
     }
-    public void aimAtGoal (boolean gamepadInput){
+
+    public void shootHighGoal(boolean gamepadInput) {
         double initialShotDelay = 1.2;
         double shootingDelay = 0.7;
-        switch (aimCase){
+        switch (aimCase) {
             case 0:
-                if(gamepadInput){
-                    if(ringsShot == 0)
+                if (gamepadInput) {
+                    if (ringsShot == 0)
                         shootingTimer.set(initialShotDelay);
                     else
                         shootingTimer.set(shootingDelay);
@@ -400,13 +404,13 @@ public class WHSRobotImpl{
             case 1:
                 rotateToTarget(0, false);
                 outtake.operateFlywheel(Outtake.GoalPositions.HIGH_BIN);
-                if(!rotateToTargetInProgress){
+                if (!rotateToTargetInProgress) {
                     aimCase++;
                 }
                 break;
             case 2:
                 outtake.operateFlywheel(Outtake.GoalPositions.HIGH_BIN);
-                if(shootingTimer.isExpired()) {
+                if (shootingTimer.isExpired()) {
                     canister.shootRing();
                     if (!canister.shootingInProgress()) {
                         aimCase++;
@@ -417,5 +421,96 @@ public class WHSRobotImpl{
                 aimCase = 0;
                 outtake.setLauncherPower(0.0);
         }
+    }
+
+    public void shootHighGoal2(boolean gamepadInput) {
+        double initialShotDelay = 1.2;
+        double shootingDelay = 0.7;
+        switch (aimCase) {
+            case 0:
+                if (gamepadInput) {
+                    if (ringsShot == 0)
+                        shootingTimer.set(initialShotDelay);
+                    else
+                        shootingTimer.set(shootingDelay);
+                    aimCase++;
+                }
+                break;
+            case 1:
+                rotateToTarget(0, false);
+                outtake.operateFlywheel(Outtake.GoalPositions.HIGH_BIN_FAR);
+                if (!rotateToTargetInProgress) {
+                    aimCase++;
+                }
+                break;
+            case 2:
+                outtake.operateFlywheel(Outtake.GoalPositions.HIGH_BIN_FAR);
+                if (shootingTimer.isExpired()) {
+                    canister.shootRing();
+                    if (!canister.shootingInProgress()) {
+                        aimCase++;
+                    }
+                }
+                break;
+            case 3:
+                aimCase = 0;
+                outtake.setLauncherPower(0.0);
+        }
+    }
+
+    public int getIndexOfClosestPoint() {
+        return swerveFollower.getIndexOfClosestPoint();
+    }
+
+    public void autoShootHighGoal() {
+        double loadRingDelay = 0.5;
+        if(ringsShot<1) {
+            loadRingDelay = 2.5;
+        }
+        double canisterResetDelay = 1.0;
+        switch (powershotSwitch) {
+            case 0:
+                shootingInProgress = true;
+                if(ringsShot < 1){
+                    outtake.operateFlywheel(Outtake.GoalPositions.HIGH_BIN_FAR);
+                } else {
+                    outtake.operateFlywheel(Outtake.GoalPositions.HIGH_BIN);
+                }
+                powershotSwitch++;
+                break;
+            case 1:
+                loadRingTimer.set(loadRingDelay);
+                outtake.operateFlywheel(Outtake.GoalPositions.HIGH_BIN);
+                powershotSwitch++;
+                break;
+            case 2:
+                outtake.operateFlywheel(Outtake.GoalPositions.HIGH_BIN);
+                if (loadRingTimer.isExpired()) {
+                    if(ringsShot > 0) {
+                        canister.setLoaderPosition(Canister.LoaderPositions.PUSH);
+                    }
+                    canisterResetTimer.set(canisterResetDelay);
+                    powershotSwitch++;
+                }
+                canisterResetTimer.set(canisterResetDelay);
+                break;
+            case 3:
+                outtake.operateFlywheel(Outtake.GoalPositions.HIGH_BIN);
+                if (canisterResetTimer.isExpired()) {
+                    canister.setLoaderPosition(Canister.LoaderPositions.REST);
+                    ringsShot++;
+                    if (ringsShot >= 5) {
+                        shootingInProgress = false;
+                        outtake.setLauncherPower(0);
+                        ringsShot = 0;
+                    } else {
+                        powershotSwitch = 1;
+                    }
+                }
+                break;
+        }
+    }
+    public boolean shootingInProgress(){
+        return  shootingInProgress;
     }
 }

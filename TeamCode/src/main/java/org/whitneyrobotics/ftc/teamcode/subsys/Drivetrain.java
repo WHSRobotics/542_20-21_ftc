@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.whitneyrobotics.ftc.teamcode.lib.util.Toggler;
 
 /**
@@ -22,7 +23,7 @@ public class Drivetrain {
     private Toggler orientationSwitch = new Toggler(2);
     private Toggler fieldCentricSwitch = new Toggler(2);
 
-    private static final double TRACK_WIDTH = 356;
+    private static final double TRACK_WIDTH = 360.6;
 
     //TODO: measure actual wheel base
     private static final double WHEEL_BASE = 450;
@@ -90,8 +91,8 @@ public class Drivetrain {
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         //For 40s. TODO: Change this when we get more 20s.
-        frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
-        backRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
         setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -228,7 +229,7 @@ public class Drivetrain {
     }
 
     public double[] getWheelVelocities() {
-        double[] wheelVelocities = {encToMM(backLeft.getVelocity()), encToMM(frontRight.getVelocity())};
+        double[] wheelVelocities = {encToMM(backLeft.getVelocity(AngleUnit.DEGREES)), encToMM(backRight.getVelocity(AngleUnit.DEGREES))};
         return wheelVelocities;
     }
 

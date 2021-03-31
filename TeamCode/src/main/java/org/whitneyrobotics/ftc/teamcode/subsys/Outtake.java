@@ -35,7 +35,7 @@ public class Outtake {
 
 
     public enum GoalPositions {
-        LEFT_POWER_SHOT, CENTER_POWER_SHOT, RIGHT_POWER_SHOT, LOW_BIN, MEDIUM_BIN, HIGH_BIN
+        LEFT_POWER_SHOT, CENTER_POWER_SHOT, RIGHT_POWER_SHOT, LOW_BIN, MEDIUM_BIN, HIGH_BIN, HIGH_BIN_FAR
     }
     /*public enum LaunchAngles{
         LOW_BIN, MEDIUM_BIN, HIGH_BIN, P1, P2, P3
@@ -63,7 +63,7 @@ public class Outtake {
 
     //LEFT, CENTER, RIGHT, LOW, MEDIUM, HIGH
     public double[] flapServoPositions = {0.0, 0.25, 0.45, 0.5, 0.65, 0.75}; //test
-    public double[] targetMotorVelocities = {1630, 1620, 1620, 0.66, 0.77, 1795}; //test to get to 7.07 m/s
+    public double[] targetMotorVelocities = {1470, 1460, 1455, 0.66, 0.77, 1665, 1705}; //test to get to 7.07 m/s
 
     public Outtake(HardwareMap outtakeMap) {
         flywheel = outtakeMap.get(DcMotorEx.class, "outtakeMotor");

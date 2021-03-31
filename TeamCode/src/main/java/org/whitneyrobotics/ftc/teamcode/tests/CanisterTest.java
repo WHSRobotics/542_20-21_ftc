@@ -3,7 +3,6 @@ package org.whitneyrobotics.ftc.teamcode.tests;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.whitneyrobotics.ftc.teamcode.lib.geometry.Coordinate;
 import org.whitneyrobotics.ftc.teamcode.lib.util.RobotConstants;
 import org.whitneyrobotics.ftc.teamcode.lib.util.Toggler;
@@ -32,9 +31,9 @@ public class CanisterTest extends OpMode {
     public void loop() {
         robot.estimateHeading();
         if(gamepad2.left_bumper) {
-            robot.drivetrain.operateMecanumDrive(gamepad2.left_stick_x/4, gamepad2.left_stick_y/4, gamepad2.right_stick_x/4, 180);
+            robot.drivetrain.operateMecanumDrive(-gamepad2.left_stick_x/4, -gamepad2.left_stick_y/4, -gamepad2.right_stick_x/4, 180);
         }else{
-            robot.drivetrain.operateMecanumDrive(gamepad2.left_stick_x, gamepad2.left_stick_y, gamepad2.right_stick_x, 180);
+            robot.drivetrain.operateMecanumDrive(-gamepad2.left_stick_x, -gamepad2.left_stick_y, -gamepad2.right_stick_x, 180);
         }
         intakeToggler.changeState(gamepad1.right_bumper);
         if(intakeToggler.currentState() == 1) {
@@ -43,7 +42,8 @@ public class CanisterTest extends OpMode {
             robot.intake.setIntakePower(0.0);
         }
         robot.canister.operateLoader(gamepad1.a);
-        robot.aimAtGoal(gamepad1.x);
+        robot.shootHighGoal(gamepad1.x);
+        robot.shootHighGoal2(gamepad1.y);
         outtakeToggler.changeState(gamepad1.left_bumper);
         //testOuttake.setLauncherPower(0.77);
         /*if(outtakeToggler.currentState() == 1) {

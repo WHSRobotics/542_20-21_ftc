@@ -1,16 +1,16 @@
 package org.whitneyrobotics.ftc.teamcode.lib.purepursuit;
 
+import com.acmerobotics.dashboard.config.Config;
 import org.whitneyrobotics.ftc.teamcode.lib.control.ControlConstants;
 
-//import com.acmerobotics.dashboard.config.Config;
-//@Config
+@Config
 public class PurePursuitRobotConstants {
 
-    public final static double MAX_ACCELERATION = 0;
+    public final static double MAX_ACCELERATION = 1250;
 
-    public final static double SWERVE_KP = 0;
-    public final static double SWERVE_KV = 0;
-    public final static double SWERVE_KA = 0;
+    public  static double SWERVE_KP = 0.0;
+    public  static double SWERVE_KV = 0.00137;
+    public  static double SWERVE_KA = 0.0;
 
     public final static double STRAFE_KP = 0, STRAFE_KV = 0, STRAFE_KA = 0;
 

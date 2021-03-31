@@ -15,7 +15,7 @@ public class Canister {
         REST, PUSH
     }
 
-    public double[] LOADER_POSITIONS = {0.79, 0.61}; // rest, push
+    public double[] LOADER_POSITIONS = {0.79, 0.57}; // rest, push
 
     public SimpleTimer loadTimer = new SimpleTimer();
     public SimpleTimer teleTimer = new SimpleTimer();
