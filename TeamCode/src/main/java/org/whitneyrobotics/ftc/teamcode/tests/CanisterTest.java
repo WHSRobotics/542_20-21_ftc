@@ -30,21 +30,19 @@ public class CanisterTest extends OpMode {
     @Override
     public void loop() {
         robot.estimateHeading();
-        if(gamepad2.left_bumper) {
+        if(gamepad1.left_bumper){
+            robot.drivetrain.frontLeft.setPower(-0.5);
+            robot.drivetrain.backLeft.setPower(-0.5);
+        }else if(gamepad2.left_bumper) {
             robot.drivetrain.operateMecanumDrive(-gamepad2.left_stick_x/4, -gamepad2.left_stick_y/4, -gamepad2.right_stick_x/4, 180);
         }else{
             robot.drivetrain.operateMecanumDrive(-gamepad2.left_stick_x, -gamepad2.left_stick_y, -gamepad2.right_stick_x, 180);
         }
         intakeToggler.changeState(gamepad1.right_bumper);
-        if(intakeToggler.currentState() == 1) {
-            robot.intake.setIntakePower(1.0);
-        }else{
-            robot.intake.setIntakePower(0.0);
-        }
-        robot.canister.operateLoader(gamepad1.a);
+        robot.intake.operate(gamepad1.right_bumper, gamepad1.left_bumper || gamepad2.right_bumper);
         robot.shootHighGoal(gamepad1.x);
         robot.shootHighGoal2(gamepad1.y);
-        outtakeToggler.changeState(gamepad1.left_bumper);
+
         //testOuttake.setLauncherPower(0.77);
         /*if(outtakeToggler.currentState() == 1) {
             robot.outtake.operateFlywheel(Outtake.GoalPositions.HIGH_BIN);

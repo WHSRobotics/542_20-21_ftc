@@ -1,8 +1,10 @@
 package org.whitneyrobotics.ftc.teamcode.autoop;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import org.firstinspires.ftc.teamcode.R;
 import org.whitneyrobotics.ftc.teamcode.lib.geometry.Coordinate;
 import org.whitneyrobotics.ftc.teamcode.lib.geometry.Position;
 import org.whitneyrobotics.ftc.teamcode.lib.purepursuit.FollowerConstants;
@@ -140,7 +142,7 @@ public class WHSAuto extends OpMode {
     String outtakeState = "hover";*/
 
     public void advanceState() {
-        if (stateEnabled[(state + 1)]) {
+        if (stateEnabled[(state + 1)] || state  >= 4) {
             state++;
             subState = 0;
         } else {
@@ -218,6 +220,10 @@ public class WHSAuto extends OpMode {
     SwervePathGenerationConstants startToLaunchLinePathGenerationConstants = new SwervePathGenerationConstants(12, 0.7, 0.7, 230);
     SwervePath startToLaunchLinePath;
 
+    FollowerConstants launchLineToWobbleZeroFollowerConstants = new FollowerConstants(400, true);
+    SwervePathGenerationConstants launchLineToWobbleZeroPathGenerationConstants = new SwervePathGenerationConstants(12, 0.7, 0.7, 230);
+    SwervePath launchLineToWobbleZeroPath;
+
     FollowerConstants launchLineToWobbleOneFollowerConstants = new FollowerConstants(400, true);
     SwervePathGenerationConstants launchLineToWobbleOnePathGenerationConstants = new SwervePathGenerationConstants(12, 0.7, 0.7, 230);
     SwervePath launchLineToWobbleOnePath;
@@ -243,7 +249,7 @@ public class WHSAuto extends OpMode {
         //all coordinates here are placeholders, change later
         scanningDistanceArray[RED][INSIDE] = new Position(1, -2);
         shootingPositionArray[RED] = new Position(STARTING_COORDINATE_X - 1425, STARTING_COORDINATE_Y);
-        wobblePositionArray[STARTING_ALLIANCE][0] = new Position(300, -1300);
+        wobblePositionArray[STARTING_ALLIANCE][0] = new Position(-100, STARTING_COORDINATE_Y);
         wobblePositionArray[STARTING_ALLIANCE][1] = new Position(-400, STARTING_COORDINATE_Y);
         wobblePositionArray[STARTING_ALLIANCE][2] = new Position(-1200, STARTING_COORDINATE_Y);
         parkingPositionArray[RED][2] = new Position(-300, STARTING_COORDINATE_Y);
@@ -253,6 +259,11 @@ public class WHSAuto extends OpMode {
         startToLaunchLinePositions.add(startingCoordinateArray[STARTING_ALLIANCE]);
         startToLaunchLinePositions.add(shootingPositionArray[STARTING_ALLIANCE]);
         startToLaunchLinePath = PathGenerator.generateSwervePath(startToLaunchLinePositions, startToLaunchLineFollowerConstants, startToLaunchLinePathGenerationConstants);
+
+        ArrayList<Position> launchLineToWobbleZero = new ArrayList<>();
+        launchLineToWobbleZero.add(shootingPositionArray[STARTING_ALLIANCE]);
+        launchLineToWobbleZero.add(wobblePositionArray[STARTING_ALLIANCE][0]);
+        launchLineToWobbleZeroPath = PathGenerator.generateSwervePath(launchLineToWobbleZero, launchLineToWobbleZeroFollowerConstants, launchLineToWobbleZeroPathGenerationConstants);
 
         ArrayList<Position> launchLineToWobbleOne = new ArrayList<>();
         launchLineToWobbleOne.add(shootingPositionArray[STARTING_ALLIANCE]);
@@ -297,10 +308,11 @@ public class WHSAuto extends OpMode {
 
     @Override
     public void init_loop() {
+        FtcDashboard.getInstance().startCameraStream(vuforia, 0);
         robot.wobble.setClawPosition(Wobble.ClawPositions.CLOSE);
         List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
         if (updatedRecognitions != null) {
-            stackLabel = "Quad";
+            stackLabel = "Lelouch Vi Britannia";
                                 /*telemetry.addData("# Object Detected", updatedRecognitions.size());
                                 int i = 0;*/
             for (Recognition recognition : updatedRecognitions) {
@@ -361,6 +373,7 @@ public class WHSAuto extends OpMode {
             case SCAN_STACK:
                 stateDesc = "Scan Stack + Drop Intake";
                 robot.wobble.setClawPosition(Wobble.ClawPositions.CLOSE);
+                robot.wobble.setArmRotatorPositions(Wobble.ArmRotatorPositions.IN);
                 switch (subState) {
                     case 0:
                         subStateDesc = "Scan Stack";
@@ -396,6 +409,7 @@ public class WHSAuto extends OpMode {
                         robot.rotateToTarget(9, true);
                         robot.intake.autoDropIntake();
                         if (!robot.rotateToTargetInProgress()) {
+                            robot.intake.setDropdown(Intake.DropdownPositions.UP);
                             advanceState();
                         }
                         break;
@@ -405,7 +419,9 @@ public class WHSAuto extends OpMode {
                 break;
             case LAUNCH_PARTICLES:
                 stateDesc = "Ready to Launch";
+                robot.intake.setDropdown(Intake.DropdownPositions.UP);
                 robot.wobble.setClawPosition(Wobble.ClawPositions.CLOSE);
+                robot.wobble.setArmRotatorPositions(Wobble.ArmRotatorPositions.IN);
                 robot.autoShootHighGoal();
                 if (!robot.shootingInProgress()) {
                     advanceState();
@@ -416,16 +432,18 @@ public class WHSAuto extends OpMode {
                 switch (subState) {
                     case 0: // Check to make sure ring amount and swerve paths match
                         robot.wobble.setClawPosition(Wobble.ClawPositions.CLOSE);
+                        robot.wobble.setArmRotatorPositions(Wobble.ArmRotatorPositions.IN);
                         subStateDesc = "Move to Wobble Box";
                         tfod.getRecognitions();
                         if (stackLabel == "Quad") {
                             robot.updatePath(launchLineToWobbleFourPath);
                             robot.swerveToTarget();
-                        } else if (stackLabel == "One") {
+                        } else if (stackLabel == "Single") {
                             robot.updatePath(launchLineToWobbleOnePath);
                             robot.swerveToTarget();
                         } else {
-                            robot.rotateToTarget(145, true);
+                            robot.updatePath(launchLineToWobbleZeroPath);
+                            robot.swerveToTarget();
                         }
                         if (!robot.swerveInProgress() && !robot.rotateToTargetInProgress() && !robot.driveToTargetInProgress()) {
                             subState++;
@@ -433,15 +451,22 @@ public class WHSAuto extends OpMode {
                         break;
                     case 1:
                         robot.wobble.setClawPosition(Wobble.ClawPositions.CLOSE);
-                        subStateDesc = "Move TO Wobble Box (Part 2)";
-                        if (stackLabel == "One") {
-                            robot.rotateToTarget(-160, true);
+                        robot.wobble.setArmRotatorPositions(Wobble.ArmRotatorPositions.IN);
+                        subStateDesc = "Rotate to Wobble Box (Part 2)";
+                        if (stackLabel == "Single") {
+                            robot.rotateToTarget(-100, true);
                         } else if (stackLabel == "Quad") {
                             robot.rotateToTarget(-30, false);
                         } else {
-                            advanceState();
+                            robot.rotateToTarget(145, true);
                         }
                         if (!robot.swerveInProgress() && !robot.rotateToTargetInProgress() && !robot.driveToTargetInProgress()) {
+                            subState++;
+                        }
+                        break;
+                    case 2:
+                        robot.wobble.autoDropWobble();
+                        if(robot.wobble.getDroppedState()){
                             advanceState();
                         }
                    /* case 1:
@@ -480,7 +505,6 @@ public class WHSAuto extends OpMode {
 
             case PARK_ON_STARTING_LINE:
                 stateDesc = "Park";
-                robot.wobble.setClawPosition(Wobble.ClawPositions.CLOSE);
                 if (stackLabel == "Quad") {
                     robot.updatePath(wobbleFourToParkPath);
                 } else {
@@ -559,12 +583,9 @@ public class WHSAuto extends OpMode {
                         break;
                 }*/
                 if (!robot.swerveInProgress()) {
-                    advanceState();
                 }
                 break;
             case END:
-                subStateDesc = "Shutting Down TensorFlowObjectDetection";
-                tfod.shutdown();
                 break;
 
             default:
@@ -573,6 +594,9 @@ public class WHSAuto extends OpMode {
         telemetry.addData("State: ", stateDesc);
         telemetry.addData("Substate: ", subStateDesc);
         telemetry.addData("IMU", robot.imu.getHeading());
+
+        telemetry.addData("Stack Height", stackLabel);
+
         //telemetry.addData("Stone Sensed?", robot.intake.stoneSensed());
         telemetry.addData("X", robot.getCoordinate().getX());
         telemetry.addData("Y", robot.getCoordinate().getY());

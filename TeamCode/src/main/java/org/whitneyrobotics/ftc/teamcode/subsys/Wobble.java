@@ -9,6 +9,7 @@ import org.whitneyrobotics.ftc.teamcode.lib.control.ControlConstants;
 import org.whitneyrobotics.ftc.teamcode.lib.control.PIDController;
 import org.whitneyrobotics.ftc.teamcode.lib.control.PIDFController;
 import org.whitneyrobotics.ftc.teamcode.lib.util.Functions;
+import org.whitneyrobotics.ftc.teamcode.lib.util.SimpleTimer;
 import org.whitneyrobotics.ftc.teamcode.lib.util.Toggler;
 
 public class Wobble {
@@ -30,10 +31,11 @@ public class Wobble {
 
     private Toggler wobbleTog = new Toggler(6);
     public  int linearSlideState;
+    private int autoState = 0;
     //private Toggler linearSlidePIDStateTog = new Toggler(2);
     private Toggler teleToggler = new Toggler(5);
 
-    // public SimpleTimer delayTimer = new SimpleTimer();
+    public SimpleTimer autoTimer = new SimpleTimer();
 
     public enum ArmRotatorPositions {
         IN, HALF, OUT
@@ -47,9 +49,11 @@ public class Wobble {
         DOWN, GRABBING, MOVING, UP
     }
 
-    public double[] ARM_ROTATOR_POSITIONS = {0.21, 0.564, 0.925}; //folded, in , out; test
-    public double[] CLAW_POSITIONS = {0.67, 0.92}; // open, close;test
+    public double[] ARM_ROTATOR_POSITIONS = {0.45, 0.4, 0.15}; //folded, in , out; test
+    public double[] CLAW_POSITIONS = {0.65, 0.91}; // open, close;test
     public int[] LINEAR_SLIDE_POSITIONS = {0, -1790, -500,  -3800}; //down, medium, up; test
+
+    boolean dropped = false;
 
     public Wobble(HardwareMap wobbleMap) {
         trapDoor = wobbleMap.servo.get("clawServo");
@@ -170,5 +174,48 @@ public class Wobble {
                 break;
         }
     }
+    public void autoDropWobble(){
+        double swingOutDelay = 1.0;
+        double dropWobbleDelay = 0.5;
+        double resetArmDelay = 1.5;
+        switch (autoState){
+            case 0:
+                autoTimer.set(swingOutDelay);
+                setArmRotatorPositions(ArmRotatorPositions.OUT);
+                autoState++;
+                break;
+            case 1:
+                setArmRotatorPositions(ArmRotatorPositions.OUT);
+                if(autoTimer.isExpired()){
+                    autoState++;
+                }
+                break;
+            case 2:
+                autoTimer.set(dropWobbleDelay);
+                autoState++;
+                break;
+            case 3:
+                setClawPosition(ClawPositions.OPEN);
+                if(autoTimer.isExpired()){
+                    autoTimer.set(resetArmDelay);
+                    autoState++;
+                }
+                break;
+            case 4:
+                setArmRotatorPositions(ArmRotatorPositions.IN);
+                if(autoTimer.isExpired()){
+                    autoState++;
+                }
+                break;
+            case 5:
+                setClawPosition(ClawPositions.CLOSE);
+               dropped = true;
 
+
+        }
+    }
+
+    public boolean getDroppedState(){
+        return dropped;
+    }
 }

@@ -27,10 +27,11 @@ public class WobbleTest extends OpMode {
 
     @Override
     public void loop() {
-        testWobble.operate(gamepad1.b);
+        testWobble.autoDropWobble();
        telemetry.addData("Position", testWobble.wobbleMotor.getCurrentPosition());
        telemetry.addData("State", testWobble.linearSlideState);
        telemetry.addData("Error", testWobble.errorDebug);
        telemetry.addData("Power Debug", testWobble.powerDebug);
+       telemetry.addData("Dropped", testWobble.getDroppedState());
     }
 }

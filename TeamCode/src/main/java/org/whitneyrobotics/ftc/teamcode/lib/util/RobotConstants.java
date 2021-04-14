@@ -16,7 +16,7 @@ public class RobotConstants {
     public final static double rotate_max = 1.0;
 
     public final static ControlConstants DRIVE_CONSTANTS = new ControlConstants(1.7, 0.7, 0.8);
-    public final static ControlConstants ROTATE_CONSTANTS = new ControlConstants(2.5, 0.085, 0.3);
+    public final static ControlConstants ROTATE_CONSTANTS = new ControlConstants(1.5, 0.085, 0.3);
 
     //Outtake
     public final static double OUTTAKE_MAX_VELOCITY = 2120;

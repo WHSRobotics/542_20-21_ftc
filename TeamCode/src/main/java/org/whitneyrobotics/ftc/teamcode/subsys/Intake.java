@@ -32,7 +32,7 @@ public class Intake {
         UP, DOWN
     }
 
-    public double[] dropdownPositions = {0.53, 0.16};//placeholders test pls
+    public double[] dropdownPositions = {0.97, 0.66};//placeholders test pls
 
     public Intake(HardwareMap intakeMap) {
         wheelIntake = intakeMap.dcMotor.get("intakeMotor");
@@ -59,6 +59,7 @@ public class Intake {
             intakeStateDescription = "Forward Intake";
         } else {
             wheelIntake.setPower(0.0);
+            wheelIntake2.setPower(0.0);
             intakeStateDescription = "Intake Off";
         }
 
